@@ -83,14 +83,14 @@ button,input,textarea,select{font:inherit;color:inherit}
 .field .opt{font-weight:500}
 .field label .q{font-family:var(--f-mono);color:var(--muted);font-weight:500;margin-right:4px}
 .field .hint{font-size:12px;color:var(--muted)}
-input[type=text],input[type=email],input[type=tel],input[type=url],input[type=number],input[type=date],textarea{
+input[type=text],input[type=email],input[type=tel],input[type=url],input[type=number],input[type=date],input[type=time],input[type=search],textarea{
   width:100%;background:var(--field);border:1px solid var(--line);border-radius:var(--r);padding:9px 11px;min-width:0}
 input:focus,textarea:focus{border-color:var(--accent);outline:none;box-shadow:0 0 0 3px var(--accent-soft)}
 textarea{resize:vertical;min-height:200px;line-height:1.45;font-size:14px}
 textarea.short{min-height:96px;font-family:var(--f-mono);font-size:13px}
 #g-rules{min-height:150px;font-size:13px}
 #s-prompt{min-height:260px;font-size:13px}
-input[type=date]{color-scheme:dark}
+input[type=date],input[type=time]{color-scheme:dark}
 .lede{margin:0;font-size:13.5px;color:var(--muted);max-width:62ch}
 a.btn{text-decoration:none;color:inherit}
 a.btn.primary{color:var(--accent-ink)}
@@ -586,11 +586,140 @@ main > section[role="tabpanel"]:not(.home){min-height:100vh;min-height:100dvh}
 .scr-q{list-style:none;margin:0;padding:0;display:grid;gap:10px;counter-reset:q}
 .scr-q li{display:grid;grid-template-columns:38px minmax(0,1fr);gap:12px;align-items:start;background:var(--field);border:1px solid var(--line);border-radius:8px;padding:12px 14px;font-size:16px;line-height:1.5}
 .scr-q li::before{counter-increment:q;content:counter(q);font-family:var(--f-mono);font-weight:600;font-size:15px;color:var(--accent-ink);background:var(--accent);border-radius:6px;height:28px;display:grid;place-items:center}
+.scr-q li[data-q]{cursor:pointer;transition:border-color .15s,opacity .15s}
+.scr-q li[data-q]:hover,.scr-q li[data-q]:focus-visible{border-color:var(--accent);outline:none}
+.scr-q li.asked{opacity:.62}
+.scr-q li.asked::before{content:"\2713";background:var(--good);color:#04130A;font-size:18px;font-weight:700}
 #scr-t{min-height:340px}
 #scr-jd{min-height:180px}
 .scr h3{margin:0;font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
 .scr .sec{display:grid;gap:8px}
 #scr-list{list-style:none;padding:0;margin:0}
+
+/* To Do List: a real check box for done, and a quiet Undo link that looks nothing like it */
+.todo li{grid-template-columns:24px auto minmax(0,1fr) auto}
+.tick{width:22px;height:22px;padding:0;display:grid;place-items:center;background:transparent;border:1.5px solid var(--line-strong);border-radius:6px;cursor:pointer;transition:border-color .15s,background .15s}
+button.tick:hover,button.tick:focus-visible{border-color:var(--good);outline:none}
+.tick.on{background:var(--good);border-color:var(--good)}
+.tick.on::after{content:"\2713";color:#04130A;font-size:15px;font-weight:800;line-height:1}
+span.tick{cursor:default}
+.todo li.done .why,.todo li.done .t{opacity:.6}
+.undo{background:none;border:0;padding:2px 0;font:inherit;font-size:12px;color:var(--muted);text-decoration:underline;text-underline-offset:2px;cursor:pointer;white-space:nowrap}
+.undo:hover,.undo:focus-visible{color:var(--ink);outline:none}
+@media (max-width:620px){.todo li{grid-template-columns:24px minmax(0,1fr)}.todo .why,.todo .t,.todo .acts{grid-column:2}}
+/* Dashboard panels that fold away */
+[data-fold] > .card-h{cursor:pointer;user-select:none}
+.fold-btn{order:9;width:30px;height:30px;padding:0;background:none;border:1px solid var(--line);border-radius:8px;color:var(--muted);cursor:pointer;display:grid;place-items:center;align-self:center}
+.fold-btn::after{content:"";width:8px;height:8px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:translateY(2px) rotate(-135deg);transition:transform .15s}
+.fold-btn:hover,.fold-btn:focus-visible{color:var(--ink);border-color:var(--line-strong);outline:none}
+.panel.folded > .fold-btn::after,.panel.folded > .card-h .fold-btn::after{transform:translateY(-2px) rotate(45deg)}
+.panel.folded > :not(.card-h){display:none}
+.panel.folded > .card-h{margin-bottom:0}
+/* Every job */
+.job-search{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.job-search input{flex:1;min-width:0}
+.job-search small{font-size:12.5px;color:var(--muted);white-space:nowrap}
+.job-table tbody tr[data-job]{cursor:pointer}
+.job-table tbody tr[data-job]:hover td{background:rgba(255,220,0,.05)}
+.job-table td.who{max-width:230px;font-size:12.5px;color:var(--muted)}
+/* Job record */
+.pick.jr{width:min(780px,calc(100% - 32px))}
+.jr textarea{min-height:0;resize:none;overflow:hidden}
+.jr-sec{margin-top:18px}
+.jr-sec > h3{margin:0 0 8px;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.jr-2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.jr-mgr{display:grid;grid-template-columns:repeat(4,minmax(0,1fr)) 34px;gap:8px;align-items:end;padding:10px 0;border-top:1px solid var(--line)}
+.jr-mgr:first-of-type{border-top:0;padding-top:0}
+.jr-mgr .field label{font-size:12px}
+.jr-mgr small{grid-column:1/-1;font-size:12px;color:var(--muted)}
+.jr-x{padding:8px 0;width:34px;justify-content:center}
+.jr-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.jr-chip{display:inline-flex;align-items:center;gap:6px;font-size:13px;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:4px 6px 4px 10px}
+.jr-chip button{background:none;border:0;padding:0 4px;color:var(--muted);font-size:15px;line-height:1;cursor:pointer}
+.jr-chip button:hover{color:var(--not)}
+.jr-add{display:flex;gap:8px}
+.jr-add input{flex:1;min-width:0}
+.jr-meta{font-size:12.5px;color:var(--muted);margin:8px 0 0}
+.jr-foot{margin-top:20px;padding-top:14px;border-top:1px solid var(--line)}
+#jr-del.armed{color:var(--not)}
+@media (max-width:620px){.jr-2{grid-template-columns:minmax(0,1fr)}.jr-mgr{grid-template-columns:repeat(2,minmax(0,1fr))}.jr-x{grid-column:2;justify-self:end}}
+/* Calendar */
+.cal-cols{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:960px){.cal-cols{grid-template-columns:minmax(0,1fr)}}
+.cal-form{display:grid;gap:10px}
+.cal-2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.cal-form label{font-size:12px}
+.cal-day{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:12px 0 6px}
+.cal-day:first-child{margin-top:0}
+.cal-list{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.cal-list li{display:grid;grid-template-columns:76px minmax(0,1fr) auto;gap:10px;align-items:center;border:1px solid var(--line);border-radius:8px;padding:8px 10px}
+.cal-list li.soon{border-color:var(--accent)}
+.cal-list .at{font-family:var(--f-mono);font-size:12.5px;white-space:nowrap}
+.cal-list .t b{display:block;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cal-list .t span{display:block;font-size:12.5px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cal-list .acts{display:flex;gap:4px}
+.cal-list .btn{padding:5px 9px;font-size:12.5px}
+.cal-list .armed{color:var(--not)}
+@media (max-width:620px){.cal-list li{grid-template-columns:minmax(0,1fr)}}
+/* Alerts: stay on screen until they're answered */
+.alerts{position:fixed;top:calc(env(safe-area-inset-top,0px) + 18px);left:50%;translate:-50% 0;z-index:150;display:grid;gap:10px;width:min(460px,calc(100% - 32px));pointer-events:none}
+.alert{pointer-events:auto;background:#141318;color:#F5F2E8;border:1px solid var(--accent);border-radius:14px;padding:16px 18px;box-shadow:0 18px 50px rgba(0,0,0,.6),0 0 30px rgba(255,220,0,.18);animation:alert-in .28s ease-out}
+.alert b{display:block;font-size:16px;margin-bottom:3px}
+.alert p{margin:0 0 12px;font-size:14px;line-height:1.45;color:#C9C5B8}
+.alert .row{gap:8px}
+@keyframes alert-in{from{opacity:0;transform:translateY(-14px)}}
+@media (prefers-reduced-motion:reduce){.alert{animation:none}}
+/* Manager responses: each one dated, with a note ready for the CRM */
+.resp-list{max-height:440px;gap:10px}
+.resp-list li{display:grid;gap:6px;align-items:stretch;border:1px solid var(--line);border-radius:8px;padding:10px}
+.rl-top{display:flex;gap:8px;align-items:baseline;min-width:0}
+.rl-top b{font-weight:600;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-right:auto}
+.rl-top b span{color:var(--muted);font-weight:400}
+.resp-list input[type=date]{width:auto;font-size:13px;padding:5px 8px}
+.resp-list textarea{min-height:0;resize:none;overflow:hidden;display:block;font-size:13.5px;line-height:1.45;padding:6px 8px}
+.rl-acts{display:flex;gap:6px;align-items:center}
+.rl-acts .btn{padding:5px 9px;font-size:12.5px}
+.rl-acts .grow{flex:1}
+.rl-acts .armed{color:var(--not)}
+.log-resp .field{flex:1 1 100%;gap:4px}
+.log-resp .field label{font-size:12px}
+.log-resp textarea{min-height:0;font-size:14px}
+/* Terms Amendments */
+.terms-table{width:100%;border-collapse:collapse;min-width:520px}
+.terms-table th,.terms-table td{border:1px solid var(--line-strong);padding:0;vertical-align:middle}
+.terms-table th{width:52%;padding:8px 10px;font-size:14px;font-weight:500;text-align:left;line-height:1.35}
+.terms-table textarea{display:block;width:100%;min-height:0;resize:none;overflow:hidden;border:0;border-radius:0;background:transparent;box-shadow:none;text-align:center;font-size:14px;line-height:1.4;padding:8px 10px}
+.terms-table textarea:focus{outline:2px solid var(--accent);outline-offset:-2px}
+/* Candidate Match: keywords you can switch on, and the second row of the page */
+.kw-t{all:unset;cursor:pointer}
+.kw-t:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:2px}
+.kw.miss:has(.kw-t):hover{border-color:var(--accent);color:var(--ink)}
+.kw.manual{border:1px solid var(--accent)}
+.kw-add{display:flex;gap:8px;margin-top:12px}
+.kw-add input{flex:1;min-width:0;font-size:13.5px}
+#view-match .bench:has(+ .bench){padding-bottom:24px}
+/* Candidate Sourcing: one record per person */
+.so-top{display:flex;flex-wrap:wrap;gap:16px;margin-bottom:14px}
+.so-top .field{flex:1 1 320px;min-width:0}
+.so-top .so-box{flex:0 1 300px}
+.so-recs{display:grid;gap:12px}
+.so-rec{display:grid;gap:12px;border:1px solid var(--line);border-radius:12px;padding:14px}
+.so-rec .field label{font-size:12px}
+.so-rec textarea{min-height:0;resize:none;overflow:hidden;display:block}
+.so-who{display:grid;grid-template-columns:84px minmax(0,1.3fr) minmax(0,1fr) minmax(0,1.3fr);gap:10px}
+.so-more{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:10px}
+.so-foot{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px}
+.so-checks{flex:1 1 420px;display:flex;flex-wrap:wrap;gap:8px 18px}
+.so-checks .check{align-items:center;white-space:nowrap}
+.so-checks .check input{margin-top:0;width:18px;height:18px}
+.so-checks .check:has(input:checked){color:var(--ink)}
+.so-acts{display:flex;gap:6px;margin-left:auto}
+.so-acts .armed{color:var(--not)}
+@media (max-width:760px){
+  .so-who{grid-template-columns:84px minmax(0,1fr)}
+  .so-who .field:nth-child(n+3){grid-column:1/-1}
+  .so-more{grid-template-columns:minmax(0,1fr)}
+}
 
 /* =========================================================
    HUD SKIN: the whole app in the look of PIPER's mind
@@ -639,7 +768,7 @@ body:not(.demo).at-home .piper-dock,.hero-up .piper-dock{opacity:0;visibility:hi
 .kw-h,.age-h,.mi-group-h{font-family:var(--f-mono);letter-spacing:.14em}
 
 /* Fields */
-input[type=text],input[type=email],input[type=tel],input[type=url],input[type=number],input[type=date],textarea,select{background:var(--field);border-color:rgba(255,220,0,.17);border-radius:3px}
+input[type=text],input[type=email],input[type=tel],input[type=url],input[type=number],input[type=date],input[type=time],input[type=search],textarea,select{background:var(--field);border-color:rgba(255,220,0,.17);border-radius:3px}
 input:hover:not(:focus),textarea:hover:not(:focus),select:hover:not(:focus){border-color:rgba(255,220,0,.3)}
 input:focus,textarea:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(255,220,0,.13),0 0 20px -6px rgba(255,216,0,.55)}
 .field label,.field .lbl{color:#E9E6DC}
@@ -724,7 +853,7 @@ input:focus,textarea:focus,select:focus{border-color:var(--accent);box-shadow:0 
 .spec-toggle{border-radius:22px}
 
 /* Fields: dark glass wells */
-input[type=text],input[type=email],input[type=tel],input[type=url],input[type=number],input[type=date],textarea,select{border-radius:12px;background:rgba(0,0,0,.32);border-color:rgba(255,255,255,.1);box-shadow:inset 0 1px 2px rgba(0,0,0,.45)}
+input[type=text],input[type=email],input[type=tel],input[type=url],input[type=number],input[type=date],input[type=time],input[type=search],textarea,select{border-radius:12px;background:rgba(0,0,0,.32);border-color:rgba(255,255,255,.1);box-shadow:inset 0 1px 2px rgba(0,0,0,.45)}
 input:focus,textarea:focus,select:focus{background:rgba(0,0,0,.42);border-color:rgba(255,228,77,.75);box-shadow:inset 0 1px 2px rgba(0,0,0,.45),0 0 0 4px rgba(255,220,0,.12),0 0 22px -6px rgba(255,216,0,.55)}
 .add-term{border-radius:10px}
 .terms-box input,.opt input,.check input,.mi-list input[type=checkbox],.toggle input{border-radius:6px}
@@ -760,7 +889,8 @@ input:focus,textarea:focus,select:focus{background:rgba(0,0,0,.42);border-color:
 .fly:nth-child(4){--fx:62vw;--fy:-75vh;--ax:8px;--ay:10px;--dx:6.6s;--dy:5.9s;--ox:-3.8s;--oy:-5.5s}
 .fly:nth-child(5){--fx:88vw;--fy:-8vh;--ax:7px;--ay:12px;--dx:7.7s;--dy:5.3s;--ox:-6.4s;--oy:-.6s}
 .fly:nth-child(6){--fx:72vw;--fy:62vh;--ax:6px;--ay:10px;--dx:5.7s;--dy:6.3s;--ox:-1.7s;--oy:-2.9s}
-.fly:nth-child(7){--fx:0vw;--fy:85vh;--ax:8px;--ay:11px;--dx:6.9s;--dy:4.9s;--ox:-4.6s;--oy:-3.7s}
+.fly:nth-child(7){--fx:-6vw;--fy:85vh;--ax:8px;--ay:11px;--dx:6.9s;--dy:4.9s;--ox:-4.6s;--oy:-3.7s}
+.fly:nth-child(8){--fx:8vw;--fy:85vh;--ax:7px;--ay:10px;--dx:7.1s;--dy:5.5s;--ox:-2.7s;--oy:-1.9s}
 @keyframes home-float-x{from{translate:calc(var(--ax) * var(--k) * -1) 0}to{translate:calc(var(--ax) * var(--k)) 0}}
 @keyframes home-float-y{from{transform:translateY(calc(var(--ay) * var(--k) * -1))}to{transform:translateY(calc(var(--ay) * var(--k)))}}
 /* Condensed windows: she shrinks so her words, the boxes and the controls all fit on one screen */
@@ -778,7 +908,8 @@ input:focus,textarea:focus,select:focus{background:rgba(0,0,0,.42);border-color:
   .fly:nth-child(4){--rx:var(--near);--ry:calc(var(--m) * -.36)}
   .fly:nth-child(5){--rx:var(--far);--ry:calc(var(--m) * .03)}
   .fly:nth-child(6){--rx:var(--near);--ry:calc(var(--m) * .46)}
-  .fly:nth-child(7){left:50%;top:auto;bottom:0;margin:0 0 0 calc(var(--tw) / -2)}
+  .fly:nth-child(7){left:calc(50% - var(--tw) / 2 - 8px);top:auto;bottom:0;margin:0 0 0 calc(var(--tw) / -2)}
+  .fly:nth-child(8){left:calc(50% + var(--tw) / 2 + 8px);top:auto;bottom:0;margin:0 0 0 calc(var(--tw) / -2)}
 }
 /* Picking a page: the others get pulled in behind her mind, the chosen one comes out in front of her */
 .home-stage .mind-wrap{z-index:2}
@@ -856,7 +987,17 @@ main.page-in{animation:page-in .35s ease-out}
 /* Demo stage: her mind holds the middle; each page streams out of her into a window beside her */
 .demo-bg,.dm,.dw-frame,.demo-flow{display:none}
 body.demo{overflow:hidden;background:var(--void)}
-body.demo .top,body.demo #dash-hero,body.demo #view-home{display:none!important}
+body.demo .top,body.demo #dash-hero,body.demo:not(.dh) #view-home{display:none!important}
+/* It opens on her real home screen, tiles and all, with the stage's mind standing exactly where hers sits */
+body.demo.dh main{visibility:visible;inset:0;border-radius:0;background:none;overflow:hidden}
+body.demo.dh main > section{zoom:1}
+body.demo.dh #mind-wrap{visibility:hidden;pointer-events:none}
+body.demo.dh .home-go{pointer-events:none}
+body.demo.dh .home-bar,body.demo.dh .home-say{display:none}
+body.demo .fly.dh-in{transition:transform .42s cubic-bezier(.6,0,.9,.5),opacity .42s ease-in;opacity:0}
+body.demo .alerts{left:72.25vw;top:auto;bottom:8vh}
+body.demo.dw .toast{left:72.25vw}
+body.demo .pick.jr{position:fixed;z-index:44;top:8vh;left:49vw;right:4.5vw;width:auto;max-width:none;margin:0;max-height:84vh;overflow:auto}
 body.demo .demo-bg,body.demo .dm,body.demo .demo-flow{display:block}
 body.demo:not(.dock) .piper-dock{visibility:hidden}
 .demo-bg{position:fixed;inset:0;z-index:29;background:radial-gradient(ellipse 30% 34% at 50% 44%,rgba(255,205,0,.05),transparent 72%)}
@@ -892,12 +1033,17 @@ main.dw-shut{animation:dw-shut .3s cubic-bezier(.6,0,.8,.4) both}
 @keyframes dw-bit{0%{opacity:0;transform:translateX(-12px);filter:blur(4px) brightness(2.6)}55%{opacity:1;filter:blur(0) brightness(1.5)}100%{opacity:1;transform:none;filter:none}}
 body.demo .tour{transition:left .8s cubic-bezier(.65,0,.25,1),width .8s cubic-bezier(.65,0,.25,1)}
 body.demo.dw .tour{left:24vw;width:min(540px,42vw)}
+body.demo.dh .tour{left:20vw;width:min(480px,34vw)}
 @media (max-width:820px){
   .dm{top:38%;width:min(64vh,92vw)}
   body.demo.dw .dm{left:50%;top:15vh;width:min(28vh,62vw)}
   body.demo main,.dw-frame{top:29vh;left:10px;right:10px;bottom:158px}
   body.demo main > section{zoom:.9}
   body.demo.dw .tour{left:50%;width:calc(100vw - 16px)}
+  body.demo .piper-panel{bottom:150px;height:calc(100dvh - 170px)}
+  body.demo .alerts{left:50%;bottom:170px}
+  body.demo.dw .toast{left:50%;bottom:170px}
+  body.demo .pick.jr{top:29vh;left:10px;right:10px;max-height:calc(71vh - 170px)}
 }
 @media (prefers-reduced-motion:reduce){main.dw-open,.dw-frame.dw-open,main.dw-shut,.dw-frame.dw-shut,.dw-bit,.dw-frame.scan .dw-scan::before{animation:none}.dm,body.demo .tour{transition:none}}
 .tour-spot{box-shadow:0 0 0 2px var(--accent),0 0 34px 6px rgba(255,220,0,.38)!important;transition:box-shadow .3s}
@@ -960,6 +1106,7 @@ html.third-eye ::selection{background:#1238E8;color:#fff}
 .third-eye .fly:nth-child(5){--c1:#F2481F;--c2:#C00C26;--t:#fff}
 .third-eye .fly:nth-child(6){--c1:#9A52FF;--c2:#4C11C4;--t:#fff}
 .third-eye .fly:nth-child(7){--c1:#34E4B4;--c2:#0B9A92;--t:#0A0E33}
+.third-eye .fly:nth-child(8){--c1:#FF9D5C;--c2:#E8590C;--t:#0A0E33}
 .third-eye .orbit button:hover,.third-eye .orbit button:focus-visible{filter:brightness(1.12);outline:3px solid var(--ink);outline-offset:2px}
 .third-eye .orbit .fly.chosen button{box-shadow:0 0 0 4px #fff,0 0 50px rgba(18,56,232,.6)}
 @keyframes te-blob{from{border-radius:44% 56% 52% 48%/58% 46% 54% 42%}50%{border-radius:58% 42% 46% 54%/44% 58% 42% 56%}to{border-radius:48% 52% 60% 40%/52% 40% 60% 48%}}
@@ -994,11 +1141,11 @@ html.third-eye ::selection{background:#1238E8;color:#fff}
 .third-eye .scr-q li{background:linear-gradient(90deg,var(--accent-soft),transparent 60%),#fff;border-color:var(--line)}
 .third-eye .scr-q li::before{background:var(--accent);box-shadow:none}
 .third-eye .field label,.third-eye .field .lbl{color:var(--ink)}
-.third-eye input[type=date]{color-scheme:light}
+.third-eye input[type=date],.third-eye input[type=time]{color-scheme:light}
 .third-eye ::placeholder{color:#6A6F90}
 
 /* Fields and buttons */
-.third-eye input[type=text],.third-eye input[type=email],.third-eye input[type=tel],.third-eye input[type=url],.third-eye input[type=number],.third-eye input[type=date],.third-eye textarea,.third-eye select{background:#fff;border-color:var(--line-strong);box-shadow:inset 0 1px 2px rgba(10,14,51,.08)}
+.third-eye input[type=text],.third-eye input[type=email],.third-eye input[type=tel],.third-eye input[type=url],.third-eye input[type=number],.third-eye input[type=date],.third-eye input[type=time],.third-eye input[type=search],.third-eye textarea,.third-eye select{background:#fff;border-color:var(--line-strong);box-shadow:inset 0 1px 2px rgba(10,14,51,.08)}
 .third-eye input:hover:not(:focus),.third-eye textarea:hover:not(:focus),.third-eye select:hover:not(:focus){border-color:var(--accent)}
 .third-eye input:focus,.third-eye textarea:focus,.third-eye select:focus{background:#fff;border-color:var(--accent);box-shadow:0 0 0 4px var(--accent-soft)}
 .third-eye .btn{background:#fff;border-color:var(--line-strong);box-shadow:0 4px 12px -8px rgba(10,14,51,.6)}
@@ -1222,6 +1369,7 @@ html.astro ::selection{background:#F7A134;color:#2A1208}
 .astro .fly:nth-child(5){--c1:#EFBE3C;--c2:#C18B13;--t:#2A1208}
 .astro .fly:nth-child(6){--c1:#4F8D74;--c2:#265A49}
 .astro .fly:nth-child(7){--t:#2A1208}
+.astro .fly:nth-child(8){--c1:#C7734B;--c2:#8A4326;order:-1}
 /* The last one isn't a cushion: it's the low white table in the middle of the pit, standing on the floor with magazines and a dish on it */
 .astro .home-go .fly:nth-child(7) button,.astro .home-go .fly:nth-child(7) button:hover,.astro .home-go .fly:nth-child(7) button:focus-visible{border-radius:0;padding:0 24% calc(var(--tbh) * .3);background:var(--as-table) center/100% 100% no-repeat;box-shadow:none;transform:none}
 .astro .home-go .fly:nth-child(7) button:hover{filter:brightness(1.05)}
@@ -1238,6 +1386,8 @@ html.astro ::selection{background:#F7A134;color:#2A1208}
   .astro .home-stage{--m:min(520px,35vh);--tw:clamp(124px,10vw,180px);--th:clamp(70px,12.5vh,112px);width:100%;max-width:none;min-height:82vh;align-content:start;padding-bottom:calc(var(--th) + 60px)}
   .astro .home-go button,.astro .home-go button:hover,.astro .home-go button:focus-visible{font-size:clamp(15px,1.25vw,20px)}
   /* Round the banquette: the ones nearest the fire are farthest away, so a little smaller */
+  /* The eighth cushion sits on the banquette too, closest to the fire on the left. Astro works the right side */
+  .astro .fly:nth-child(8){--rx:-13vw;--ry:36vh;scale:.8;left:calc(50% + var(--rx));top:calc(var(--m) * .5 + var(--ry));bottom:auto;margin:calc(var(--th) / -2) 0 0 calc(var(--tw) / -2)}
   .astro .fly:nth-child(1){--rx:-23.5vw;--ry:36vh;scale:.88}
   .astro .fly:nth-child(2){--rx:-33.5vw;--ry:39.5vh}
   .astro .fly:nth-child(3){--rx:-43.5vw;--ry:47vh;scale:1.08}
@@ -1282,9 +1432,9 @@ html.astro ::selection{background:#F7A134;color:#2A1208}
 .astro .panel:nth-child(3n),.astro .tile:nth-child(3n){--gold:#FF9B73;--gold-hot:#FF9B73;--gold-line:rgba(255,155,115,.34)}
 .astro .todo,.astro .log-list,.astro .mi-group,.astro .mgr,.astro .kpi,.astro .tier,.astro .resp-counts div,.astro .mi-cand{background:rgba(255,215,160,.045)}
 /* Fields are wells you drop text into; focus warms them from inside */
-.astro input[type=text],.astro input[type=email],.astro input[type=tel],.astro input[type=url],.astro input[type=number],.astro input[type=date],.astro input[type=search],.astro textarea,.astro select{background:var(--field);border-color:rgba(250,212,155,.2);border-radius:14px;box-shadow:inset 0 3px 7px rgba(0,0,0,.65)}
+.astro input[type=text],.astro input[type=email],.astro input[type=tel],.astro input[type=url],.astro input[type=number],.astro input[type=date],.astro input[type=time],.astro input[type=search],.astro textarea,.astro select{background:var(--field);border-color:rgba(250,212,155,.2);border-radius:14px;box-shadow:inset 0 3px 7px rgba(0,0,0,.65)}
 .astro input:focus,.astro textarea:focus,.astro select:focus{background:#1D0D07;border-color:var(--accent);box-shadow:inset 0 3px 7px rgba(0,0,0,.5),0 0 0 3px rgba(247,161,52,.2)}
-.astro input[type=date]{color-scheme:dark}
+.astro input[type=date],.astro input[type=time]{color-scheme:dark}
 .astro ::placeholder{color:#A18A6E}
 /* Buttons give under the finger, slowly */
 .astro .btn{border-radius:999px;background:rgba(255,215,160,.07);border-color:var(--line-strong);box-shadow:inset 0 1px 0 rgba(255,235,205,.12),0 3px 6px -2px rgba(8,2,0,.8);transition:transform .45s cubic-bezier(.25,1.7,.45,1),background .2s,border-color .2s,box-shadow .2s}
@@ -1480,8 +1630,9 @@ html.astro ::selection{background:#F7A134;color:#2A1208}
       <button class="tab" role="tab" id="tab-middleton" aria-controls="view-middleton" aria-selected="false" data-view="middleton">Middleton Method</button>
       <button class="tab" role="tab" id="tab-boolean" aria-controls="view-boolean" aria-selected="false" data-view="boolean">RIG</button>
       <button class="tab" role="tab" id="tab-match" aria-controls="view-match" aria-selected="false" data-view="match">Candidate Match</button>
-      <button class="tab" role="tab" id="tab-notes" aria-controls="view-notes" aria-selected="false" data-view="notes">Candidate Notes</button>
       <button class="tab" role="tab" id="tab-spec" aria-controls="view-spec" aria-selected="false" data-view="spec">Job Spec</button>
+      <button class="tab" role="tab" id="tab-notes" aria-controls="view-notes" aria-selected="false" data-view="notes">Candidate Notes</button>
+      <button class="tab" role="tab" id="tab-source" aria-controls="view-source" aria-selected="false" data-view="source">Candidate Sourcing</button>
       <button class="tab" role="tab" id="tab-stalk" aria-controls="view-stalk" aria-selected="false" data-view="stalk">Ad Stalk</button>
     </nav>
   </div>
@@ -1495,12 +1646,13 @@ html.astro ::selection{background:#F7A134;color:#2A1208}
       <p class="home-say" id="dash-say"></p>
       <nav class="home-go orbit" aria-label="Where to next">
         <span class="fly"><button type="button" data-go="stalk">Ad Stalk</button></span>
-        <span class="fly"><button type="button" data-go="middleton">Middleton Method</button></span>
         <span class="fly"><button type="button" data-go="boolean">RIG</button></span>
+        <span class="fly"><button type="button" data-go="spec">Job Spec</button></span>
         <span class="fly"><button type="button" data-go="match">Candidate Match</button></span>
         <span class="fly"><button type="button" data-go="notes">Candidate Notes</button></span>
-        <span class="fly"><button type="button" data-go="spec">Job Spec</button></span>
+        <span class="fly"><button type="button" data-go="source">Candidate Sourcing</button></span>
         <span class="fly"><button type="button" data-go="dashboard">Dashboard</button></span>
+        <span class="fly"><button type="button" data-go="middleton">Middleton Method</button></span>
       </nav>
     </div>
     <div class="home-bar" id="hero-bar"><button type="button" class="btn ghost dash-down" id="dash-down">Back down &darr;</button></div>
@@ -1513,12 +1665,13 @@ html.astro ::selection{background:#F7A134;color:#2A1208}
       <p class="home-say" id="home-say" aria-live="polite"></p>
       <nav class="home-go orbit" id="home-go" aria-label="Where to start">
         <span class="fly"><button type="button" data-go="stalk">Ad Stalk</button></span>
-        <span class="fly"><button type="button" data-go="middleton">Middleton Method</button></span>
         <span class="fly"><button type="button" data-go="boolean">RIG</button></span>
+        <span class="fly"><button type="button" data-go="spec">Job Spec</button></span>
         <span class="fly"><button type="button" data-go="match">Candidate Match</button></span>
         <span class="fly"><button type="button" data-go="notes">Candidate Notes</button></span>
-        <span class="fly"><button type="button" data-go="spec">Job Spec</button></span>
+        <span class="fly"><button type="button" data-go="source">Candidate Sourcing</button></span>
         <span class="fly"><button type="button" data-go="dashboard">Dashboard</button></span>
+        <span class="fly"><button type="button" data-go="middleton">Middleton Method</button></span>
       </nav>
     </div>
     <div class="home-bar">
@@ -1540,7 +1693,7 @@ html.astro ::selection{background:#F7A134;color:#2A1208}
         <div class="c12 tiles" id="d-tiles"></div>
 
         <div class="panel c7">
-          <div class="card-h"><h2>Reach out today</h2><small id="d-todo-sub"></small></div>
+          <div class="card-h"><h2>To Do List</h2><small id="d-todo-sub"></small></div>
           <div id="d-todo"></div>
           <form class="add-todo" id="d-add-todo">
             <label class="sr" for="d-todo-in">Add a to-do</label>
@@ -1557,7 +1710,28 @@ html.astro ::selection{background:#F7A134;color:#2A1208}
           </div>
         </div>
 
-        <div class="panel c12" id="d-ci-panel">
+        <div class="panel c12" id="d-cal-panel" data-fold="cal">
+          <div class="card-h"><h2>Calendar</h2><small id="d-cal-sub"></small><button type="button" class="btn ghost" id="d-cal-notify" hidden>Turn on desktop alerts</button></div>
+          <div class="cal-cols">
+            <div id="d-cal"></div>
+            <form class="cal-form" id="d-cal-form" novalidate>
+              <div class="field"><label for="cal-title">Meeting</label><input type="text" id="cal-title" placeholder="Intake call with Acme" autocomplete="off"></div>
+              <div class="cal-2">
+                <div class="field"><label for="cal-date">Date</label><input type="date" id="cal-date"></div>
+                <div class="field"><label for="cal-time">Time</label><input type="time" id="cal-time"></div>
+              </div>
+              <div class="field"><label for="cal-who">With</label><input type="text" id="cal-who" placeholder="Optional" autocomplete="off"></div>
+              <div class="field"><label for="cal-link">Meeting link</label><input type="url" id="cal-link" placeholder="Optional: Teams or Zoom link" autocomplete="off"></div>
+              <div class="cal-2">
+                <div class="field"><label for="cal-lead">Alert me</label><select id="cal-lead"><option value="0">When it starts</option><option value="5">5 minutes before</option><option value="10" selected>10 minutes before</option><option value="15">15 minutes before</option><option value="30">30 minutes before</option><option value="60">1 hour before</option></select></div>
+                <div class="field"><label for="cal-repeat">Repeats</label><select id="cal-repeat"><option value="none">Doesn't repeat</option><option value="daily">Every day</option><option value="weekdays">Monday to Friday</option><option value="weekly">Every week</option></select></div>
+              </div>
+              <div class="row"><button type="submit" class="btn primary" id="cal-save">Add meeting</button><button type="button" class="btn ghost" id="cal-cancel" hidden>Cancel</button></div>
+            </form>
+          </div>
+        </div>
+
+        <div class="panel c12" id="d-ci-panel" data-fold="ci">
           <div class="card-h"><h2>Manager Check In</h2><small>Your Monday email to your manager</small></div>
           <div class="ci-head" aria-hidden="true"><span>#</span><span>Company name</span><span>Open position</span><span>Hiring manager name</span><span>Last point of contact</span><span>Next steps</span></div>
           <div class="ci-list" id="d-ci"></div>
@@ -1566,6 +1740,16 @@ html.astro ::selection{background:#F7A134;color:#2A1208}
             <span class="grow"></span>
             <button type="button" class="btn ghost" id="d-ci-clear">Clear list</button>
             <button type="button" class="btn primary" id="d-ci-copy">Copy for Outlook</button>
+          </div>
+        </div>
+
+        <div class="panel c12" id="d-terms-panel" data-fold="terms" data-fold-start="closed">
+          <div class="card-h"><h2>Terms Amendments</h2><small>Fill it in, copy it, paste it into Outlook</small></div>
+          <div class="table-scroll"><table class="terms-table" id="d-terms"></table></div>
+          <div class="row" style="margin-top:12px">
+            <span class="grow"></span>
+            <button type="button" class="btn ghost" id="d-terms-clear">Clear</button>
+            <button type="button" class="btn primary" id="d-terms-copy">Copy for Outlook</button>
           </div>
         </div>
 
@@ -1584,6 +1768,8 @@ html.astro ::selection{background:#F7A134;color:#2A1208}
             <label class="sr" for="d-resp-who">Manager</label>
             <input type="text" id="d-resp-who" list="d-mgr-list" placeholder="Manager name or email" autocomplete="off">
             <datalist id="d-mgr-list"></datalist>
+            <div class="field"><label for="d-resp-date">Date</label><input type="date" id="d-resp-date"></div>
+            <div class="field"><label for="d-resp-note">Note for your CRM</label><textarea id="d-resp-note" rows="2" placeholder="What did they say?"></textarea></div>
             <button type="button" class="btn resp-btn pos" data-resp="pos" title="Positive">+ Positive</button>
             <button type="button" class="btn resp-btn" data-resp="neu" title="Neutral">Neutral</button>
             <button type="button" class="btn resp-btn neg" data-resp="neg" title="Negative">&minus; Negative</button>
@@ -1627,8 +1813,13 @@ html.astro ::selection{background:#F7A134;color:#2A1208}
           </div>
         </div>
 
-        <div class="panel c12">
-          <div class="card-h"><h2>Every job</h2><small>Set where each one stands</small></div>
+        <div class="panel c12" id="d-jobs-panel" data-fold="jobs">
+          <div class="card-h"><h2>Every job</h2><small>Click a job to view, edit or delete it</small><button type="button" class="btn" id="d-job-add">+ Add job</button></div>
+          <div class="job-search">
+            <label class="sr" for="d-job-q">Search every job</label>
+            <input type="search" id="d-job-q" placeholder="Search companies, positions, contacts or candidates" autocomplete="off">
+            <small id="d-job-count"></small>
+          </div>
           <div id="d-jobs"></div>
         </div>
       </div>
@@ -1671,6 +1862,7 @@ html.astro ::selection{background:#F7A134;color:#2A1208}
             <div class="field">
               <label class="sr" for="rig-jd">Job description</label>
               <textarea id="rig-jd" placeholder="Paste the full job description here…"></textarea>
+              <div class="row"><button type="button" class="btn ghost" id="rig-jd-clear">Clear</button></div>
             </div>
           </div>
 
@@ -1680,6 +1872,7 @@ html.astro ::selection{background:#F7A134;color:#2A1208}
               <label class="sr" for="rig-about">Company About section</label>
               <textarea id="rig-about" style="min-height:110px" placeholder="Paste the About section from the company's LinkedIn page…"></textarea>
               <span class="hint">Goes into the prompt as context on the company, so the search targets people who fit it.</span>
+              <div class="row"><button type="button" class="btn ghost" id="rig-about-clear">Clear</button></div>
             </div>
           </div>
 
@@ -1707,7 +1900,7 @@ html.astro ::selection{background:#F7A134;color:#2A1208}
               <textarea id="g-answer" class="short" placeholder="Paste the Boolean string here…"></textarea>
               <span class="hint">Clean up puts it on one line with quotes on every phrase, AND / OR / NOT in caps, and balanced parentheses.</span>
             </div>
-            <div class="row"><button type="button" class="btn" id="g-use">Clean up</button><button type="button" class="btn primary" id="b-copy" disabled>Copy string</button></div>
+            <div class="row"><button type="button" class="btn" id="g-use">Clean up</button><button type="button" class="btn primary" id="b-copy" disabled>Copy string</button><span class="grow"></span><button type="button" class="btn ghost" id="g-clear">Clear Boolean</button></div>
             <div class="status" id="g-status" aria-live="polite"></div>
           </div>
 
@@ -1726,7 +1919,7 @@ html.astro ::selection{background:#F7A134;color:#2A1208}
       <div class="head">
         <div>
           <h1>Candidate Match</h1>
-          <p>Paste a resume. It's matched against the job description from the RIG tab, and you get five proof points to send the client.</p>
+          <p>Paste a resume and see how it stacks up against the job description from the RIG tab. Once it's the right person, write the five proof points to send the client.</p>
         </div>
         <span class="badge" id="x-example-badge">Example candidate, click the resume to start</span>
       </div>
@@ -1758,6 +1951,37 @@ html.astro ::selection{background:#F7A134;color:#2A1208}
           </div>
 
           <div class="step">
+            <div class="row"><button type="button" class="btn ghost" id="x-clear">Clear candidate</button></div>
+          </div>
+        </div>
+
+        <div class="sticky">
+          <div class="panel">
+            <div class="out-h"><h2>Keyword match</h2></div>
+            <p class="match-sub" id="x-score-sub" aria-live="polite"></p>
+            <div class="tiers" id="x-tiers"></div>
+            <div class="kw-groups" id="x-keywords"></div>
+            <form class="kw-add" id="x-kw-add">
+              <label class="sr" for="x-kw-in">Add a keyword from the job description</label>
+              <input type="text" id="x-kw-in" placeholder="Missing a keyword from the job description? Add it" autocomplete="off">
+              <button type="submit" class="btn">Add</button>
+            </form>
+            <div class="fit">
+              <div class="step-h"><h3>Fit score</h3><small>Optional</small></div>
+              <p class="lede">Copies the resume and the job description as one prompt and opens a new tab, which scores the fit as a percentage using what it knows about the industry, not just keywords, names the biggest gaps between the resume and the job description, and writes 10&ndash;15 screening questions to close them.</p>
+              <div class="row">
+                <a class="btn primary" id="x-fit-open" href="https://chatgpt.com/" target="_blank" rel="noopener">Copy &amp; score in ChatGPT ↗</a>
+                <button type="button" class="btn ghost" id="x-fit-copy">Copy prompt only</button>
+              </div>
+              <div class="row"><button type="button" class="btn" id="x-to-screen">Paste the questions into the screening call &rarr;</button></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bench">
+        <div class="panel">
+          <div class="step">
             <div class="step-h"><h2>Polish the bullets</h2><small>Optional</small></div>
             <p class="lede">The bullets on the right are drafted from the candidate's own resume lines. For smoother wording, copy the prompt and paste the 5 bullets you get back here.</p>
             <label class="check"><input type="checkbox" id="x-strip" checked> Leave the candidate's name, email, phone and links out of the prompt</label>
@@ -1779,29 +2003,9 @@ html.astro ::selection{background:#F7A134;color:#2A1208}
             </div>
             <div class="status" id="x-status" aria-live="polite"></div>
           </div>
-
-          <div class="step">
-            <div class="row"><button type="button" class="btn ghost" id="x-clear">Clear candidate</button></div>
-          </div>
         </div>
 
-        <div class="sticky">
-          <div class="panel">
-            <div class="out-h"><h2>Keyword match</h2></div>
-            <p class="match-sub" id="x-score-sub" aria-live="polite"></p>
-            <div class="tiers" id="x-tiers"></div>
-            <div class="kw-groups" id="x-keywords"></div>
-            <div class="fit">
-              <div class="step-h"><h3>Fit score</h3><small>Optional</small></div>
-              <p class="lede">Copies the resume and the job description as one prompt and opens a new tab, which scores the fit as a percentage using what it knows about the industry, not just keywords, names the biggest gaps between the resume and the job description, and writes 10&ndash;15 screening questions to close them.</p>
-              <div class="row">
-                <a class="btn primary" id="x-fit-open" href="https://chatgpt.com/" target="_blank" rel="noopener">Copy &amp; score in ChatGPT ↗</a>
-                <button type="button" class="btn ghost" id="x-fit-copy">Copy prompt only</button>
-              </div>
-              <div class="row"><button type="button" class="btn" id="x-to-screen">Paste the questions into the screening call &rarr;</button></div>
-            </div>
-          </div>
-
+        <div>
           <div class="panel">
             <div class="out-h">
               <h2>Proof points for the client</h2>
@@ -1988,6 +2192,42 @@ html.astro ::selection{background:#F7A134;color:#2A1208}
     </div>
   </section>
 
+  <!-- ============ CANDIDATE SOURCING ============ -->
+  <section id="view-source" role="tabpanel" aria-labelledby="tab-source" hidden>
+    <div class="wrap">
+      <div class="head">
+        <div>
+          <h1>Candidate Sourcing</h1>
+          <p>Line up the people you find for a job, then copy them straight into your sourcing sheet.</p>
+        </div>
+      </div>
+      <div class="panel so">
+        <div class="so-top">
+          <div class="field">
+            <label for="so-job">Job you're sourcing for</label>
+            <select id="so-job"></select>
+          </div>
+          <div class="field so-box">
+            <label for="so-box">Check boxes paste as</label>
+            <select id="so-box">
+              <option value="tf">TRUE and FALSE (clickable Excel checkboxes)</option>
+              <option value="mark">&#9745; and &#9744;</option>
+              <option value="x">X and blank</option>
+            </select>
+          </div>
+        </div>
+        <div class="so-recs" id="so-recs"></div>
+        <div class="row" style="margin-top:12px">
+          <button type="button" class="btn" id="so-add">+ Add candidate</button>
+          <span class="grow"></span>
+          <button type="button" class="btn ghost" id="so-clear">Clear this list</button>
+          <button type="button" class="btn ghost" id="so-copy">Copy all for Excel</button>
+        </div>
+        <p class="note">Select Copy on a candidate, click the Need to Call cell on their row in your sheet, and paste. It fills Need to Call through Notes. <span id="so-box-note"></span> The matched job stays here and doesn't copy over.</p>
+      </div>
+    </div>
+  </section>
+
   <!-- ============ AD STALK ============ -->
   <section id="view-stalk" role="tabpanel" aria-labelledby="tab-stalk" hidden>
     <div class="wrap">
@@ -2071,6 +2311,23 @@ html.astro ::selection{background:#F7A134;color:#2A1208}
   <div id="x-pick-list"></div>
 </dialog>
 
+<dialog class="pick jr" id="jr" aria-labelledby="jr-h">
+  <div class="pick-h">
+    <h2 id="jr-h">Job</h2>
+    <button type="button" class="btn ghost" id="jr-close" aria-label="Close without saving">Close</button>
+  </div>
+  <form id="jr-form" novalidate>
+    <div id="jr-body"></div>
+    <div class="row jr-foot">
+      <button type="button" class="btn ghost" id="jr-del">Delete job</button>
+      <span class="grow"></span>
+      <button type="button" class="btn ghost" id="jr-source">Add people in Candidate Sourcing</button>
+      <button type="submit" class="btn primary">Save</button>
+    </div>
+  </form>
+</dialog>
+
+<div class="alerts" id="alerts" aria-live="assertive"></div>
 <div class="toast" id="toast" role="status"></div>
 <div class="demo-bg" aria-hidden="true"></div>
 <div class="dm" aria-hidden="true"><canvas id="demo-mind" width="600" height="600"></canvas></div>
@@ -2163,13 +2420,50 @@ const store = DEMO ? {
   get(k, d){ try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch(e){ return d; } },
   set(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} }
 };
-// Two weeks of made-up KPIs, so the Dashboard has something to chart
+// A made-up desk, so every panel in the tour has something on it: jobs, replies, meetings, KPIs, candidates
 if (DEMO){
   const days = {}, d = new Date(); let n = 0;
   const iso = x => `${x.getFullYear()}-${String(x.getMonth() + 1).padStart(2, "0")}-${String(x.getDate()).padStart(2, "0")}`;
   while (n < 9){ d.setDate(d.getDate() - 1); if (d.getDay() % 6 === 0) continue;
     days[iso(d)] = { calls:[34, 28, 31, 22, 36, 30, 27, 33, 25][n], early:[6, 3, 5, 2, 7, 5, 4, 6, 3][n], emails:[31, 26, 35, 30, 28, 33, 24, 30, 29][n], phone:[72, 48, 65, 40, 80, 61, 55, 70, 45][n], mgrs:[3, 2, 4, 1, 3, 3, 2, 4, 2][n] }; n++; }
   DEMO_MEM.set("md.kpi", { targets:{}, days });
+  const now = Date.now(), back = k => iso(new Date(now - k * 864e5)), jk = (c, p) => `${c}|${p}`.toLowerCase();
+  const mail = name => name.toLowerCase().replace(/\s+/g, ".") + "@example.com";
+  const mgr = (title, name, phone, ...ago) => ({ key:mail(name), title, name, email:mail(name), phone, dates:ago.map(back) });
+  const desk = [
+    ["Northwind Therapeutics", "Director, Regulatory Affairs", mgr("VP, Regulatory", "Dana Whitfield", "(617) 555-0118", 12, 1), "pulled", ["Sam Okafor"]],
+    ["Lakeshore Vascular", "Principal R&D Engineer", mgr("Sr. Director, R&D", "Marcus Oyelaran", "(612) 555-0127", 21, 6)],
+    ["Harbor Point Diagnostics", "Quality Engineering Manager", mgr("VP, Quality", "Renee Castillo", "(858) 555-0134", 18, 4), "", ["Lena Fischer"]],
+    ["Silverline Medical", "Clinical Affairs Manager", mgr("Director, Clinical", "Tom Brandt", "(949) 555-0146", 30, 9)],
+    ["Bluefin Biosciences", "MSAT Scientist, Cell Therapy", mgr("Head of MSAT", "Priya Raman", "(919) 555-0152", 33, 16)],
+    ["Cedar Ridge Orthopedics", "Sr. Regulatory Specialist", mgr("Regulatory Director", "Alicia Moreno", "(574) 555-0161", 40, 25), "filled"],
+    ["Kestrel Pharma", "Supply Chain Manager", mgr("VP, Operations", "Hannah Lowe", "(908) 555-0175", 8, 3)]
+  ];
+  DEMO_MEM.set("md.import", { v:2, at:now - 864e5, mode:"Middleton blocks", text:"", days:[], jobs:desk.map(([company, position, m, , candidates = []]) => ({ company, position, link:"", terms:false, managers:[m], candidates, dates:[...m.dates] })) });
+  DEMO_MEM.set("md.jobstat", { ...Object.fromEntries(desk.filter(j => j[3]).map(j => [jk(j[0], j[1]), j[3]])), [jk("Acme Biologics", "Senior Manager, Quality Assurance")]:"pulled" });
+  DEMO_MEM.set("md.log", [["Tidewater Biosciences", "Process Development Lead", "Director, PD", "Owen Park", "(858) 555-0183", 2], ["Orchard Surgical", "Sr. Manufacturing Engineer", "Plant Manager", "Grace Lin", "(408) 555-0191", 1]].map(([company, position, title, name, phone, k], i) => (
+    { id:"demo" + i, num:String(i + 1), bullhorn:true, terms:!i, company, position, link:"", managers:[{ title, name, email:mail(name), phone }], candidates:[], created:back(k) })));
+  const said = (t, k, note) => ({ dates:[], resp:[{ t, d:back(k), note, ts:now - k * 864e5 }] });
+  DEMO_MEM.set("md.touch", { [mail("Dana Whitfield")]:said("pos", 1, "Wants to see two resumes this week."), [mail("Renee Castillo")]:said("neu", 4, "Hiring's on hold until January."), [mail("Alicia Moreno")]:said("neg", 25, "Filled internally.") });
+  DEMO_MEM.set("md.callnext", [mail("Hannah Lowe")]);
+  DEMO_MEM.set("md.todos", [{ id:"demo", text:"Prep for the Northwind intake", day:back(0), done:false }]);
+  DEMO_MEM.set("md.checkin", [
+    { num:"1", company:"Northwind Therapeutics", position:"Director, Regulatory Affairs", manager:"Dana Whitfield", last:"Positive reply yesterday", next:"Intake call today, then send two resumes" },
+    { num:"2", company:"Harbor Point Diagnostics", position:"Quality Engineering Manager", manager:"Renee Castillo", last:"Spoke last week, on hold", next:"Check back in January" },
+    { num:"3", company:"Kestrel Pharma", position:"Supply Chain Manager", manager:"Hannah Lowe", last:"Voicemail on Friday", next:"Call before 9am" }
+  ]);
+  DEMO_MEM.set("md.terms", ["Northwind Therapeutics, Inc.", "200 Harbor Way, Boston, MA", "25%", "Standard is fine", "Net 30 requested", "None", "Yes", "Dana Whitfield, " + mail("Dana Whitfield")]);
+  const soon = new Date(now + 10 * 60e3), clock = x => `${String(x.getHours()).padStart(2, "0")}:${String(x.getMinutes()).padStart(2, "0")}`;
+  DEMO_MEM.set("md.meet", [
+    { id:"demo1", title:"Intake call with Northwind", date:iso(soon), time:clock(soon), who:"Dana Whitfield", link:"", lead:10, repeat:"none" },
+    { id:"demo2", title:"Team huddle", date:back(6), time:"08:45", who:"", link:"", lead:5, repeat:"weekly" },
+    { id:"demo3", title:"Candidate prep with Sam Okafor", date:back(-1), time:"14:30", who:"Sam Okafor", link:"", lead:10, repeat:"none" }
+  ]);
+  const acme = jk("Acme Biologics", "Senior Manager, Quality Assurance");
+  DEMO_MEM.set("md.source", { job:acme, box:"tf", rows:[
+    { id:"demo1", job:acme, label:"", num:"1", need:true, name:"Riley Chen", phone:"(617) 555-0163", email:mail("Riley Chen"), good:true, notfit:false, resume:true, submitted:false, reject:false, notes:"11 years in biologics QA. Open to hybrid." },
+    { id:"demo2", job:acme, label:"", num:"2", need:false, name:"Morgan Diaz", phone:"(781) 555-0129", email:mail("Morgan Diaz"), good:false, notfit:true, resume:false, submitted:false, reject:false, notes:"Device background, no GMP biologics." }
+  ] });
 }
 let toastTimer;
 function toast(msg){
@@ -2180,7 +2474,7 @@ function toast(msg){
 }
 
 /* ---------------- Tabs ---------------- */
-const VIEWS = ["home", "dashboard", "middleton", "boolean", "match", "notes", "spec", "stalk"];
+const VIEWS = ["home", "dashboard", "middleton", "boolean", "match", "notes", "spec", "source", "stalk"];
 // Mic and voice: in the header on every page, in the bar under her at home or when scrolled up to her
 function placeCtl(){
   const ctl = $(".hud-ctl"), host = CUR_VIEW === "home" ? $("#view-home .home-bar") : document.body.classList.contains("hero-up") ? $("#hero-bar") : $(".top .wrap");
@@ -2202,6 +2496,7 @@ function showView(name){
   if (name === "match") syncMatchJd();
   if (name === "dashboard") renderDash();
   if (name === "middleton"){ prefillPositionFromRig(); renderImport(); }
+  if (name === "source") soRender();
   if (name !== "home") store.set("md.view", name);
 }
 document.querySelectorAll(".tab").forEach(t => t.addEventListener("click", () => showView(t.dataset.view)));
@@ -2418,6 +2713,12 @@ function useAnswer(){
   $("#g-status").textContent = (s === raw.trim() ? "Already in your format." : "Cleaned up.") + ` ${s.length.toLocaleString()} characters. Ready to copy.`;
 }
 function updateCopyBtn(){ $("#b-copy").disabled = !$("#g-answer").value.trim(); }
+$("#g-clear").addEventListener("click", () => {
+  $("#g-answer").value = ""; $("#g-status").textContent = ""; B.raw = ""; saveB(); updateCopyBtn(); $("#g-answer").focus();
+});
+[[jdEl, "#rig-jd-clear"], [aboutEl, "#rig-about-clear"]].forEach(([el, btn]) => $(btn).addEventListener("click", () => {
+  el.value = ""; el.dispatchEvent(new Event("input", { bubbles:true })); el.focus();
+}));
 $("#g-use").addEventListener("click", useAnswer);
 $("#g-answer").addEventListener("input", () => { updateCopyBtn(); $("#g-status").textContent = ""; });
 
@@ -2673,8 +2974,7 @@ function blocksToRows(blocks){
 }
 
 /* Clipboard HTML with inline styles \u2014 Excel and Google Sheets both read these */
-function rowsToClipboardHTML(rows){
-  const widths = [40, 190, 150, 210, 140, 160];
+function rowsToClipboardHTML(rows, widths = [40, 190, 150, 210, 140, 160]){
   const cols = widths.map(w => `<col width="${w}" style="width:${w}px">`).join("");
   const body = rows.map(r => "<tr>" + r.map(c => {
     const st = ["font-family:'Aptos Narrow',Aptos,Calibri,sans-serif","font-size:11pt","vertical-align:middle","height:21px"];
@@ -2817,6 +3117,7 @@ const SYN = {
   "lean six sigma":["six sigma","lean sigma"], "six sigma":["lean six sigma","green belt","black belt"],
   "bachelors degree":["bachelor","bachelors","b.s.","b.a.","bsc","bs in","ba in"], "masters degree":["master","masters","m.s.","msc","ms in","advanced degree","mba"], "phd":["ph.d","doctorate"], "pharmd":["pharm.d"],
   "p&l":["profit and loss","p/l"], "s&op":["sales and operations planning"], "oee":["overall equipment effectiveness"], "ehs":["environmental health and safety","environment health and safety"],
+  "statistical process control":["spc"], "design verification":["v&v","verification"], "design validation":["v&v"], "risk management":["risk file","risk files","risk assessment","iso 14971"],
   "root cause analysis":["rca","root cause"], "risk assessment":["risk assessments","fmea"], "quality risk management":["qrm","ich q9"],
   "data integrity":["alcoa"], "eu mdr":["mdr"], "cell therapy":["car t"], "commercial launch":["product launch","commercial product"]
 };
@@ -2886,6 +3187,62 @@ function learnPairs(text){
 const DICT = uniq([...SKILLS, ...LS_TERMS]).filter(t => !SKIP_IN_MATCH.has(t.toLowerCase()));
 function variantsFor(key){ return [...(SYN[key] || []), ...(JD_ALIAS[key] || [])].map(nz); }
 
+// What this job description asks for in its own words: standards by number, "experience with X", capitalized names, and phrases it repeats
+const KW_BOILER = /equal opportunity|eeo\b|benefits|salary|compensation|401\(?k|paid time|medical, dental|disabilit|veteran|religion|national origin|accommodation|e-verify|background check|reports? to|location\s*:|travel up to/i;
+const KW_GENERIC = new Set("ability able across activities additional all also an and any applicable appropriate are as at background based be best business candidate candidates company complex continuous cross day degree demonstrated develop effective effectively ensure ensuring environment excellent experience experienced expertise fast field following functional good great highly ideal including industry interpersonal job key knowledge lead leader leadership level manage management manager minimum must new oral other paced plus position preferred processes program programs project projects proven related relevant required requirements responsibilities responsible role skills strong support team teams their this understanding verbal well work working written year years you your our we will with within the of to in for on or a from by is that have has can may".split(" "));
+const KW_EDGE = /^(a|an|the|of|to|in|for|on|or|and|with|by|per|via|from|at|as|such|our|your|their|this|that|new|strong|excellent|deep|solid|proven|working|hands|demonstrated|good|broad|extensive|relevant|related|similar|various|all|any|other|both|within|across|using)$/i;
+function jdPhrases(lines){
+  const out = new Map(), good = lines.filter(l => l.tier !== "other" && !KW_BOILER.test(l.text));
+  const add = (raw, tier, n = 1) => {
+    let w = String(raw).replace(/[\u2019']s\b/g, "").replace(/[^\w\s&/+.-]/g, " ").replace(/[.\-/]+(\s|$)/g, " ").trim().split(/\s+/).filter(Boolean);
+    while (w.length && KW_EDGE.test(w[0])) w.shift();
+    while (w.length && KW_EDGE.test(w[w.length - 1])) w.pop();
+    if (!w.length || w.length > 4 || w.every(x => KW_GENERIC.has(x.toLowerCase()))) return;
+    const text = w.join(" "), key = nz(text);
+    if (key.length < 3 || /^\d+$/.test(key)) return;
+    const was = out.get(key);
+    if (!was) out.set(key, { display:text[0].toUpperCase() + text.slice(1), key, tier, n });
+    else { was.n += n; if (W[tier] > W[was.tier]) was.tier = tier; }
+  };
+  const grams = new Map();
+  for (const l of good){
+    for (const m of l.text.matchAll(/\b(?:[A-Z]{2,6}|\d{1,2}\s?CFR)[ -]?\d{2,6}(?:[-.:]\d+)*\b/g)) add(m[0], l.tier);
+    for (const m of l.text.matchAll(/\b(?:experience|expertise|knowledge|proficiency|proficient|familiarity|familiar|background|understanding|skilled|track record)\s+(?:of|in|with|on|using)\s+([^.;:()]{3,90})/gi))
+      m[1].split(/,|\s(?:and|or)\s|\s\/\s/).forEach(c => add(c, l.tier));
+    // What a bullet says the person will do: "Own process validation for extrusion" gives "process validation"
+    const did = l.text.match(/^(?:lead|own|drive|support|perform|manage|develop|oversee|conduct|execute|maintain|implement|design|create|build|run|author|establish|improve|review|host|write|prepare|coordinate)\s+(?:the\s+|all\s+|our\s+)?(.{4,90}?)(?:\s(?:for|per|across|to|with|in|on|at|from|by|through|using|that|while)\s|[.;:]|$)/i);
+    if (did) did[1].split(/,|\s(?:and|or)\s|\s\/\s/).forEach(c => add(c, l.tier));
+    for (const m of l.text.matchAll(/\b[A-Z][a-zA-Z0-9+/-]*(?:\s+(?:&\s+)?[A-Z][a-zA-Z0-9+/-]*){1,3}\b/g)) if (!KW_GENERIC.has(m[0].split(/\s+/)[0].toLowerCase())) add(m[0], l.tier);
+    const w = nz(l.text).replace(/[^a-z0-9&/+ ]/g, " ").split(/\s+/).filter(Boolean);
+    for (let n = 1; n <= 3; n++) for (let i = 0; i + n <= w.length; i++){
+      const g = w.slice(i, i + n);
+      if (KW_EDGE.test(g[0]) || KW_EDGE.test(g[n - 1]) || KW_GENERIC.has(g[0]) || KW_GENERIC.has(g[n - 1]) || g.some(x => x.length < 3)) continue;
+      const k = g.join(" "), was = grams.get(k);
+      if (was){ was.n++; if (W[l.tier] > W[was.tier]) was.tier = l.tier; } else grams.set(k, { n:1, tier:l.tier });
+    }
+  }
+  for (const [k, g] of grams) if (g.n >= (k.includes(" ") ? 2 : 3)) add(k, g.tier, g.n);
+  return [...out.values()].sort((a, b) => W[b.tier] - W[a.tier] || b.n - a.n || b.key.length - a.key.length);
+}
+// Stems and word order, for "Supplier Audits" against "audited 14 suppliers". Short words and acronyms still have to match exactly
+const FUZZ_STOP = /^(and|or|of|the|for|in|to|with|a|an|on|at|by|&)$/;
+const lineTokens = s => nz(s).split(" ").map(w => w.replace(/[^a-z0-9/+]/g, "")).filter(Boolean);
+function fuzzyHit(tokens, t){
+  if (CASE_ONLY.has(t.display)) return false;
+  for (const v of t.variants){
+    const ws = lineTokens(v).filter(w => !FUZZ_STOP.test(w));
+    if (!ws.length || (ws.length === 1 && ws[0].length < 6)) continue;
+    const places = ws.map(w => {
+      const st = w.length > 5 ? w.replace(/(ions?|ings?|ments?|ed|es|s)$/, "") : w, stem = st.length >= 5 ? st : w, whole = w.length <= 4;
+      const at = []; tokens.forEach((x, i) => { if (whole ? x === w : x.startsWith(stem)) at.push(i); }); return at;
+    });
+    if (places.some(a => !a.length)) continue;
+    if (places[0].some(p => places.every(a => a.some(q => Math.abs(q - p) <= 7)))) return true;
+  }
+  return false;
+}
+
+let KWADD = store.get("md.kwadd", {});   // keywords added by hand, per job description
 function jdTerms(jd){
   if (!String(jd).trim()) return [];
   const lines = tagLines(jd), pairs = learnPairs(jd), cands = new Map();
@@ -2914,7 +3271,21 @@ function jdTerms(jd){
     if (dup){ if (W[t.tier] > W[dup.tier]) dup.tier = t.tier; continue; }
     kept.push(t);
   }
-  return kept.slice(0, 40);
+  kept.sort((a, b) => W[b.tier] - W[a.tier]);
+  const out = kept.slice(0, 40);
+  // Then what's particular to this job, as long as it isn't already covered
+  const covered = k => out.some(t => (" " + k + " ").includes(" " + t.key + " ") || (" " + t.key + " ").includes(" " + k + " ") || t.variants.has(k));
+  for (const ph of jdPhrases(lines)){
+    if (out.length >= 50) break;
+    if (!covered(ph.key)) out.push({ ...ph, detect:new Set([ph.key]), variants:new Set([ph.key, ...variantsFor(ph.key)]) });
+  }
+  // How often the job description says it, which is what makes it worth leading a bullet with
+  const whole = " " + nz(jd) + " ";
+  for (const t of out) t.n = Math.max(t.n || 0, whole.split(" " + t.key + " ").length - 1);
+  for (const v of KWADD[jdKey(jd)] || []){
+    const k = nz(v); if (!out.some(t => t.key === k)) out.unshift({ display:v, key:k, tier:"required", n:2, detect:new Set([k]), variants:new Set([k, ...variantsFor(k)]) });
+  }
+  return out;
 }
 
 /* Keywords removed as irrelevant, remembered per job description (the last 30) */
@@ -2928,14 +3299,27 @@ function setSkipped(jd, set){
   store.set("md.kwskip", KWSKIP);
 }
 
+/* Keywords you've switched on by hand: it's on the resume even though the match missed it. Remembered per job description and resume */
+let KWON = store.get("md.kwon", {});
+const kwOnKey = (jd, resume) => jdKey(jd) + ":" + jdKey(resume);
+function onFor(jd, resume){ return new Set(KWON[kwOnKey(jd, resume)] || []); }
+function setOn(jd, resume, set){
+  const k = kwOnKey(jd, resume); delete KWON[k];
+  if (set.size) KWON[k] = [...set];
+  const keys = Object.keys(KWON); if (keys.length > 60) keys.slice(0, keys.length - 60).forEach(x => delete KWON[x]);
+  store.set("md.kwon", KWON);
+}
+
 function scoreMatch(jd, resume){
-  const skip = skippedFor(jd), all = jdTerms(jd);
+  const skip = skippedFor(jd), all = jdTerms(jd), on = onFor(jd, resume), tokens = lineTokens(resume);
   const terms = all.filter(t => !skip.has(t.key)), removed = all.filter(t => skip.has(t.key));
   const rn = " " + nz(resume) + " ";
   let total = 0, got = 0;
   const tiers = {};
   for (const t of terms){
-    t.hit = !!String(resume).trim() && termIn(rn, resume, t, t.variants);
+    t.auto = !!String(resume).trim() && (termIn(rn, resume, t, t.variants) || fuzzyHit(tokens, t));
+    t.manual = !t.auto && !!String(resume).trim() && on.has(t.key);
+    t.hit = t.auto || t.manual;
     total += W[t.tier]; if (t.hit) got += W[t.tier];
     (tiers[t.tier] = tiers[t.tier] || { hit:0, total:0 }).total++;
     if (t.hit) tiers[t.tier].hit++;
@@ -3008,13 +3392,15 @@ function draftBullets(result, resume){
   const cands = [];
   for (const ln of lines){
     const lnN = " " + nz(ln.text) + " ";
-    const inLine = hits.filter(t => termIn(lnN, ln.text, t, t.variants));
+    const lnT = lineTokens(ln.text), inLine = hits.filter(t => termIn(lnN, ln.text, t, t.variants) || fuzzyHit(lnT, t));
     for (const t of inLine){
       const snip = snippetFor(ln.text, t, inLine); if (!snip) continue;
       const sN = " " + nz(snip) + " ";
-      const inSnip = inLine.filter(u => termIn(sN, snip, u, u.variants));
+      const snT = lineTokens(snip), inSnip = inLine.filter(u => termIn(sN, snip, u, u.variants) || fuzzyHit(snT, u));
       if (!inSnip.includes(t)) continue;
-      cands.push({ snip, score: Math.max(...inSnip.map(u => TB[u.tier])) + (inSnip.length - 1) * 0.6 + (/\d/.test(snip) ? 1.5 : 0) + (ln.bullet ? 0.5 : 0), terms: inSnip });
+      // Hard proof of what this job keeps asking for floats to the top: numbers, and the terms the job description repeats
+      const asked = Math.max(...inSnip.map(u => Math.min(u.n || 1, 4))) * 0.5;
+      cands.push({ snip, score: Math.max(...inSnip.map(u => TB[u.tier])) + (inSnip.length - 1) * 0.6 + asked + (/\d/.test(snip) ? 2 : 0) + (ln.bullet ? 0.5 : 0), terms: inSnip });
     }
   }
   cands.sort((x, y) => y.score - x.score);
@@ -3093,7 +3479,7 @@ function renderScore(){
     sub.textContent = "No recognizable skills or keywords found in the job description.";
   } else {
     const hits = r.terms.filter(t => t.hit).length;
-    sub.textContent = `${hits} of ${r.terms.length} job description keywords found on the resume. Select \u00D7 on a keyword to leave it out.`;
+    sub.textContent = `${hits} of ${r.terms.length} keywords pulled from this job description are on the resume. If I missed one, click it to switch it on. Select \u00D7 to leave one out.`;
   }
   const order = ["required","preferred","resp","other"];
   $("#x-tiers").innerHTML = resume.trim() ? order.filter(k => r.tiers[k]).map(k =>
@@ -3102,7 +3488,7 @@ function renderScore(){
   $("#x-keywords").innerHTML = groupOrder.filter(k => r.terms.some(t => t.tier === k)).map(k => {
     const ts = r.terms.filter(t => t.tier === k).sort((a, b) => (b.hit ? 1 : 0) - (a.hit ? 1 : 0));
     return `<div><div class="kw-h">${esc(TIER_LABEL[k])}</div><div class="kws">${ts.map(t =>
-      `<span class="kw ${resume.trim() ? (t.hit ? "hit" : "miss") : "miss"}">${esc(t.display)}<button type="button" class="kw-x" data-skip="${esc(t.key)}" aria-label="Remove ${esc(t.display)} from the score" title="Not relevant: leave out of the score">\u00D7</button></span>`).join("")}</div></div>`;
+      `<span class="kw ${resume.trim() ? (t.hit ? "hit" : "miss") : "miss"}${t.manual ? " manual" : ""}">${resume.trim() && !t.auto ? `<button type="button" class="kw-t" data-on="${esc(t.key)}" aria-pressed="${t.manual}" title="${t.manual ? "You switched this on. Click to switch it off" : "It's on the resume? Click to count it"}">${esc(t.display)}</button>` : esc(t.display)}<button type="button" class="kw-x" data-skip="${esc(t.key)}" aria-label="Remove ${esc(t.display)} from the score" title="Not relevant: leave out of the score">\u00D7</button></span>`).join("")}</div></div>`;
   }).join("") + (r.removed.length ? `<div class="kw-off"><div class="kw-h">Removed from the score<button type="button" class="linkish" data-unskip-all>Restore all</button></div><div class="kws">${r.removed.map(t =>
       `<button type="button" class="kw gone" data-unskip="${esc(t.key)}" title="Put back in the score">${esc(t.display)}</button>`).join("")}</div></div>` : "")
     || (jd.trim() ? `<p class="empty-note">No keywords found in the job description yet.</p>` : "");
@@ -3110,6 +3496,13 @@ function renderScore(){
 }
 
 $("#x-keywords").addEventListener("click", e => {
+  const sw = e.target.closest("[data-on]");
+  if (sw){
+    const on = onFor(jdEl.value, M.resume);
+    if (on.has(sw.dataset.on)) on.delete(sw.dataset.on); else on.add(sw.dataset.on);
+    setOn(jdEl.value, M.resume, on); refreshAfterResume();
+    return;
+  }
   const x = e.target.closest("[data-skip]"), un = e.target.closest("[data-unskip]"), all = e.target.closest("[data-unskip-all]");
   if (!x && !un && !all) return;
   const jd = jdEl.value, set = skippedFor(jd);
@@ -3117,6 +3510,17 @@ $("#x-keywords").addEventListener("click", e => {
   if (un) set.delete(un.dataset.unskip);
   if (all) set.clear();
   setSkipped(jd, set); refreshAfterResume();
+});
+
+$("#x-kw-add").addEventListener("submit", e => {
+  e.preventDefault();
+  const v = $("#x-kw-in").value.trim(), jd = jdEl.value;
+  if (!v) return;
+  if (!jd.trim()){ toast("Add the job description first"); return; }
+  const k = jdKey(jd), skip = skippedFor(jd);
+  KWADD[k] = [...new Set([...(KWADD[k] || []), v])]; store.set("md.kwadd", KWADD);
+  if (skip.delete(nz(v))) setSkipped(jd, skip);
+  $("#x-kw-in").value = ""; refreshAfterResume();
 });
 
 function renderBullets(){
@@ -3188,8 +3592,8 @@ $("#x-clear").addEventListener("click", () => {
 });
 
 /* ---------- Prompt out, polished bullets back ---------- */
-const DEFAULT_BULLET_RULES = `Give me 5 bullet points, no longer than 8 words each, that explain to the client why this candidate is perfect for the job. Write each one as a natural phrase that works the keyword in, like "Experienced in GMP through 13 years in biotech" or "Well versed in Veeva Vault from owning CAPA". Do not use a "Keyword: explanation" format, and no colons. Use keywords from the job description, especially the preferred / nice-to-have skills, and only what the resume backs up. Reply with just the 5 bullets.`;
-const OLD_BULLET_RULES = [`Give me 5 bullet points, no longer than 8 words each, that explain to the client why this candidate is perfect for the job. Use keywords from the job description, especially the preferred / nice-to-have skills, and only what the resume backs up. Reply with just the 5 bullets.`, `Write exactly 5 bullet points that prove this candidate is a strong fit for the role. A recruiter will paste them into an email to the hiring client.
+const DEFAULT_BULLET_RULES = `Give me 5 bullet points, no longer than 8 words each, that make this candidate stand out from everyone else the client will see for this exact job. First work out which requirements in this job description are hardest to find and matter most to this hiring manager, and give those the bullets. Use the job description's own wording for each skill, and back it with the most specific proof on the resume: numbers, named products, regulations, tools, companies, team sizes, results. Every bullet has to be so specific to this candidate and this job that it couldn't be reused for anyone else. Nothing generic like "results-driven leader" or "strong communicator", and nothing this job doesn't ask for. Write each one as a natural phrase, like "Hosted 2 FDA inspections with zero 483s" or "Owned CAPA and deviations in Veeva Vault". Do not use a "Keyword: explanation" format, and no colons. Only what the resume backs up. Reply with just the 5 bullets.`;
+const OLD_BULLET_RULES = [`Give me 5 bullet points, no longer than 8 words each, that explain to the client why this candidate is perfect for the job. Write each one as a natural phrase that works the keyword in, like "Experienced in GMP through 13 years in biotech" or "Well versed in Veeva Vault from owning CAPA". Do not use a "Keyword: explanation" format, and no colons. Use keywords from the job description, especially the preferred / nice-to-have skills, and only what the resume backs up. Reply with just the 5 bullets.`, `Give me 5 bullet points, no longer than 8 words each, that explain to the client why this candidate is perfect for the job. Use keywords from the job description, especially the preferred / nice-to-have skills, and only what the resume backs up. Reply with just the 5 bullets.`, `Write exactly 5 bullet points that prove this candidate is a strong fit for the role. A recruiter will paste them into an email to the hiring client.
 - Aim for 8 words or fewer per bullet.
 - Make each bullet a concrete accomplishment or credential from the resume. Use the resume's numbers (years, team size, inspections, results).
 - Work in keywords from the job description: preferred / nice-to-have skills first, then required skills.
@@ -3236,11 +3640,13 @@ function bulletPrompt(){
   const order = { preferred:0, required:1, resp:2, other:3 };
   const hits = r.terms.filter(t => t.hit).sort((a, b) => order[a.tier] - order[b.tier]).map(t => t.display);
   const pref = r.terms.filter(t => t.tier === "preferred").map(t => t.display);
+  const repeated = r.terms.filter(t => t.hit && (t.n || 0) > 1).sort((a, b) => b.n - a.n).slice(0, 8).map(t => t.display);
   const resume = M.strip !== false ? scrubResume(M.resume, M.name) : M.resume;
   return `${(xRules.value.trim() || DEFAULT_BULLET_RULES)}
 
 Keywords this resume matches (preferred first): ${hits.join(", ") || "none found"}
 Preferred / nice-to-have skills in the job description: ${pref.join(", ") || "none listed"}
+What the job description keeps coming back to, that this resume has: ${repeated.join(", ") || "nothing repeated"}
 
 JOB DESCRIPTION
 """
@@ -3268,7 +3674,7 @@ $("#x-copy-prompt").addEventListener("click", async () => {
 });
 
 // Fit score: the resume and JD go out with an industry-aware scoring ask; the score lives in that tab
-const FIT_RULES = `You are an experienced recruiter in this industry. Score how well this candidate fits this job, from 0 to 100%. Use what you know about the industry and how these roles are really hired, not just exact keyword matches: weigh the must-have requirements most, then the level and years of experience, industry and regulatory background, and transferable skills. Reply with the score as a percentage on the first line, then 3 short reasons it's a fit. Then list the most notable gaps between the resume and the job description. Then, to fill in those gaps, give 10 to 15 numbered questions I can ask the candidate on a screening call.`;
+const FIT_RULES = `You are an experienced recruiter in this industry. Score how well this candidate fits this job, from 0 to 100%. Use what you know about the industry and how these roles are really hired, not just exact keyword matches: weigh the must-have requirements most, then the level and years of experience, industry and regulatory background, and transferable skills. Reply with the score as a percentage on the first line, then 3 short reasons it's a fit. Then list the most notable gaps between the resume and the job description. Then, to fill in those gaps, give 10 to 15 questions I can ask the candidate on a screening call. List the questions as one simple numbered list, 1 to 15, with no titles, headings, sections, categories or bold.`;
 function fitPrompt(){
   const resume = M.strip !== false ? scrubResume(M.resume, M.name) : M.resume;
   const ctx = [B.role && `Role: ${B.role.trim()}`, B.industry && `Industry: ${B.industry.trim()}`, B.geo && `Geography: ${B.geo.trim()}`].filter(Boolean).join("\n");
@@ -4414,8 +4820,8 @@ function scrollToPage(smooth){
   const top = sec.getBoundingClientRect().top + window.scrollY - $(".top").offsetHeight;
   window.scrollTo({ top:Math.max(0, top), behavior:smooth && !REDUCED ? "smooth" : "auto" });
 }
-const VIEW_NAME = { dashboard:"Dashboard", middleton:"Middleton Method", boolean:"RIG", match:"Candidate Match", notes:"Candidate Notes", spec:"Job Spec", stalk:"Ad Stalk" };
-const HERO_ORDER = ["stalk", "middleton", "boolean", "match", "notes", "spec", "dashboard"];   // the last one is the bottom middle
+const VIEW_NAME = { dashboard:"Dashboard", middleton:"Middleton Method", boolean:"RIG", match:"Candidate Match", notes:"Candidate Notes", spec:"Job Spec", source:"Candidate Sourcing", stalk:"Ad Stalk" };
+const HERO_ORDER = ["stalk", "boolean", "spec", "match", "notes", "source", "dashboard", "middleton"];   // three on the left, three on the right, the last two are the bottom row
 function setHero(name){
   // The page you're on sits in the bottom middle, under her; Dashboard takes its usual spot
   const nav = $("#dash-hero .orbit");
@@ -4511,7 +4917,7 @@ const daysSince = iso => iso ? Math.max(0, Math.round((fromISO(isoToday()) - fro
 const ago = n => n == null ? "no date" : n === 0 ? "today" : n === 1 ? "1 day ago" : `${n} days ago`;
 const dd = n => n == null ? "\u2014" : n + "d";
 const jobKey = (c, p) => norm(c) + "|" + norm(p);
-const mgrKey = (m, company) => m.email && /@/.test(m.email) ? norm(m.email) : "n:" + norm(m.name || m.title) + "@" + norm(company);
+const mgrKey = (m, company) => m.email && /@/.test(m.email) ? norm(m.email) : "n:" + norm(m.name || m.title || m.phone) + "@" + norm(company);
 const FOLLOW_UP_DAYS = 3;
 const STATUS = { pursuing:"Trying to pull", pulled:"Pulled", filled:"Filled / unavailable" };
 
@@ -4522,6 +4928,36 @@ let CALLNEXT = store.get("md.callnext", []); // manager keys ticked for the next
 let TODOS = store.get("md.todos", []);       // [{ id, text, day, done }]
 const saveTouch = () => store.set("md.touch", TOUCH);
 const saveCallNext = () => store.set("md.callnext", CALLNEXT);
+let JOBEDIT = store.get("md.jobedit", {});   // { key: the whole job as edited here, or { deleted:true } }. Wins over the sheet and saved entries, and survives pasting again
+const saveJobEdit = () => store.set("md.jobedit", JOBEDIT);
+let SO = Object.assign({ rows:[], job:"*", box:"tf" }, store.get("md.source", {}));   // Candidate Sourcing
+// The sourcing sheet uses clickable Excel checkboxes. Anything saved before that was known moves over, once; a choice made after it stays
+if (!SO.boxPicked) SO.box = "tf";
+SO.rows = [...new Map(SO.rows.map(r => [r.id, r])).values()];   // an early version could save the same row twice
+SO.rows.forEach(r => { if (r.num == null) r.num = String(soNextNum(r.job)); });
+function soNextNum(job){ return SO.rows.filter(r => r.job === job).reduce((m, r) => Math.max(m, Number(r.num) || 0), 0) + 1; }
+const saveSo = () => store.set("md.source", SO);
+const SO_BOXES = ["need", "good", "notfit", "resume", "submitted", "reject"];
+const soHas = r => !!(r.name || r.phone || r.email || r.notes || SO_BOXES.some(b => r[b]));
+
+/* The sheet's entry numbers only organize the Middleton Method for the day, and its blank boxes hold
+   filler words. Neither one is a company, a person or a candidate, so neither gets into the pipeline. */
+const NUM_CELL = /^#?\s*\d{1,4}\s*[.):\-]?$/;
+const FILLER_RE = /^(?:(?:hiring )?(?:manager|mgr|hm)(?:['\u2019]?s)?(?: job)?(?: title| name| e-?mail| phone(?: number)?)?|job title|title|name|e-?mail(?: address)?|phone(?: number| #| no\.?)?|contact(?: name)?|company(?: name)?|position(?:\s*\/\s*link)?|candidate(?: name)?|#|n\/?a|tbd|none|x+)$/i;
+function isFiller(v){ const s = String(v ?? "").replace(/\s+/g, " ").trim(); return !s || /^[-\u2013\u2014._]+$/.test(s) || FILLER_RE.test(s); }
+const keepText = v => { const s = String(v ?? "").trim(); return isFiller(s) || NUM_CELL.test(s) ? "" : s; };
+function cleanMgr(m){ return { ...m, title:keepText(m.title), name:keepText(m.name), email:isFiller(m.email) ? "" : String(m.email).trim(), phone:isFiller(m.phone) ? "" : String(m.phone).trim() }; }
+function cleanJob(j){
+  const managers = (j.managers || []).map(cleanMgr).filter(m => m.title || m.name || m.email || m.phone);
+  let company = keepText(j.company), position = keepText(j.position);
+  // A number where the company goes: the name slid along into the next box
+  if (!company && NUM_CELL.test(String(j.company ?? "").trim())){
+    company = position; position = "";
+    if (!company && managers[0]?.name){ company = managers[0].name; managers[0] = { ...managers[0], name:"" }; }
+  }
+  if (!company && !position) return null;
+  return { ...j, company, position, managers:managers.filter(m => m.title || m.name || m.email || m.phone), candidates:(j.candidates || []).map(keepText).filter(Boolean), dates:j.dates || [] };
+}
 
 // Entries saved before dates were stored still carry their save time inside the id
 function entryDate(x){
@@ -4531,35 +4967,51 @@ function entryDate(x){
 }
 function pipeline(){
   const jobs = new Map(), mgrs = new Map(), cands = new Map(), today = isoToday();
-  function addMgr(m, company, jk, dates){
-    if (!(m.name || m.email || m.title)) return null;
+  function addMgr(m, company, jk, dates, lock){
+    if (!(m.name || m.email || m.title || m.phone)) return null;
     const k = m.key || mgrKey(m, company);
     let r = mgrs.get(k);
     if (!r){ r = { key:k, name:"", title:"", email:"", phone:"", company, jobs:new Set(), dates:new Set() }; mgrs.set(k, r); }
-    for (const f of ["name", "title", "email", "phone"]) if (!r[f] && m[f]) r[f] = String(m[f]).trim();
+    if (!r.locked) for (const f of ["name", "title", "email", "phone"]) if (!r[f] && m[f]) r[f] = String(m[f]).trim();
+    if (lock) r.locked = true;
     r.jobs.add(jk); dates.forEach(d => r.dates.add(d));
     return k;
   }
-  function addJob(j, src){
-    if (!String(j.company || "").trim() && !String(j.position || "").trim()) return;
-    const k = jobKey(j.company, j.position);
+  // A job edited here keeps the key it started with, so its status stays with it, and anything pasted later under its old or new name lands on it
+  const edited = new Map();
+  for (const [id, e] of Object.entries(JOBEDIT)){ edited.set(id, id); if (!e.deleted) edited.set(jobKey(e.company, e.position), id); }
+  function addJob(j, src, own){
+    j = cleanJob(j); if (!j) return;
+    const id = own || edited.get(jobKey(j.company, j.position)), e = id ? JOBEDIT[id] : null;
+    if (e?.deleted) return;
+    if (e && !own){
+      const managers = j.managers.map(m => ({ ...m, key:m.key || mgrKey(m, j.company) })).filter(m => !(e.gone || []).includes(m.key));
+      j = { ...j, company:e.company, position:e.position, managers, candidates:j.candidates.filter(c => !(e.goneC || []).includes(norm(c))), dates:j.dates.filter(d => !(e.goneD || []).includes(d)) };
+    }
+    const k = id || jobKey(j.company, j.position);
     let r = jobs.get(k);
-    if (!r){ r = { key:k, company:String(j.company || "").trim(), position:String(j.position || "").trim(), link:"", num:"", terms:false, mgrs:new Set(), cands:new Set(), dates:new Set(), src:new Set() }; jobs.set(k, r); }
+    if (!r){ r = { key:k, company:String(j.company || "").trim(), position:String(j.position || "").trim(), link:"", terms:false, notes:e?.notes || "", mgrs:new Set(), rawM:new Map(), cands:new Set(), dates:new Set(), src:new Set(), sourced:[] }; jobs.set(k, r); }
     r.src.add(src);
-    if (!r.link && j.link) r.link = j.link;
-    if (!r.num && j.num) r.num = String(j.num);
-    if (j.terms) r.terms = true;
-    (j.dates || []).forEach(d => r.dates.add(d));
-    (j.candidates || []).forEach(c => {
+    if (!r.locked){ if (!r.link && j.link) r.link = j.link; if (j.terms) r.terms = true; }
+    if (own) r.locked = true;
+    j.dates.forEach(d => r.dates.add(d));
+    j.candidates.forEach(c => {
       c = String(c).trim(); if (!c) return;
       r.cands.add(c);
       const ck = norm(c); if (!cands.has(ck)) cands.set(ck, { name:c, jobs:new Set() });
       cands.get(ck).jobs.add(k);
     });
-    (j.managers || []).forEach(m => { const mk = addMgr(m, r.company, k, [...(m.dates || []), ...(j.dates || [])]); if (mk) r.mgrs.add(mk); });
+    j.managers.forEach(m => {
+      const mk = addMgr(m, r.company, k, [...(m.dates || []), ...j.dates], !!own); if (!mk) return;
+      r.mgrs.add(mk);
+      const raw = r.rawM.get(mk) || { key:mk, dates:[] };
+      raw.dates = [...new Set([...raw.dates, ...(m.dates || [])])]; r.rawM.set(mk, raw);
+    });
   }
+  for (const [id, e] of Object.entries(JOBEDIT)) if (!e.deleted) addJob(e, "edit", id);
   (IMPORT?.jobs || []).forEach(j => addJob(j, "sheet"));
-  LOG.forEach(x => { const d = entryDate(x); addJob({ company:x.company, position:x.position, link:x.link, num:x.num, terms:x.terms, candidates:x.candidates, managers:x.managers, dates:d ? [d] : [] }, "saved"); });
+  LOG.forEach(x => { const d = entryDate(x); addJob({ company:x.company, position:x.position, link:x.link, terms:x.terms, candidates:x.candidates, managers:x.managers, dates:d ? [d] : [] }, "saved"); });
+  SO.rows.forEach(s => { if (soHas(s)) jobs.get(s.job)?.sourced.push(s); });
   for (const [k, t] of Object.entries(TOUCH)){ const r = mgrs.get(k); if (r) (t.dates || []).forEach(d => r.dates.add(d)); }
   for (const m of mgrs.values()){
     const ds = [...m.dates].filter(d => d <= today).sort();
@@ -4583,9 +5035,9 @@ function markCalled(k){
   CALLNEXT = CALLNEXT.filter(x => x !== k);
   saveTouch(); saveCallNext();
 }
-function logResp(k, type){
-  const t = touch(k), d = isoToday();
-  t.resp.push({ t:type, d, ts:Date.now() });
+function logResp(k, type, d = isoToday(), note = ""){
+  const t = touch(k);
+  t.resp.push({ t:type, d, note, ts:Date.now() });
   if (!t.dates.includes(d)) t.dates.push(d);
   saveTouch();
 }
@@ -4620,7 +5072,8 @@ function todayList(P){
   P.mgrs.filter(m => m.last && daysSince(m.last) >= FOLLOW_UP_DAYS && m.lastResp?.t !== "neg" && live(m))
     .sort((a, b) => daysSince(b.last) - daysSince(a.last)).slice(0, 8)
     .forEach(m => add(m, "Follow up", "due", `Last reached ${ago(daysSince(m.last))}`));
-  P.jobs.filter(j => j.status === "pulled" && !j.cands.size).forEach(j => out.push({ kind:"task", why:"Source", cls:"due", text:`Find candidates for ${j.position || "the role"}${j.company ? " at " + j.company : ""}`, note:"Pulled, no candidates yet", view:"boolean" }));
+  // Stays on the list while you're still adding people, until there's someone in the sheet or submitted
+  P.jobs.filter(j => j.status === "pulled" && !j.cands.size && !j.sourced.some(s => s.submitted)).forEach(j => out.push({ kind:"task", why:"Source", cls:"due", text:`Source candidates for ${j.position || "the role"}${j.company ? " at " + j.company : ""}`, note:j.sourced.length ? `Pulled, ${j.sourced.length} sourced so far` : "Pulled, no candidates yet", job:j.key }));
   return out;
 }
 
@@ -4678,8 +5131,9 @@ function kpiRead(){
 const fmtN = n => n == null ? "\u2014" : Math.abs(n - Math.round(n)) < .05 ? String(Math.round(n)) : n.toFixed(1);
 
 function dashRead(P){
-  const out = [], T = todayList(P).filter(x => x.kind === "mgr");
-  if (!P.jobs.length && !Object.keys(KPI.days).length) return [`Paste your tracking sheet on the Middleton Method tab and log today's KPIs below, and I'll have a proper read for you.`];
+  const out = [], T = todayList(P).filter(x => x.kind === "mgr"), meet = meetUpcoming(1).find(o => o.iso === isoToday());
+  if (meet) out.push(`Next meeting: ${meet.m.title} at ${fmtClock(meet.m.time)}.`);
+  if (!out.length && !P.jobs.length && !Object.keys(KPI.days).length) return [`Paste your tracking sheet on the Middleton Method tab and log today's KPIs below, and I'll have a proper read for you.`];
   const pos = T.filter(x => x.cls === "pos");
   if (pos.length) out.push(`${pos.length === 1 ? mgrLabel(pos[0].m) + " replied" : pos.length + " managers replied"} positively and ${pos.length === 1 ? "hasn't" : "haven't"} had a call back. Start there.`);
   const due = T.filter(x => x.cls === "due").length, listed = T.filter(x => x.cls === "list").length;
@@ -4723,15 +5177,16 @@ function renderDash(){
   ];
   $("#d-tiles").innerHTML = tiles.map(t => `<div class="tile${t.hi ? " hi" : ""}"><b>${t.n}</b><span>${esc(t.l)}</span></div>`).join("");
 
-  // Reach out today
+  // To Do List
   const T = todayList(P), todos = TODOS.filter(x => x.day === today || !x.done);
   const left = T.filter(x => !x.done).length + todos.filter(x => !x.done).length;
   $("#d-todo-sub").textContent = left ? `${left} to do` : "All done";
-  const mgrRow = x => `<li><span class="why ${x.cls}">${esc(x.why)}</span><span class="t"><b>${esc(mgrLabel(x.m))}</b><span>${esc([x.m.name && x.m.title, x.m.company].filter(Boolean).join(" \u00b7 "))}${x.note ? " \u00b7 " + esc(x.note) : ""}</span><span>${esc([x.m.phone, x.m.email].filter(Boolean).join(" \u00b7 "))}</span></span>
+  const tick = (attr, on, what) => `<button type="button" class="tick${on ? " on" : ""}" ${attr} aria-pressed="${on}" aria-label="${on ? "Done" : "Mark done"}: ${esc(what)}"></button>`;
+  const mgrRow = x => `<li><span></span><span class="why ${x.cls}">${esc(x.why)}</span><span class="t"><b>${esc(mgrLabel(x.m))}</b><span>${esc([x.m.name && x.m.title, x.m.company].filter(Boolean).join(" \u00b7 "))}${x.note ? " \u00b7 " + esc(x.note) : ""}</span><span>${esc([x.m.phone, x.m.email].filter(Boolean).join(" \u00b7 "))}</span></span>
     <span class="acts"><button type="button" class="btn" data-called="${esc(x.m.key)}">Called</button><button type="button" class="btn resp-btn pos" data-r="pos" data-k="${esc(x.m.key)}" aria-label="Positive response" title="Positive response">+</button><button type="button" class="btn resp-btn" data-r="neu" data-k="${esc(x.m.key)}" aria-label="Neutral response" title="Neutral response">=</button><button type="button" class="btn resp-btn neg" data-r="neg" data-k="${esc(x.m.key)}" aria-label="Negative response" title="Negative response">\u2212</button></span></li>`;
-  const taskRow = x => `<li><span class="why ${x.cls}">${esc(x.why)}</span><span class="t"><b>${esc(x.text)}</b><span>${esc(x.note || "")}</span></span><span class="acts">${x.view ? `<button type="button" class="btn" data-goto="${x.view}">Open</button>` : x.scroll ? `<button type="button" class="btn" data-scroll="${x.scroll}">Go</button>` : ""}</span></li>`;
-  const dailyRow = x => `<li class="${x.done ? "done" : ""}"><span class="why ${x.cls}">${esc(x.why)}</span><span class="t"><b>${esc(x.text)}</b><span>${esc(x.done ? (x.auto ? "Logged" : "Done for today") : x.note || "")}</span></span><span class="acts">${x.auto ? (x.done ? "" : `<button type="button" class="btn" data-scroll="${x.scroll}">Go</button>`) : `<button type="button" class="btn" data-daily="${x.id}">${x.done ? "Undo" : "Done"}</button>`}</span></li>`;
-  const todoRow = x => `<li class="${x.done ? "done" : ""}"><span class="why">To do</span><span class="t"><b>${esc(x.text)}</b></span><span class="acts"><button type="button" class="btn" data-todo-done="${x.id}">${x.done ? "Undo" : "Done"}</button><button type="button" class="btn ghost" data-todo-del="${x.id}" aria-label="Delete">\u00d7</button></span></li>`;
+  const taskRow = x => `<li><span></span><span class="why ${x.cls}">${esc(x.why)}</span><span class="t"><b>${esc(x.text)}</b><span>${esc(x.note || "")}</span></span><span class="acts">${x.job ? `<button type="button" class="btn" data-source-job="${esc(x.job)}">Open</button>` : x.view ? `<button type="button" class="btn" data-goto="${x.view}">Open</button>` : x.scroll ? `<button type="button" class="btn" data-scroll="${x.scroll}">Go</button>` : ""}</span></li>`;
+  const dailyRow = x => `<li class="${x.done ? "done" : ""}">${x.auto ? `<span class="tick${x.done ? " on" : ""}" role="img" aria-label="${x.done ? "Logged" : "Not logged yet"}"></span>` : tick(`data-daily="${x.id}"`, x.done, x.text)}<span class="why ${x.cls}">${esc(x.why)}</span><span class="t"><b>${esc(x.text)}</b><span>${esc(x.done ? (x.auto ? "Logged" : "Done for today") : x.note || "")}</span></span><span class="acts">${x.auto ? (x.done ? "" : `<button type="button" class="btn" data-scroll="${x.scroll}">Go</button>`) : x.done ? `<button type="button" class="undo" data-daily="${x.id}">Undo</button>` : ""}</span></li>`;
+  const todoRow = x => `<li class="${x.done ? "done" : ""}">${tick(`data-todo-done="${x.id}"`, x.done, x.text)}<span class="why">To do</span><span class="t"><b>${esc(x.text)}</b></span><span class="acts">${x.done ? `<button type="button" class="undo" data-todo-done="${x.id}">Undo</button>` : ""}<button type="button" class="btn ghost" data-todo-del="${x.id}" aria-label="Delete">\u00d7</button></span></li>`;
   $("#d-todo").innerHTML = T.length || todos.length
     ? `<ul class="todo">${T.map(x => x.kind === "mgr" ? mgrRow(x) : x.kind === "daily" ? dailyRow(x) : taskRow(x)).join("")}${todos.map(todoRow).join("")}</ul>`
     : `<div class="dash-empty">Nothing due. Paste your sheet on the Middleton Method tab, or tick managers there for your call list, and they'll show up here.</div>`;
@@ -4758,11 +5213,19 @@ function renderDash(){
   $("#d-resp-sub").textContent = total ? `Latest ${ago(daysSince(resp[0].lastResp.d))}` : "";
   $("#d-resp").innerHTML = `<div class="resp-counts">${["pos", "neu", "neg"].map(t => `<div class="${t}"><b>${cnt[t]}</b><span>${RESP_LABEL[t]}</span></div>`).join("")}</div>`
     + (total ? `<div class="stack" role="img" aria-label="${cnt.pos} positive, ${cnt.neu} neutral, ${cnt.neg} negative">${["pos", "neu", "neg"].filter(t => cnt[t]).map(t => `<i class="${t}" style="flex:${cnt[t]}" title="${RESP_LABEL[t]}: ${cnt[t]}"></i>`).join("")}</div>
-      <ul class="resp-list">${resp.map(m => `<li><b>${esc(mgrLabel(m))}${m.company ? ` <span style="color:var(--muted);font-weight:400">\u00b7 ${esc(m.company)}</span>` : ""}</b><span class="rtag ${m.lastResp.t}">${RESP_LABEL[m.lastResp.t]}</span><span class="ago">${esc(ago(daysSince(m.lastResp.d)))}</span></li>`).join("")}</ul>`
-      : `<div class="dash-empty">No responses logged yet. Use + = \u2212 on a manager in Reach out today, or log one below.</div>`);
+      <ul class="resp-list">${resp.flatMap(m => m.resp.map(r => ({ m, r }))).sort((a, b) => (b.r.ts || 0) - (a.r.ts || 0)).map(({ m, r }) => `<li data-k="${esc(m.key)}" data-ts="${esc(r.ts)}">
+        <div class="rl-top"><b>${esc(mgrLabel(m))}${m.company ? ` <span>\u00b7 ${esc(m.company)}</span>` : ""}</b><span class="rtag ${r.t}">${RESP_LABEL[r.t]}</span></div>
+        <label class="sr" for="rl-note-${esc(r.ts)}">Note</label><textarea id="rl-note-${esc(r.ts)}" data-rf="note" rows="1" placeholder="Add a note for your CRM">${esc(r.note || "")}</textarea>
+        <div class="rl-acts"><label class="sr" for="rl-d-${esc(r.ts)}">Date</label><input type="date" id="rl-d-${esc(r.ts)}" data-rf="d" value="${esc(r.d)}"><span class="grow"></span><button type="button" class="btn" data-rl-copy>Copy for CRM</button><button type="button" class="btn ghost" data-rl-del aria-label="Delete this response">\u00d7</button></div>
+      </li>`).join("")}</ul>`
+      : `<div class="dash-empty">No responses logged yet. Use + = \u2212 on a manager in the To Do List, or log one below.</div>`);
+  $("#d-resp").querySelectorAll("textarea").forEach(ciGrow);
+  if (!$("#d-resp-date").value) $("#d-resp-date").value = isoToday();
   $("#d-mgr-list").innerHTML = P.mgrs.map(m => `<option value="${esc(mgrLabel(m) + (m.company ? " \u2014 " + m.company : ""))}"></option>`).join("");
 
   renderCheckin();
+  renderMeet();
+  renderTerms();
   renderKPI();
   renderJobs(P);
   loadNews(false);
@@ -4847,6 +5310,7 @@ $("#view-dashboard").addEventListener("click", e => {
   if (b.dataset.called){ markCalled(b.dataset.called); renderDash(); toast("Marked as called today"); return; }
   if (b.dataset.r && b.dataset.k){ logResp(b.dataset.k, b.dataset.r); renderDash(); toast(`${RESP_LABEL[b.dataset.r]} response logged`); return; }
   if (b.dataset.goto){ showView(b.dataset.goto); window.scrollTo(0, 0); return; }
+  if (b.dataset.sourceJob){ openSourcing(b.dataset.sourceJob); return; }
   if (b.dataset.scroll){ $(b.dataset.scroll)?.scrollIntoView({ behavior:"smooth", block:"center" }); return; }
   if (b.dataset.daily){ toggleDaily(b.dataset.daily); renderDash(); return; }
   if (b.dataset.todoDone){ const x = TODOS.find(t => t.id === b.dataset.todoDone); if (x){ x.done = !x.done; x.day = isoToday(); store.set("md.todos", TODOS); renderDash(); } return; }
@@ -4857,7 +5321,9 @@ $("#view-dashboard").addEventListener("click", e => {
     const m = P.mgrs.find(m => norm(mgrLabel(m) + (m.company ? " \u2014 " + m.company : "")) === v) || P.mgrs.find(m => norm(m.email) === v || norm(m.name) === v)
       || P.mgrs.find(m => norm(m.name).includes(v) || norm(m.email).includes(v));
     if (!m){ toast("I can't find that manager. Paste your sheet or save the entry first."); return; }
-    logResp(m.key, b.dataset.resp); $("#d-resp-who").value = ""; renderDash(); toast(`${RESP_LABEL[b.dataset.resp]} response logged for ${mgrLabel(m)}`);
+    logResp(m.key, b.dataset.resp, $("#d-resp-date").value || isoToday(), $("#d-resp-note").value.trim());
+    $("#d-resp-who").value = $("#d-resp-note").value = ""; $("#d-resp-date").value = isoToday();
+    renderDash(); toast(`${RESP_LABEL[b.dataset.resp]} response logged for ${mgrLabel(m)}`);
   }
 });
 $("#d-add-todo").addEventListener("submit", e => {
@@ -4947,21 +5413,500 @@ kpiGrid.addEventListener("mouseover", e => {
 });
 kpiGrid.addEventListener("mouseleave", () => kpiGrid.querySelectorAll(".kpi-tip").forEach(t => t.remove()));
 
-/* Every job, with its status */
-function renderJobs(P){
-  const host = $("#d-jobs");
-  if (!P.jobs.length){ host.innerHTML = `<div class="dash-empty">No jobs yet. Paste your sheet or save entries on the Middleton Method tab.</div>`; return; }
-  const order = { pursuing:0, pulled:1, filled:2 };
-  const rows = [...P.jobs].sort((a, b) => order[a.status] - order[b.status] || (a.last || "") .localeCompare(b.last || ""));
-  host.innerHTML = `<div class="table-scroll"><table class="job-table"><thead><tr><th>#</th><th>Company</th><th>Position</th><th>Managers</th><th>Candidates</th><th>First reached</th><th>Last reached</th><th>Status</th></tr></thead><tbody>${rows.map(j => `<tr>
-    <td class="num">${esc(j.num)}</td><td>${esc(j.company)}</td><td>${j.link ? `<a href="${esc(j.link)}" target="_blank" rel="noopener" style="color:inherit">${esc(j.position)}</a>` : esc(j.position)}</td>
-    <td class="num">${j.mgrs.size}</td><td class="num">${j.cands.size}</td><td class="num">${esc(ago(daysSince(j.first)))}</td><td class="num">${esc(ago(daysSince(j.last)))}</td>
-    <td><label class="sr" for="st-${esc(j.key)}">Status</label><select id="st-${esc(j.key)}" data-status="${esc(j.key)}">${Object.entries(STATUS).map(([k, l]) => `<option value="${k}"${j.status === k ? " selected" : ""}>${l}</option>`).join("")}</select></td></tr>`).join("")}</tbody></table></div>`;
+/* Manager responses: the date and note on each one, ready to paste into the CRM */
+const respOf = li => TOUCH[li.dataset.k]?.resp.find(r => String(r.ts) === li.dataset.ts);
+$("#d-resp").addEventListener("input", e => {
+  const f = e.target.closest('[data-rf="note"]'); if (!f) return;
+  const r = respOf(f.closest("li")); if (!r) return;
+  r.note = f.value; ciGrow(f); saveTouch();
+});
+$("#d-resp").addEventListener("change", e => {
+  const f = e.target.closest('[data-rf="d"]'); if (!f || !f.value) return;
+  const li = f.closest("li"), t = TOUCH[li.dataset.k], r = respOf(li); if (!r) return;
+  const was = r.d; r.d = f.value;
+  if (!t.resp.some(x => x.d === was)) t.dates = t.dates.filter(d => d !== was);
+  if (!t.dates.includes(r.d)) t.dates.push(r.d);
+  saveTouch(); renderDash();
+});
+$("#d-resp").addEventListener("click", async e => {
+  const li = e.target.closest("li"); if (!li) return;
+  if (e.target.closest("[data-rl-copy]")){
+    const r = respOf(li), m = pipeline().byMgr.get(li.dataset.k); if (!r || !m) return;
+    const [y, mo, d] = r.d.split("-");
+    const who = [m.name || m.title || m.email, m.name && m.title, m.company].filter(Boolean).join(", ");
+    const line = `${mo}/${d}/${y} - ${who}: ${RESP_LABEL[r.t]} response.${r.note?.trim() ? " " + r.note.trim() : ""}`;
+    toast(await copyText(line) ? "Copied. Paste it into your CRM." : "Copy was blocked by this browser.");
+    return;
+  }
+  const del = e.target.closest("[data-rl-del]"); if (!del) return;
+  if (del.dataset.armed !== "1"){
+    del.dataset.armed = "1"; del.classList.add("armed"); del.textContent = "Sure?";
+    setTimeout(() => { if (del.isConnected){ del.dataset.armed = ""; del.classList.remove("armed"); del.textContent = "\u00d7"; } }, 3000);
+    return;
+  }
+  const t = TOUCH[li.dataset.k]; t.resp = t.resp.filter(r => String(r.ts) !== li.dataset.ts);
+  saveTouch(); renderDash();
+});
+
+/* Panels that fold away. Each one remembers, in this browser, how you left it */
+let FOLD = store.get("md.fold", {});
+function setFold(panel, open){
+  panel.classList.toggle("folded", !open);
+  panel.querySelector(".fold-btn").setAttribute("aria-expanded", String(open));
+  if (open) panel.querySelectorAll("textarea").forEach(ciGrow);
 }
+function unfold(el){ const p = el?.closest(".panel.folded"); if (p){ setFold(p, true); FOLD[p.dataset.fold] = true; store.set("md.fold", FOLD); } }
+document.querySelectorAll("[data-fold]").forEach(panel => {
+  const id = panel.dataset.fold, head = panel.querySelector(":scope > .card-h"), name = head.querySelector("h2").textContent;
+  const btn = document.createElement("button");
+  btn.type = "button"; btn.className = "fold-btn"; btn.setAttribute("aria-label", `Show or hide ${name}`);
+  head.append(btn);
+  setFold(panel, FOLD[id] ?? panel.dataset.foldStart !== "closed");
+  head.addEventListener("click", e => {
+    if (e.target.closest("button:not(.fold-btn), a, input, select, label")) return;
+    const open = panel.classList.contains("folded");
+    setFold(panel, open); FOLD[id] = open; store.set("md.fold", FOLD);
+  });
+});
+
+/* Every job: search it, click into any job to view, edit, add or delete */
+const jobLabel = j => [j.company, j.position].filter(Boolean).join(" \u00b7 ") || "Untitled job";
+const jobContacts = (j, P) => [...j.mgrs].map(k => P.byMgr.get(k)).filter(Boolean);
+function renderJobs(P){
+  const host = $("#d-jobs"), q = norm($("#d-job-q").value);
+  if (!P.jobs.length){ host.innerHTML = `<div class="dash-empty">No jobs yet. Paste your sheet or save entries on the Middleton Method tab, or add one here.</div>`; $("#d-job-count").textContent = ""; return; }
+  const hay = j => norm([j.company, j.position, j.notes, ...jobContacts(j, P).flatMap(m => [m.name, m.title, m.email, m.phone]), ...j.cands, ...j.sourced.map(s => s.name), STATUS[j.status]].join(" "));
+  const order = { pursuing:0, pulled:1, filled:2 };
+  const rows = P.jobs.filter(j => !q || q.split(/\s+/).every(w => hay(j).includes(w))).sort((a, b) => order[a.status] - order[b.status] || (a.last || "").localeCompare(b.last || ""));
+  $("#d-job-count").textContent = q ? `${rows.length} of ${P.jobs.length}` : `${P.jobs.length} job${P.jobs.length === 1 ? "" : "s"}`;
+  if (!rows.length){ host.innerHTML = `<div class="dash-empty">No jobs match that search.</div>`; return; }
+  host.innerHTML = `<div class="table-scroll"><table class="job-table"><thead><tr><th>Company</th><th>Position</th><th>Contacts</th><th>Candidates</th><th>First reached</th><th>Last reached</th><th>Status</th><th><span class="sr">Edit</span></th></tr></thead><tbody>${rows.map(j => `<tr data-job="${esc(j.key)}">
+    <td>${esc(j.company)}</td><td>${j.link ? `<a href="${esc(j.link)}" target="_blank" rel="noopener" style="color:inherit">${esc(j.position)}</a>` : esc(j.position)}</td>
+    <td class="who">${esc(jobContacts(j, P).map(mgrLabel).join(", "))}</td><td class="who">${esc([...j.cands, ...j.sourced.map(s => s.name).filter(Boolean)].join(", "))}</td><td class="num">${esc(ago(daysSince(j.first)))}</td><td class="num">${esc(ago(daysSince(j.last)))}</td>
+    <td><label class="sr" for="st-${esc(j.key)}">Status</label><select id="st-${esc(j.key)}" data-status="${esc(j.key)}">${Object.entries(STATUS).map(([k, l]) => `<option value="${k}"${j.status === k ? " selected" : ""}>${l}</option>`).join("")}</select></td>
+    <td><button type="button" class="btn ghost" data-job-edit="${esc(j.key)}">Edit</button></td></tr>`).join("")}</tbody></table></div>`;
+}
+$("#d-job-q").addEventListener("input", () => renderJobs(pipeline()));
+$("#d-job-add").addEventListener("click", () => openJob(null));
 $("#d-jobs").addEventListener("change", e => {
   const s = e.target.closest("[data-status]"); if (!s) return;
   if (s.value === "pursuing") delete JOBSTAT[s.dataset.status]; else JOBSTAT[s.dataset.status] = s.value;
   store.set("md.jobstat", JOBSTAT); renderDash(); toast(`Marked ${STATUS[s.value].toLowerCase()}`);
+});
+$("#d-jobs").addEventListener("click", e => {
+  if (e.target.closest("select, label, a")) return;
+  const r = e.target.closest("[data-job]"); if (r) openJob(r.dataset.job);
+});
+
+/* One job, opened up. Changes are kept as a record of their own, so pasting the sheet again won't undo them */
+const jr = $("#jr");
+let JR = null;
+function openJob(key){
+  const P = pipeline(), j = key ? P.byJob.get(key) : null;
+  if (key && !j) return;
+  JR = j ? {
+    key, isNew:false, company:j.company, position:j.position, link:j.link, terms:j.terms, notes:j.notes, status:j.status, first:j.first, last:j.last,
+    dates:[...j.dates].sort(), candidates:[...j.cands], sourced:j.sourced.map(s => s.name).filter(Boolean), gone:[], goneC:[], goneD:[],
+    managers:[...j.rawM.values()].map(x => { const m = P.byMgr.get(x.key); return { key:x.key, title:m.title, name:m.name, email:m.email, phone:m.phone, dates:x.dates, last:m.last }; })
+  } : { key:"u" + Date.now().toString(36), isNew:true, company:"", position:"", link:"", terms:false, notes:"", status:"pursuing", dates:[isoToday()], candidates:[], sourced:[], gone:[], goneC:[], goneD:[], managers:[{ key:"m" + Date.now().toString(36), title:"", name:"", email:"", phone:"", dates:[] }] };
+  $("#jr-del").hidden = JR.isNew; $("#jr-source").hidden = JR.isNew;
+  const del = $("#jr-del"); del.dataset.armed = ""; del.classList.remove("armed"); del.textContent = "Delete job";
+  renderJr();
+  if (DEMO) jr.show(); else jr.showModal();   // In the tour it opens over the page window, so Next and Exit still work
+  if (JR.isNew) $("#jr-company").focus();
+}
+function renderJr(){
+  const J = JR;
+  $("#jr-h").textContent = J.isNew ? "Add a job" : jobLabel(J);
+  $("#jr-body").innerHTML = `
+    <div class="jr-sec">
+      <h3>Company and position</h3>
+      <div class="jr-2">
+        <div class="field"><label for="jr-company">Company</label><input type="text" id="jr-company" data-j="company" value="${esc(J.company)}" autocomplete="off"></div>
+        <div class="field"><label for="jr-position">Position</label><input type="text" id="jr-position" data-j="position" value="${esc(J.position)}" autocomplete="off"></div>
+        <div class="field"><label for="jr-link">Job description link</label><input type="url" id="jr-link" data-j="link" value="${esc(J.link)}" autocomplete="off"></div>
+        <div class="field"><label for="jr-status">Status</label><select id="jr-status" data-j="status">${Object.entries(STATUS).map(([k, l]) => `<option value="${k}"${J.status === k ? " selected" : ""}>${l}</option>`).join("")}</select></div>
+      </div>
+      <label class="check" style="margin-top:10px"><input type="checkbox" id="jr-terms" data-j="terms"${J.terms ? " checked" : ""}> Terms</label>
+      <div class="field" style="margin-top:10px"><label for="jr-notes">Notes</label><textarea id="jr-notes" data-j="notes" rows="2">${esc(J.notes)}</textarea></div>
+    </div>
+    <div class="jr-sec">
+      <h3>Dates reached out</h3>
+      <div class="jr-chips">${J.dates.map(d => `<span class="jr-chip">${esc(longDate(d))}<button type="button" data-rm-date="${d}" aria-label="Remove ${esc(longDate(d))}">\u00d7</button></span>`).join("") || `<span class="jr-meta" style="margin:0">No dates yet</span>`}</div>
+      <div class="jr-add"><label class="sr" for="jr-date">Add a date</label><input type="date" id="jr-date"><button type="button" class="btn" id="jr-date-add">Add date</button></div>
+      ${J.first ? `<p class="jr-meta">First reached ${esc(ago(daysSince(J.first)))}, last reached ${esc(ago(daysSince(J.last)))}, counting calls marked here.</p>` : ""}
+    </div>
+    <div class="jr-sec">
+      <h3>Contacts</h3>
+      ${J.managers.map((m, i) => `<div class="jr-mgr" data-i="${i}">
+        <div class="field"><label for="jr-m${i}-title">Title</label><input type="text" id="jr-m${i}-title" data-m="title" value="${esc(m.title)}" autocomplete="off"></div>
+        <div class="field"><label for="jr-m${i}-name">Name</label><input type="text" id="jr-m${i}-name" data-m="name" value="${esc(m.name)}" autocomplete="off"></div>
+        <div class="field"><label for="jr-m${i}-email">Email</label><input type="email" id="jr-m${i}-email" data-m="email" value="${esc(m.email)}" autocomplete="off"></div>
+        <div class="field"><label for="jr-m${i}-phone">Phone</label><input type="tel" id="jr-m${i}-phone" data-m="phone" value="${esc(m.phone)}" autocomplete="off"></div>
+        <button type="button" class="btn ghost jr-x" data-rm-mgr-j="${i}" aria-label="Remove this contact">\u00d7</button>
+      </div>`).join("")}
+      <button type="button" class="btn" id="jr-mgr-add">+ Add contact</button>
+    </div>
+    <div class="jr-sec">
+      <h3>Candidates</h3>
+      <div class="jr-chips">${J.candidates.map((c, i) => `<span class="jr-chip">${esc(c)}<button type="button" data-rm-cand-j="${i}" aria-label="Remove ${esc(c)}">\u00d7</button></span>`).join("") || `<span class="jr-meta" style="margin:0">No candidates yet</span>`}</div>
+      <div class="jr-add"><label class="sr" for="jr-cand">Add a candidate</label><input type="text" id="jr-cand" placeholder="Candidate name" autocomplete="off"><button type="button" class="btn" id="jr-cand-add">Add</button></div>
+      ${J.sourced.length ? `<p class="jr-meta">In Candidate Sourcing: ${esc(J.sourced.join(", "))}.</p>` : ""}
+    </div>`;
+  $("#jr-body").querySelectorAll("textarea").forEach(ciGrow);
+}
+$("#jr-body").addEventListener("input", e => {
+  const f = e.target.closest("[data-j]"), m = e.target.closest("[data-m]");
+  if (f) JR[f.dataset.j] = f.type === "checkbox" ? f.checked : f.value;
+  if (m) JR.managers[Number(m.closest(".jr-mgr").dataset.i)][m.dataset.m] = m.value;
+  if (f?.tagName === "TEXTAREA") ciGrow(f);
+});
+$("#jr-body").addEventListener("focusout", e => {
+  const m = e.target.closest('[data-m="phone"]'); if (!m) return;
+  m.value = JR.managers[Number(m.closest(".jr-mgr").dataset.i)].phone = formatPhone(m.value);
+});
+function jrAddDate(){ const el = $("#jr-date"); if (!el.value) { el.focus(); return; } if (!JR.dates.includes(el.value)) JR.dates = [...JR.dates, el.value].sort(); renderJr(); }
+function jrAddCand(){ const el = $("#jr-cand"), v = el.value.trim(); if (!v) { el.focus(); return; } if (!JR.candidates.some(c => norm(c) === norm(v))) JR.candidates.push(v); renderJr(); $("#jr-cand").focus(); }
+$("#jr-body").addEventListener("keydown", e => {
+  if (e.key !== "Enter") return;
+  if (e.target.id === "jr-cand"){ e.preventDefault(); jrAddCand(); }
+  else if (e.target.id === "jr-date"){ e.preventDefault(); jrAddDate(); }
+});
+$("#jr-body").addEventListener("click", e => {
+  const t = e.target;
+  if (t.closest("#jr-date-add")) return jrAddDate();
+  if (t.closest("#jr-cand-add")) return jrAddCand();
+  if (t.closest("#jr-mgr-add")){
+    JR.managers.push({ key:"m" + Date.now().toString(36), title:"", name:"", email:"", phone:"", dates:[] }); renderJr();
+    document.getElementById(`jr-m${JR.managers.length - 1}-title`).focus(); return;
+  }
+  const rd = t.closest("[data-rm-date]"), rm = t.closest("[data-rm-mgr-j]"), rc = t.closest("[data-rm-cand-j]");
+  if (rd){ JR.goneD.push(rd.dataset.rmDate); JR.dates = JR.dates.filter(d => d !== rd.dataset.rmDate); renderJr(); }
+  if (rm){ const [x] = JR.managers.splice(Number(rm.dataset.rmMgrJ), 1); JR.gone.push(x.key); renderJr(); }
+  if (rc){ const [x] = JR.candidates.splice(Number(rc.dataset.rmCandJ), 1); JR.goneC.push(norm(x)); renderJr(); }
+});
+function afterJobChange(){ if (!$("#view-dashboard").hidden) renderDash(); if (!$("#view-middleton").hidden) renderImport(); if (!$("#view-source").hidden) soRender(); }
+function saveJob(){
+  const J = JR, company = J.company.trim(), position = J.position.trim();
+  if (!company && !position){ $("#jr-company").focus(); return false; }
+  const was = JOBEDIT[J.key] || {}, more = (a, b) => [...new Set([...(a || []), ...b])];
+  JOBEDIT[J.key] = {
+    company, position, link:normUrl(J.link), terms:!!J.terms, notes:J.notes.trim(), dates:J.dates, candidates:J.candidates,
+    managers:J.managers.map(m => ({ key:m.key, title:m.title.trim(), name:m.name.trim(), email:m.email.trim(), phone:formatPhone(m.phone), dates:m.dates })).filter(m => m.title || m.name || m.email || m.phone),
+    gone:more(was.gone, J.gone), goneC:more(was.goneC, J.goneC), goneD:more(was.goneD, J.goneD).filter(d => !J.dates.includes(d))
+  };
+  saveJobEdit();
+  if (J.status === "pursuing") delete JOBSTAT[J.key]; else JOBSTAT[J.key] = J.status;
+  store.set("md.jobstat", JOBSTAT);
+  return true;
+}
+$("#jr-form").addEventListener("submit", e => {
+  e.preventDefault();
+  if (!saveJob()) return;
+  jr.close(); afterJobChange(); toast("Job saved");
+});
+$("#jr-close").addEventListener("click", () => jr.close());
+jr.addEventListener("click", e => { if (e.target === jr) jr.close(); });
+$("#jr-del").addEventListener("click", e => {
+  const b = e.currentTarget;
+  if (b.dataset.armed !== "1"){ b.dataset.armed = "1"; b.classList.add("armed"); b.textContent = "Confirm delete"; setTimeout(() => { if (b.dataset.armed === "1"){ b.dataset.armed = ""; b.classList.remove("armed"); b.textContent = "Delete job"; } }, 3000); return; }
+  JOBEDIT[JR.key] = { deleted:true }; saveJobEdit();
+  delete JOBSTAT[JR.key]; store.set("md.jobstat", JOBSTAT);
+  jr.close(); afterJobChange(); toast("Job deleted");
+});
+$("#jr-source").addEventListener("click", () => { if (!saveJob()) return; jr.close(); openSourcing(JR.key); });
+
+/* Calendar: meetings typed in here, with an alert before each one */
+let MEET = store.get("md.meet", []);
+const saveMeet = () => store.set("md.meet", MEET);
+let MEET_EDIT = null;
+const fmtClock = t => { const [h, m] = String(t).split(":").map(Number); return `${h % 12 || 12}:${String(m).padStart(2, "0")} ${h < 12 ? "AM" : "PM"}`; };
+const occAt = (iso, time) => { const d = fromISO(iso), [h, m] = String(time).split(":").map(Number); d.setHours(h, m, 0, 0); return d; };
+const meetsOn = (m, iso) => iso >= m.date && (m.repeat === "daily" || (m.repeat === "weekdays" && isWorkday(iso)) || (m.repeat === "weekly" && fromISO(iso).getDay() === fromISO(m.date).getDay()) || iso === m.date);
+// Everything from just now through the next n days, soonest first. A meeting stays up for 15 minutes after it starts
+function meetUpcoming(n = 14){
+  const now = Date.now(), out = [];
+  for (let i = -1; i <= n; i++){
+    const iso = isoShift(isoToday(), i);
+    for (const m of MEET) if (meetsOn(m, iso)){ const at = occAt(iso, m.time); if (at.getTime() >= now - 15 * 60e3) out.push({ m, iso, at }); }
+  }
+  return out.sort((a, b) => a.at - b.at);
+}
+const inMins = at => { const n = Math.round((at - Date.now()) / 60e3); return n > 0 ? (n < 90 ? `in ${n} min` : "") : n === 0 ? "starting now" : `started ${-n} min ago`; };
+function renderMeet(){
+  const list = meetUpcoming(), today = isoToday(), tomorrow = isoShift(today, 1);
+  const n = list.filter(o => o.iso === today).length;
+  $("#d-cal-sub").textContent = n ? `${n} meeting${n === 1 ? "" : "s"} today` : "Nothing today";
+  const days = [...new Set(list.map(o => o.iso))];
+  $("#d-cal").innerHTML = days.length ? days.slice(0, 7).map(d => `<div class="cal-day">${d === today ? "Today" : d === tomorrow ? "Tomorrow" : esc(fromISO(d).toLocaleDateString("en-US", { weekday:"long", month:"short", day:"numeric" }))}</div>
+    <ul class="cal-list">${list.filter(o => o.iso === d).map(o => { const soon = inMins(o.at); return `<li class="${soon && d === today ? "soon" : ""}"><span class="at">${esc(fmtClock(o.m.time))}</span><span class="t"><b>${esc(o.m.title)}</b><span>${esc([d === today ? soon : "", o.m.who, o.m.repeat !== "none" ? "Repeats" : ""].filter(Boolean).join(" \u00b7 "))}</span></span><span class="acts">${o.m.link ? `<a class="btn" href="${esc(o.m.link)}" target="_blank" rel="noopener">Open</a>` : ""}<button type="button" class="btn ghost" data-meet-edit="${esc(o.m.id)}">Edit</button><button type="button" class="btn ghost" data-meet-del="${esc(o.m.id)}" aria-label="Delete ${esc(o.m.title)}">\u00d7</button></span></li>`; }).join("")}</ul>`).join("")
+    : `<div class="dash-empty">No meetings coming up. Add one and I'll give you a heads up before it starts.</div>`;
+  if (!$("#cal-date").value) $("#cal-date").value = today;
+  const nb = $("#d-cal-notify");
+  nb.hidden = !("Notification" in window) || DEMO;
+  if (!nb.hidden){ const on = Notification.permission === "granted"; nb.textContent = on ? "Desktop alerts on" : "Turn on desktop alerts"; nb.disabled = on || Notification.permission === "denied"; }
+}
+function meetFormReset(){
+  MEET_EDIT = null; $("#d-cal-form").reset(); $("#cal-date").value = isoToday();
+  $("#cal-save").textContent = "Add meeting"; $("#cal-cancel").hidden = true;
+}
+$("#d-cal-form").addEventListener("submit", e => {
+  e.preventDefault();
+  const title = $("#cal-title").value.trim(), date = $("#cal-date").value, time = $("#cal-time").value;
+  if (!title){ toast("Name the meeting first"); $("#cal-title").focus(); return; }
+  if (!date || !time){ toast("Add the date and time"); (date ? $("#cal-time") : $("#cal-date")).focus(); return; }
+  const rec = { id:MEET_EDIT || "c" + Date.now().toString(36), title, date, time, who:$("#cal-who").value.trim(), link:normUrl($("#cal-link").value), lead:Number($("#cal-lead").value), repeat:$("#cal-repeat").value };
+  const i = MEET.findIndex(m => m.id === rec.id);
+  if (i >= 0) MEET[i] = rec; else MEET.push(rec);
+  saveMeet(); meetFormReset(); renderMeet(); checkAlerts();
+  toast(i >= 0 ? "Meeting updated" : `Added. I'll alert you ${rec.lead ? rec.lead + " minutes before" : "when it starts"}.`);
+});
+$("#cal-cancel").addEventListener("click", meetFormReset);
+$("#d-cal").addEventListener("click", e => {
+  const ed = e.target.closest("[data-meet-edit]"), del = e.target.closest("[data-meet-del]");
+  if (ed){
+    const m = MEET.find(x => x.id === ed.dataset.meetEdit); if (!m) return;
+    MEET_EDIT = m.id; $("#cal-title").value = m.title; $("#cal-date").value = m.date; $("#cal-time").value = m.time; $("#cal-who").value = m.who; $("#cal-link").value = m.link; $("#cal-lead").value = String(m.lead); $("#cal-repeat").value = m.repeat;
+    $("#cal-save").textContent = "Save meeting"; $("#cal-cancel").hidden = false; $("#cal-title").focus();
+  }
+  if (del){
+    if (del.dataset.armed !== "1"){ del.dataset.armed = "1"; del.classList.add("armed"); del.textContent = "Sure?"; setTimeout(() => { if (del.isConnected){ del.dataset.armed = ""; del.classList.remove("armed"); del.textContent = "\u00d7"; } }, 3000); return; }
+    MEET = MEET.filter(m => m.id !== del.dataset.meetDel); saveMeet(); if (MEET_EDIT === del.dataset.meetDel) meetFormReset(); renderMeet();
+  }
+});
+$("#d-cal-notify").addEventListener("click", async () => {
+  const r = await Notification.requestPermission(); renderMeet();
+  toast(r === "granted" ? "Desktop alerts are on, even when I'm in a background tab." : "Your browser blocked desktop alerts. The on-screen ones still work.");
+});
+
+/* Alerts: a card that stays up until it's answered. Only while the app is open in this browser */
+const ALERTS_ON = new Set();
+function showAlert({ id, title, body, speak, acts, quiet }){
+  if (ALERTS_ON.has(id)) return;
+  ALERTS_ON.add(id);
+  const el = document.createElement("div"); el.className = "alert"; el.setAttribute("role", "alertdialog"); el.setAttribute("aria-label", title);
+  el.innerHTML = `<b>${esc(title)}</b><p>${esc(body)}</p><div class="row"></div>`;
+  const close = () => { ALERTS_ON.delete(id); el.remove(); };
+  acts.forEach((a, i) => {
+    const b = a.href ? document.createElement("a") : document.createElement("button");
+    b.className = "btn" + (i ? " ghost" : " primary"); b.textContent = a.label;
+    if (a.href){ b.href = a.href; b.target = "_blank"; b.rel = "noopener"; } else b.type = "button";
+    b.addEventListener("click", () => { close(); a.fn?.(); });
+    el.querySelector(".row").append(b);
+  });
+  $("#alerts").append(el);
+  if (!quiet) say(speak || title);
+  try {
+    if (document.hidden && window.Notification && Notification.permission === "granted"){
+      const n = new Notification(title, { body, icon:"icons/icon-192.png", tag:id });
+      n.onclick = () => { focus(); n.close(); };
+    }
+  } catch(_){}
+}
+let ALERTED = Object.assign({ kpi:"", meet:{} }, store.get("md.alerted", {}));
+const saveAlerted = () => store.set("md.alerted", ALERTED);
+// Monday to Thursday 4:55pm, Friday 3:25pm, once a day, unless today's numbers are already in
+const kpiDue = d => d.getDay() === 5 ? 15 * 60 + 25 : d.getDay() >= 1 && d.getDay() <= 4 ? 16 * 60 + 55 : null;
+function goToKpis(){
+  showView("dashboard");
+  setTimeout(() => { spotlight($("#d-kpi-form")); $("#kpi-calls")?.focus({ preventScroll:true }); }, 150);
+}
+function checkAlerts(){
+  if (DEMO || !gate.hidden) return;
+  const now = new Date(), today = isoToday(), due = kpiDue(now);
+  if (due != null && now.getHours() * 60 + now.getMinutes() >= due && ALERTED.kpi !== today && !KPI.days[today]){
+    ALERTED.kpi = today; saveAlerted();
+    showAlert({ id:"kpi", title:"Time to add your KPIs", body:"The day's almost done. Log today's numbers before you head out.", acts:[{ label:"Take me there", fn:goToKpis }, { label:"Dismiss" }] });
+  }
+  for (const o of meetUpcoming(1)){
+    const key = `${o.m.id}@${o.iso}T${o.m.time}`, left = o.at - now;
+    if (left > o.m.lead * 60e3 || now.getTime() < (ALERTED.meet[key] || 0)) continue;
+    ALERTED.meet[key] = 1e15; saveAlerted();
+    const when = inMins(o.at) || `at ${fmtClock(o.m.time)}`;
+    showAlert({ id:key, title:`${o.m.title}, ${when}`, body:[fmtClock(o.m.time), o.m.who && `with ${o.m.who}`].filter(Boolean).join(" "), speak:`${o.m.title} is ${when.replace(/\bmin\b/, "minutes")}.`, acts:[
+      ...(o.m.link ? [{ label:"Open meeting", href:o.m.link }] : []),
+      { label:"Snooze 5 min", fn:() => { ALERTED.meet[key] = Date.now() + 5 * 60e3; saveAlerted(); } },
+      { label:"Dismiss" }
+    ] });
+  }
+  if (!$("#view-dashboard").hidden) renderMeet();
+}
+setInterval(checkAlerts, 15000);
+document.addEventListener("visibilitychange", () => { if (!document.hidden) checkAlerts(); });
+
+/* Terms Amendments: the table on the left stays the same, the answers go on the right */
+const TERMS_ROWS = [
+  "Legal client name for contract",
+  "Client address for contract",
+  "What placement fee % do you want?",
+  "Our standard rebate is 8-week sliding scale refund. If you are requesting something different, please confirm here:",
+  "Our payment terms are 14 days. If you need something else, please confirm here:",
+  "Other non-standard requests?",
+  "DocuSign delivery required",
+  "If DocuSign required, please include signer's full name and email address"
+];
+let TERMS = store.get("md.terms", []);
+const saveTerms = () => store.set("md.terms", TERMS);
+function renderTerms(){
+  const host = $("#d-terms");
+  if (!host.rows.length) host.innerHTML = `<tbody>${TERMS_ROWS.map((l, i) => `<tr><th scope="row"><label for="tm${i}">${esc(l)}</label></th><td><textarea id="tm${i}" data-tm="${i}" rows="1" placeholder="[INSERT TEXT HERE]"></textarea></td></tr>`).join("")}</tbody>`;
+  host.querySelectorAll("[data-tm]").forEach(t => { if (document.activeElement !== t) t.value = TERMS[Number(t.dataset.tm)] || ""; ciGrow(t); });
+}
+$("#d-terms").addEventListener("input", e => {
+  const t = e.target.closest("[data-tm]"); if (!t) return;
+  TERMS[Number(t.dataset.tm)] = t.value; ciGrow(t); saveTerms();
+});
+$("#d-terms-clear").addEventListener("click", e => {
+  const b = e.currentTarget;
+  if (b.dataset.armed !== "1"){ b.dataset.armed = "1"; b.textContent = "Confirm clear"; setTimeout(() => { b.dataset.armed = ""; b.textContent = "Clear"; }, 3000); return; }
+  b.dataset.armed = ""; b.textContent = "Clear";
+  TERMS = []; saveTerms(); renderTerms();
+});
+// Outlook reads the font from each paragraph, so Aptos 12 goes on every one, inside the table too
+const TM_FONT = "font-family:Aptos,sans-serif;font-size:12pt;mso-ascii-font-family:Aptos;mso-hansi-font-family:Aptos;color:black";
+const tmPara = (html, align) => `<p style="margin:0;${align ? `text-align:${align};` : ""}${TM_FONT}"><span style="${TM_FONT}">${html}</span></p>`;
+function termsEmail(){
+  const answer = i => String(TERMS[i] ?? "").trim();
+  const td = (w, inner) => `<td width="${w}" style="width:${w}pt;border:solid windowtext 1pt;padding:0 5.4pt;vertical-align:middle">${inner}</td>`;
+  const rows = TERMS_ROWS.map((l, i) => `<tr>${td(245, tmPara(esc(l)))}${td(223, tmPara(esc(answer(i)).replace(/\n/g, "<br>") || "&nbsp;", "center"))}</tr>`).join("");
+  const table = `<table cellspacing="0" cellpadding="0" style="border-collapse:collapse;${TM_FONT}"><tbody>${rows}</tbody></table>`;
+  const html = `<meta charset="utf-8"><div style="${TM_FONT}">${tmPara("Hi Team,")}${tmPara("Can we please amend the following terms when you get a chance?")}${tmPara("&nbsp;")}${table}${tmPara("&nbsp;")}${tmPara("My best,")}</div>`;
+  const text = ["Hi Team,", "Can we please amend the following terms when you get a chance?", "", ...TERMS_ROWS.map((l, i) => `${l}\t${answer(i).replace(/\s*\n\s*/g, " ")}`), "", "My best,"].join("\n");
+  return { html, text };
+}
+$("#d-terms-copy").addEventListener("click", async () => {
+  const { html, text } = termsEmail();
+  toast(await copyRich(html, text) ? "Copied. Paste it into your Outlook email." : "Copy was blocked by this browser.");
+});
+
+/* Candidate Sourcing: one record per person, each with its own number and its own copy button. The job match lives here only */
+const soBlank = job => ({ id:"s" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), job:job || "", label:"", num:String(soNextNum(job || "")), need:false, name:"", phone:"", email:"", good:false, notfit:false, resume:false, submitted:false, reject:false, notes:"" });
+const soView = () => SO.job === "*" ? SO.rows : SO.rows.filter(r => r.job === SO.job);
+const SO_LABELS = { need:"Need to Call", good:"Good Fit", notfit:"Not A Fit", resume:"Resume", submitted:"Submitted", reject:"Client Reject" };
+function soJobGroups(P, sel, label){
+  const opt = j => `<option value="${esc(j.key)}"${j.key === sel ? " selected" : ""}>${esc(jobLabel(j))}</option>`;
+  const by = s => P.jobs.filter(j => j.status === s).sort((a, b) => jobLabel(a).localeCompare(jobLabel(b)));
+  const group = (l, list) => list.length ? `<optgroup label="${l}">${list.map(opt).join("")}</optgroup>` : "";
+  // A job that's since been deleted still shows, so the candidate doesn't silently lose their match
+  const gone = sel && sel !== "*" && !P.byJob.has(sel) ? `<option value="${esc(sel)}" selected>${esc(label || "A deleted job")}</option>` : "";
+  return gone + group("Pulled", by("pulled")) + group("Still trying to pull", by("pursuing")) + group("Filled / unavailable", by("filled"));
+}
+function soRecHTML(r, P){
+  const id = f => `so-${esc(r.id)}-${f}`;
+  const txt = (f, l, type = "text", ph = "") => `<div class="field"><label for="${id(f)}">${l}</label><input type="${type}" id="${id(f)}" data-t="${f}" value="${esc(r[f])}"${ph ? ` placeholder="${ph}"` : ""} autocomplete="off"></div>`;
+  return `<div class="so-rec" data-id="${esc(r.id)}">
+    <div class="so-who">
+      <div class="field"><label for="${id("num")}">#</label><input type="number" id="${id("num")}" data-t="num" min="1" inputmode="numeric" value="${esc(r.num)}"></div>
+      ${txt("name", "Name")}${txt("phone", "Phone number", "tel", "(123) 456-7890")}${txt("email", "Email", "email")}
+    </div>
+    <div class="so-more">
+      <div class="field"><label for="${id("notes")}">Notes</label><textarea id="${id("notes")}" data-t="notes" rows="1">${esc(r.notes)}</textarea></div>
+      <div class="field"><label for="${id("job")}">Matched job</label><select id="${id("job")}" data-job-of><option value="">No job yet</option>${soJobGroups(P, r.job, r.label)}</select></div>
+    </div>
+    <div class="so-foot">
+      <div class="so-checks">${SO_BOXES.map(b => `<label class="check"><input type="checkbox" data-b="${b}"${r[b] ? " checked" : ""}> ${SO_LABELS[b]}</label>`).join("")}</div>
+      <div class="so-acts"><button type="button" class="btn" data-so-copy>Copy</button><button type="button" class="btn ghost" data-so-rm aria-label="Remove this candidate">×</button></div>
+    </div>
+  </div>`;
+}
+function soRender(){
+  const P = pipeline();
+  if (SO.job && SO.job !== "*" && !P.byJob.has(SO.job)) SO.job = "*";
+  // One empty record ready to type into, and only the one, in the list you're looking at
+  const inView = r => SO.job === "*" ? !r.job : r.job === SO.job;
+  let kept = false;
+  SO.rows = SO.rows.filter(r => { if (soHas(r)) return true; if (!inView(r) || kept) return false; return kept = true; });
+  if (!kept) SO.rows.push(soBlank(SO.job === "*" ? "" : SO.job));
+  $("#so-job").innerHTML = `<option value="*"${SO.job === "*" ? " selected" : ""}>All candidates</option><option value=""${SO.job === "" ? " selected" : ""}>Not matched to a job yet</option>${soJobGroups(P, SO.job)}`;
+  $("#so-box").value = SO.box; soBoxNote();
+  $("#so-recs").innerHTML = soView().map(r => soRecHTML(r, P)).join("");
+  $("#so-recs").querySelectorAll("textarea").forEach(ciGrow);
+  saveSo();
+}
+function soBoxNote(){ $("#so-box-note").textContent = SO.box === "tf" ? "It pastes as plain text so your checkboxes keep working, and the text takes the font already set in your sheet." : "It pastes in the same font and size as the Middleton Method."; }
+function openSourcing(key){
+  SO.job = key || "*"; saveSo();
+  showView("source");
+  setTimeout(() => { const r = soView().find(x => !soHas(x)); if (r) document.getElementById(`so-${r.id}-name`)?.focus({ preventScroll:true }); }, 150);
+}
+$("#so-job").addEventListener("change", e => { SO.job = e.target.value; soRender(); });
+$("#so-box").addEventListener("change", e => { SO.box = e.target.value; SO.boxPicked = true; saveSo(); soBoxNote(); });
+$("#so-add").addEventListener("click", () => {
+  const r = soBlank(SO.job === "*" ? "" : SO.job); SO.rows.push(r); saveSo();
+  $("#so-recs").insertAdjacentHTML("beforeend", soRecHTML(r, pipeline()));
+  $("#so-recs").lastElementChild.querySelectorAll("textarea").forEach(ciGrow);
+  document.getElementById(`so-${r.id}-name`).focus();
+});
+const soRowOf = el => SO.rows.find(r => r.id === el.closest("[data-id]").dataset.id);
+// (123) 456-7890 as it's typed, from any way of writing the number
+function phoneAsTyped(v){
+  if (/[a-z]/i.test(v)) return v;
+  let d = String(v).replace(/\D/g, "");
+  if (d.length === 11 && d[0] === "1") d = d.slice(1);
+  if (!d || d.length > 10) return d ? v : "";
+  return d.length < 4 ? `(${d}` : d.length < 7 ? `(${d.slice(0, 3)}) ${d.slice(3)}` : `(${d.slice(0, 3)}) ${d.slice(3, 6)}-${d.slice(6)}`;
+}
+$("#so-recs").addEventListener("input", e => {
+  const t = e.target.closest("[data-t]"), b = e.target.closest("[data-b]");
+  if (!t && !b) return;
+  const r = soRowOf(e.target); if (!r) return;
+  if (b) r[b.dataset.b] = b.checked;
+  if (t){
+    if (t.dataset.t === "phone" && t.selectionStart === t.value.length) t.value = phoneAsTyped(t.value);
+    r[t.dataset.t] = t.value;
+    if (t.tagName === "TEXTAREA") ciGrow(t);
+  }
+  saveSo();
+});
+$("#so-recs").addEventListener("focusout", e => {
+  const t = e.target.closest('[data-t="phone"]'); if (!t) return;
+  const r = soRowOf(t); if (r){ t.value = r.phone = formatPhone(t.value); saveSo(); }
+});
+$("#so-recs").addEventListener("change", e => {
+  const s = e.target.closest("[data-job-of]"); if (!s) return;
+  const r = soRowOf(s); if (!r) return;
+  r.job = s.value; r.label = s.selectedOptions[0]?.textContent || "";
+  saveSo();
+  if (SO.job !== "*" && r.job !== SO.job){ soRender(); toast(r.job ? `Moved to ${r.label}` : "Moved to Not matched to a job yet"); }
+});
+// In the sheet's column order: Need to Call, #, Name, Phone Number, Email, Good Fit, Not A Fit, Resume, Submitted, Client Reject, Notes
+function soCopyRows(list){
+  const mark = on => SO.box === "tf" ? (on ? "TRUE" : "FALSE") : SO.box === "x" ? (on ? "X" : "") : (on ? "☑" : "☐");
+  const rows = list.map(r => {
+    const bx = f => ({ v:mark(r[f]), border:true, center:true }), tx = f => ({ v:String(r[f] ?? "").trim(), border:true });
+    return [bx("need"), { v:String(r.num ?? "").trim(), border:true, center:true }, tx("name"), { ...tx("phone"), text:true }, tx("email"), bx("good"), bx("notfit"), bx("resume"), bx("submitted"), bx("reject"), tx("notes")];
+  });
+  const tsv = rowsToTSV(rows);
+  // Clickable Excel checkboxes only survive a plain-text paste; a formatted one turns them into ordinary cells
+  return SO.box === "tf" ? copyText(tsv) : copyRich(rowsToClipboardHTML(rows, [64, 36, 170, 130, 210, 64, 64, 64, 72, 72, 240]), tsv);
+}
+$("#so-recs").addEventListener("click", async e => {
+  const cp = e.target.closest("[data-so-copy]");
+  if (cp){
+    const r = soRowOf(cp); if (!r) return;
+    if (!soHas(r)){ toast("Nothing to copy yet. Fill this one in first."); return; }
+    toast(await soCopyRows([r]) ? `Copied ${r.name.trim() || "the candidate"}. Paste it on their row in your sheet.` : "Copy was blocked by this browser.");
+    return;
+  }
+  const b = e.target.closest("[data-so-rm]"); if (!b) return;
+  const r = soRowOf(b); if (!r) return;
+  if (soHas(r) && b.dataset.armed !== "1"){
+    b.dataset.armed = "1"; b.classList.add("armed"); b.textContent = "Sure?";
+    setTimeout(() => { if (b.isConnected){ b.dataset.armed = ""; b.classList.remove("armed"); b.textContent = "×"; } }, 3000);
+    return;
+  }
+  SO.rows = SO.rows.filter(x => x !== r); soRender();
+});
+$("#so-clear").addEventListener("click", e => {
+  const b = e.currentTarget;
+  if (b.dataset.armed !== "1"){ b.dataset.armed = "1"; b.textContent = "Confirm clear"; setTimeout(() => { b.dataset.armed = ""; b.textContent = "Clear this list"; }, 3000); return; }
+  b.dataset.armed = ""; b.textContent = "Clear this list";
+  const gone = new Set(soView()); SO.rows = SO.rows.filter(r => !gone.has(r)); soRender(); toast("List cleared");
+});
+$("#so-copy").addEventListener("click", async () => {
+  const list = soView().filter(soHas).sort((a, b) => (Number(a.num) || Infinity) - (Number(b.num) || Infinity));
+  if (!list.length){ toast("Nothing to copy yet. Add someone first."); return; }
+  toast(await soCopyRows(list) ? `Copied ${list.length} candidate${list.length === 1 ? "" : "s"}. Paste it into your sheet.` : "Copy was blocked by this browser.");
 });
 
 /* News: US medical device headlines for the day, read through a public RSS-to-JSON service.
@@ -5126,58 +6071,116 @@ function headerMap(row){
   });
   return hits >= 3 && H.company != null ? H : null;
 }
+// A row that only says when: "10/27/2026", "Monday, October 27", "Date: 10/27". It heads every box under it, until the next one
+const DATE_WORDS = /\b(?:dated?|week|of|for|on|added|day|updated|mon|tues?|wed|thu|thur|thurs|fri|sat|sun|monday|tuesday|wednesday|thursday|friday|saturday|sunday|jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec|january|february|march|april|june|july|august|september|october|november|december|st|nd|rd|th)\b/gi;
+function dateRowOf(row){
+  const out = [];
+  for (const c of row){
+    const v = c?.v || ""; if (isFiller(v)) continue;
+    // Excel hands over a bare serial number when the cell isn't formatted as a date
+    const serial = /^4\d{4}$/.test(v) ? toISO(new Date(1899, 11, 30 + Number(v))) : "";
+    const ds = serial ? [serial] : datesIn(v);
+    if (v.length > 40 || v.replace(DATE_WORDS, "").replace(/[\d\s/.,:\-\u2013\u2014]+/g, "")) return null;
+    if (ds.length) out.push(...ds); else if (/\d/.test(v)) return null;
+  }
+  return out.length ? out : null;
+}
+// Where a box starts: its number, then the company, wherever those landed in the row. Otherwise null
+function entryOf(row){
+  const i = row.findIndex(c => c?.v);
+  if (i < 0 || !NUM_CELL.test(row[i].v)) return null;
+  let co = i + 1;
+  while (co < row.length && (!row[co]?.v || NUM_CELL.test(row[co].v))) co++;
+  const v = row[co]?.v;
+  return v && !isFiller(v) && !datesIn(v).length && !EMAIL_RE.test(v) && !PHONE_RE.test(v) ? { base:i, co } : null;
+}
+const deFill = grid => grid.map(r => r.map(c => c && isFiller(c.v) ? { ...c, v:"" } : c));
 function readSheet(grid){
-  const numbered = grid.filter(r => /^\d{1,4}$/.test(cv(r, 0)) && cv(r, 1)).length;
-  if (numbered){
-    const jobs = []; let cur = null;
-    for (const row of grid){
-      if (/^\d{1,4}$/.test(cv(row, 0)) && cv(row, 1)){
-        // Position sits in C (merged C-E); dates on this row count for the whole job
-        const pi = [2, 3, 4].find(i => cv(row, i) && !datesIn(cv(row, i)).length && !EMAIL_RE.test(cv(row, i)));
-        cur = { num:cv(row, 0), company:cv(row, 1), position:pi != null ? cv(row, pi) : "", link:pi != null ? row[pi].href || "" : "", terms:false, managers:[], candidates:[], dates:[] };
-        row.forEach((c, i) => { if (i < 2 || i === pi || !c?.v) return; const ds = datesIn(c.v); if (ds.length) cur.dates.push(...ds); else if (i === 5 && !EMAIL_RE.test(c.v) && !PHONE_RE.test(c.v)) cur.candidates.push(c.v); });
-        jobs.push(cur); continue;
+  const done = (mode, jobs) => ({ mode, jobs:jobs.map(cleanJob).filter(Boolean) });
+  if (grid.some(entryOf)){
+    const jobs = []; let cur = null, at = null, section = [];
+    for (const row of deFill(grid)){
+      const when = dateRowOf(row);
+      if (when){ section = when; cur = null; continue; }
+      const en = entryOf(row);
+      if (en){
+        // Position sits just after the company (merged across three cells); dates on this row count for the whole job
+        const pi = [1, 2, 3].map(n => en.co + n).find(i => cv(row, i) && !datesIn(cv(row, i)).length && !EMAIL_RE.test(cv(row, i)));
+        cur = { company:cv(row, en.co), position:pi != null ? cv(row, pi) : "", link:pi != null ? row[pi].href || "" : "", terms:false, managers:[], candidates:[], dates:[...section] };
+        row.forEach((c, i) => { if (i <= en.co || i === pi || !c?.v) return; const ds = datesIn(c.v); if (ds.length) cur.dates.push(...ds); else if (i === en.co + 4 && !EMAIL_RE.test(c.v) && !PHONE_RE.test(c.v)) cur.candidates.push(c.v); });
+        jobs.push(cur); at = en; continue;
       }
       if (!cur || blankRowOf(row)) continue;
-      if (/^terms$/i.test(cv(row, 0))) cur.terms = true;
-      if (/^hiring manager job title$/i.test(cv(row, 1))) continue;
-      const { m, cands } = mgrFromRow(row, { skip:[0], pos:[1, 2], candCol:5 });
+      if (/^terms$/i.test(cv(row, at.base))) cur.terms = true;
+      const { m, cands } = mgrFromRow(row, { skip:Array.from({ length:at.co }, (_, i) => i), pos:[at.co, at.co + 1], candCol:at.co + 4 });
       cur.candidates.push(...cands);
       if (m.title || m.name || m.email || m.phone) cur.managers.push(m); else cur.dates.push(...m.dates);
     }
-    return { mode:"Middleton blocks", jobs };
+    return done("Middleton blocks", jobs);
   }
   const hi = grid.slice(0, 6).findIndex(r => headerMap(r));
   if (hi >= 0){
-    const H = headerMap(grid[hi]), map = new Map(); let last = { company:"", position:"" };
+    const H = headerMap(grid[hi]), map = new Map(); let last = { company:"", position:"" }, section = grid.slice(0, hi).map(dateRowOf).filter(Boolean).pop() || [];
     for (const row of grid.slice(hi + 1)){
       if (blankRowOf(row)) continue;
+      const when = dateRowOf(row);
+      if (when){ section = when; continue; }
       const g = k => H[k] != null ? cv(row, H[k]) : "";
       const company = g("company") || last.company, position = g("position") || (g("company") ? "" : last.position);
       last = { company, position };
       if (!company && !position) continue;
       const k = jobKey(company, position);
-      if (!map.has(k)) map.set(k, { num:"", company, position, link:H.position != null ? row[H.position]?.href || "" : "", managers:[], candidates:[], dates:[] });
+      if (!map.has(k)) map.set(k, { company, position, link:H.position != null ? row[H.position]?.href || "" : "", managers:[], candidates:[], dates:[...section] });
       const j = map.get(k), dates = H.dates.flatMap(i => datesIn(cv(row, i)));
       const m = { title:g("mtitle"), name:g("mname"), email:(g("email").match(EMAIL_RE) || [""])[0], phone:g("phone"), dates };
       if (m.name || m.email || m.title) j.managers.push(m); else j.dates.push(...dates);
       const c = g("cand"); if (c && !datesIn(c).length) j.candidates.push(...c.split(/[,;]/).map(s => s.trim()).filter(Boolean));
     }
-    return { mode:"a table with headers", jobs:[...map.values()] };
+    return done("a table with headers", [...map.values()]);
   }
-  const jobs = []; let cur = null;
-  for (const row of grid){
+  const jobs = []; let cur = null, section = [];
+  for (const row of deFill(grid)){
     if (blankRowOf(row)){ cur = null; continue; }
+    const when = dateRowOf(row);
+    if (when){ section = when; cur = null; continue; }
     if (!cur){
-      const texts = row.filter(c => c?.v && !EMAIL_RE.test(c.v) && !PHONE_RE.test(c.v) && !datesIn(c.v).length && !/^\d+$/.test(c.v));
+      const texts = row.filter(c => c?.v && !EMAIL_RE.test(c.v) && !PHONE_RE.test(c.v) && !datesIn(c.v).length && !NUM_CELL.test(c.v));
       if (!texts.length) continue;
-      cur = { num:"", company:texts[0].v, position:texts[1]?.v || "", link:texts[1]?.href || "", managers:[], candidates:[], dates:row.flatMap(c => datesIn(c?.v)) };
+      cur = { company:texts[0].v, position:texts[1]?.v || "", link:texts[1]?.href || "", managers:[], candidates:[], dates:[...section, ...row.flatMap(c => datesIn(c?.v))] };
       jobs.push(cur); continue;
     }
     const { m } = mgrFromRow(row, { skip:[] });
     if (m.title || m.name || m.email || m.phone) cur.managers.push(m); else cur.dates.push(...m.dates);
   }
-  return { mode:"blocks separated by blank rows", jobs };
+  return done("blocks separated by blank rows", jobs);
+}
+// A new paste adds to what's already read, so one day's rows don't wipe out the rest. The same job again just picks up its new dates
+function mergeJobs(base, add){
+  const map = new Map(base.map(j => [jobKey(j.company, j.position), j]));
+  for (const j of add){
+    const k = jobKey(j.company, j.position), o = map.get(k);
+    if (!o){ map.set(k, j); continue; }
+    o.link = o.link || j.link; o.terms = o.terms || j.terms;
+    o.dates = [...new Set([...(o.dates || []), ...j.dates])];
+    o.candidates = [...new Map([...(o.candidates || []), ...j.candidates].map(c => [norm(c), c])).values()];
+    for (const m of j.managers){
+      const x = (o.managers || []).find(y => y.key === m.key);
+      if (!x){ (o.managers = o.managers || []).push(m); continue; }
+      for (const f of ["title", "name", "email", "phone"]) x[f] = x[f] || m[f];
+      x.dates = [...new Set([...(x.dates || []), ...(m.dates || [])])];
+    }
+  }
+  return [...map.values()];
+}
+// A sheet read before the dates and numbers were handled gets read again from its saved text, keeping the links that only the first read could see
+if (IMPORT && IMPORT.v !== 2){
+  const again = IMPORT.text ? readSheet(gridFromTSV(IMPORT.text)) : { jobs:[] };
+  if (again.jobs.length){
+    const old = new Map((IMPORT.jobs || []).map(j => [jobKey(j.company, j.position), j]));
+    again.jobs.forEach(j => { j.managers.forEach(m => { m.key = mgrKey(m, j.company); }); const o = old.get(jobKey(j.company, j.position)); if (o){ j.link = j.link || o.link; j.terms = j.terms || o.terms; } });
+    IMPORT = { ...IMPORT, v:2, mode:again.mode, jobs:again.jobs };
+  } else IMPORT = { ...IMPORT, v:2, jobs:(IMPORT.jobs || []).map(cleanJob).filter(Boolean) };
+  store.set("md.import", IMPORT);
 }
 
 const miPaste = $("#mi-paste"), miToggle = $("#mi-toggle");
@@ -5186,13 +6189,15 @@ function setMiOpen(open){ miToggle.setAttribute("aria-expanded", String(open)); 
 miToggle.addEventListener("click", () => setMiOpen(miToggle.getAttribute("aria-expanded") !== "true"));
 function runImport(grid){
   const res = readSheet(grid);
-  if (!res.jobs.length){ IMPORT = null; store.set("md.import", null); renderImport(); $("#mi-out").innerHTML = `<p class="mi-warn">I couldn't find any jobs in that. Copy the rows straight from the sheet, including column A with the entry numbers.</p>`; return; }
+  if (!res.jobs.length){ renderImport(); $("#mi-out").insertAdjacentHTML("afterbegin", `<p class="mi-warn">I couldn't find any jobs in that. Copy the rows straight from the sheet, including the date above them and the entry numbers.</p>`); return; }
   res.jobs.forEach(j => j.managers.forEach(m => { m.key = mgrKey(m, j.company); }));
-  IMPORT = { at:Date.now(), mode:res.mode, jobs:res.jobs, text:miPaste.value.slice(0, 400000) };
+  const days = [...new Set(res.jobs.flatMap(j => j.dates))].sort();
+  IMPORT = { v:2, at:Date.now(), mode:res.mode, jobs:mergeJobs(IMPORT?.jobs || [], res.jobs), text:miPaste.value.slice(0, 400000), days };
   store.set("md.import", IMPORT);
   renderImport();
+  if (!$("#view-dashboard").hidden) renderDash();
   const mc = new Set(res.jobs.flatMap(j => j.managers.map(m => m.key))).size;
-  toast(`Read ${res.jobs.length} job${res.jobs.length === 1 ? "" : "s"} and ${mc} manager${mc === 1 ? "" : "s"}`);
+  toast(`Read ${res.jobs.length} job${res.jobs.length === 1 ? "" : "s"} and ${mc} manager${mc === 1 ? "" : "s"}${days.length ? `, ${days.length} date${days.length === 1 ? "" : "s"}` : ", no dates"}`);
 }
 miPaste.addEventListener("paste", e => {
   const html = e.clipboardData?.getData("text/html"), text = e.clipboardData?.getData("text/plain");
@@ -5230,6 +6235,7 @@ function renderImport(){
       <div class="tile"><b>${P.cands.length}</b><span>Candidates</span></div>
       <div class="tile"><b>${tick.size}</b><span>On your call list</span></div>
     </div>
+    ${IMPORT?.days ? (IMPORT.days.length ? `<p class="mi-note">Dates read in the last paste: ${esc(IMPORT.days.map(d => fromISO(d).toLocaleDateString("en-US", { month:"short", day:"numeric" })).join(", "))}.</p>` : `<p class="mi-warn">I didn't find a date in the last paste. Include the date cell above the boxes when you copy.</p>`) : ""}
     <p class="mi-note">${IMPORT ? `Read as ${esc(IMPORT.mode)} ${ago(daysSince(toISO(new Date(IMPORT.at))))}` : "From your saved entries"}${LOG.length && IMPORT ? ", with your saved entries added" : ""}. ${noDate ? `${noDate} manager${noDate === 1 ? " has" : "s have"} no date, so ${noDate === 1 ? "it sits" : "they sit"} at the bottom.` : "Every manager has a date."}</p>
     <div class="mi-tools">
       <label class="sr" for="mi-filter">Filter managers</label>
@@ -5240,9 +6246,9 @@ function renderImport(){
     <div>${groups.map(g => `<div class="mi-group"><div class="mi-group-h">${esc(g.l)} <span>(${g.list.length})</span><button type="button" class="linkish" data-tick-group="${esc(g.l)}">Tick all</button></div><ul class="mi-list">${g.list.map(m => {
       const on = tick.has(m.key), id = "mi-" + m.key.replace(/[^a-z0-9]/gi, "_");
       return `<li class="${on ? "on" : ""}"><input type="checkbox" id="${esc(id)}" data-tick="${esc(m.key)}"${on ? " checked" : ""} aria-label="Call ${esc(mgrLabel(m))} next"><label class="who" for="${esc(id)}"><b>${esc(mgrLabel(m))}</b><span>${esc([m.name && m.title, m.company].filter(Boolean).join(" \u00b7 "))}${m.jobs.size > 1 ? ` \u00b7 ${m.jobs.size} jobs` : ""}</span></label><span class="reach">${esc([m.phone, m.email].filter(Boolean).join(" \u00b7 ") || "No phone or email")}</span>
-        <span class="days"><span>${dd(daysSince(m.last))}<small>since last</small></span><span>${dd(daysSince(m.first))}<small>since first</small></span><span>${m.touches}<small>touches</small></span></span></li>`;
+        <span class="days"><span>${dd(daysSince(m.last))}<small>since last</small></span><span>${dd(daysSince(m.first))}<small>since first</small></span><span>${m.touches}<small>touches</small></span><button type="button" class="btn ghost mi-edit" data-job="${esc([...m.jobs][0])}">Edit</button></span></li>`;
     }).join("")}</ul></div>`).join("") || `<p class="mi-note">No managers match that filter.</p>`}</div>
-    <details class="rules"><summary>Jobs (${P.jobs.length})</summary><div class="table-scroll"><table class="job-table"><thead><tr><th>#</th><th>Company</th><th>Position</th><th>Managers</th><th>Since first</th><th>Since last</th></tr></thead><tbody>${[...P.jobs].sort((a, b) => (Number(a.num) || 1e9) - (Number(b.num) || 1e9)).map(j => `<tr><td class="num">${esc(j.num)}</td><td>${esc(j.company)}${j.terms ? ` <span class="badge ok">Terms</span>` : ""}</td><td>${esc(j.position)}</td><td class="num">${j.mgrs.size}</td><td class="num">${dd(daysSince(j.first))}</td><td class="num">${dd(daysSince(j.last))}</td></tr>`).join("")}</tbody></table></div></details>
+    <details class="rules"><summary>Jobs (${P.jobs.length}). Click one to edit it</summary><div class="table-scroll"><table class="job-table"><thead><tr><th>Company</th><th>Position</th><th>Contacts</th><th>Since first</th><th>Since last</th></tr></thead><tbody>${[...P.jobs].sort((a, b) => a.company.localeCompare(b.company)).map(j => `<tr data-job="${esc(j.key)}"><td>${esc(j.company)}${j.terms ? ` <span class="badge ok">Terms</span>` : ""}</td><td>${esc(j.position)}</td><td class="num">${j.mgrs.size}</td><td class="num">${dd(daysSince(j.first))}</td><td class="num">${dd(daysSince(j.last))}</td></tr>`).join("")}</tbody></table></div></details>
     <details class="rules"><summary>Candidates (${P.cands.length})</summary>${P.cands.length ? `<div class="mi-cands">${P.cands.sort((a, b) => a.name.localeCompare(b.name)).map(c => `<div class="mi-cand"><b>${esc(c.name)}</b>${[...c.jobs].map(k => { const j = P.byJob.get(k); return `<span>${esc(j.position || "Untitled role")} \u00b7 ${esc(j.company)}</span>`; }).join("")}</div>`).join("")}</div>` : `<p class="mi-note">No candidates found in column F.</p>`}</details>`;
 }
 $("#mi-out").addEventListener("change", e => {
@@ -5256,6 +6262,8 @@ $("#mi-out").addEventListener("input", e => {
   renderImport(); const f = $("#mi-filter"); f.focus(); f.setSelectionRange(pos, pos);
 });
 $("#mi-out").addEventListener("click", async e => {
+  const je = e.target.closest("[data-job]");
+  if (je){ openJob(je.dataset.job); return; }
   const g = e.target.closest("[data-tick-group]");
   if (g){
     const P = pipeline(), b = BUCKETS.find(x => x.l === g.dataset.tickGroup), q = norm(miFilter);
@@ -5279,7 +6287,7 @@ $("#mi-out").addEventListener("click", async e => {
    The questions box splits into numbered cards to read on the phone; the transcript and the
    job description go out with them so the answers get filled in and the fit assessed.
    ========================================================= */
-const SCR = Object.assign({ q:"", t:"", jd:"", open:false }, store.get("md.screen", {}));
+const SCR = Object.assign({ q:"", t:"", jd:"", open:false, asked:[] }, store.get("md.screen", {}));
 const saveScr = () => store.set("md.screen", SCR);
 const scrQ = $("#scr-q"), scrT = $("#scr-t"), scrJd = $("#scr-jd"), scrToggle = $("#scr-toggle");
 function parseQuestions(raw){
@@ -5299,12 +6307,22 @@ function parseQuestions(raw){
 }
 function renderScreen(){
   const qs = parseQuestions(SCR.q);
-  $("#scr-list").innerHTML = qs.length ? qs.map(q => `<li>${esc(q)}</li>`).join("") : `<li class="notes-empty" style="display:block">The questions show up here, one to a box, as soon as you paste them.</li>`;
+  const asked = new Set(SCR.asked), done = qs.filter(q => asked.has(norm(q))).length;
+  $("#scr-list").innerHTML = qs.length ? qs.map((q, i) => { const on = asked.has(norm(q)); return `<li data-q="${i}" class="${on ? "asked" : ""}" role="button" tabindex="0" aria-pressed="${on}">${esc(q)}</li>`; }).join("") : `<li class="notes-empty" style="display:block">The questions show up here, one to a box, as soon as you paste them.</li>`;
   $("#scr-list").classList.toggle("scr-q", !!qs.length);
-  $("#scr-count").textContent = qs.length ? `${qs.length} question${qs.length === 1 ? "" : "s"}${SCR.t.trim() ? " \u00b7 transcript in" : ""}` : SCR.t.trim() ? "Transcript in" : "";
+  $("#scr-count").textContent = qs.length ? `${done ? done + " of " : ""}${qs.length} question${qs.length === 1 ? "" : "s"}${done ? " asked" : ""}${SCR.t.trim() ? " \u00b7 transcript in" : ""}` : SCR.t.trim() ? "Transcript in" : "";
 }
 function setScrOpen(open){ SCR.open = open; saveScr(); scrToggle.setAttribute("aria-expanded", String(open)); $("#scr-body").hidden = !open; $("#scr").classList.toggle("open", open); }
 scrToggle.addEventListener("click", () => setScrOpen(!SCR.open));
+// On the phone: tap a question or its number and a check goes over the number, so nothing gets asked twice
+function toggleAsked(li){
+  const k = norm(parseQuestions(SCR.q)[Number(li.dataset.q)]);
+  SCR.asked = SCR.asked.includes(k) ? SCR.asked.filter(x => x !== k) : [...SCR.asked, k];
+  saveScr(); renderScreen();
+  $(`#scr-list [data-q="${li.dataset.q}"]`)?.focus({ preventScroll:true });
+}
+$("#scr-list").addEventListener("click", e => { const li = e.target.closest("[data-q]"); if (li) toggleAsked(li); });
+$("#scr-list").addEventListener("keydown", e => { if (e.key !== "Enter" && e.key !== " ") return; const li = e.target.closest("[data-q]"); if (li){ e.preventDefault(); toggleAsked(li); } });
 scrQ.addEventListener("input", () => { SCR.q = scrQ.value; saveScr(); renderScreen(); });
 scrT.addEventListener("input", () => { SCR.t = scrT.value; saveScr(); renderScreen(); });
 scrJd.addEventListener("input", () => { SCR.jd = scrJd.value; saveScr(); });
@@ -5347,7 +6365,7 @@ $("#scr-clear").addEventListener("click", e => {
   const b = e.currentTarget;
   if (b.dataset.armed !== "1"){ b.dataset.armed = "1"; b.textContent = "Confirm clear"; setTimeout(() => { b.dataset.armed = ""; b.textContent = "Clear everything"; }, 3000); return; }
   b.dataset.armed = ""; b.textContent = "Clear everything";
-  SCR.q = SCR.t = SCR.jd = ""; scrQ.value = scrT.value = scrJd.value = ""; saveScr(); renderScreen(); toast("Screening call cleared");
+  SCR.q = SCR.t = SCR.jd = ""; SCR.asked = []; scrQ.value = scrT.value = scrJd.value = ""; saveScr(); renderScreen(); toast("Screening call cleared");
 });
 function openScreening(){ showView("notes"); setScrOpen(true); setTimeout(() => { $("#scr").scrollIntoView({ behavior:"smooth", block:"start" }); scrQ.focus({ preventScroll:true }); }, 30); }
 $("#x-to-screen").addEventListener("click", () => {
@@ -5750,6 +6768,7 @@ function tuck(){
 // Light up what she's pointing at for a moment
 function spotlight(el){
   if (!el) return;
+  unfold(el);
   const box = /^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName) ? el : el.closest(".panel, .spec-panel, .tile") || el;
   box.scrollIntoView({ behavior:REDUCED ? "auto" : "smooth", block:"center" });
   box.classList.remove("pp-spot"); void box.offsetWidth; box.classList.add("pp-spot");
@@ -5775,7 +6794,9 @@ const SPOTS = [
   { k:/respon|replied|repl(y|ies)/, view:"dashboard", el:"#d-resp", say:"Here are your manager responses." },
   { k:/pipeline age|oldest|newest|aging|ageing/, view:"dashboard", el:"#d-oldest", say:"Here's your pipeline age." },
   { k:/every job|all (the |my )?jobs|job status|statuses/, view:"dashboard", el:"#d-jobs", say:"Here's every job and where it stands." },
-  { k:/reach out|to ?dos?\b|call list|who (to|do i|should i) call|pledge/, view:"dashboard", el:"#d-todo", say:"Here's who to reach out to today." },
+  { k:/reach out|to ?dos?\b|call list|who (to|do i|should i) call|pledge/, view:"dashboard", el:"#d-todo", say:"Here's your To Do List." },
+  { k:/calendar|meetings?\b|schedule/, view:"dashboard", el:"#d-cal-panel", say:"Here's your calendar." },
+  { k:/terms? amend|amend.*terms?|contract terms/, view:"dashboard", el:"#d-terms-panel", say:"Here are your Terms Amendments." },
   { k:/pipers read|your read/, view:"dashboard", el:"#d-read", say:"Here's my read on your desk." },
   { k:/paste.*(sheet|excel)|excel|spreadsheet|tracking sheet|import/, view:"middleton", open:"mi", el:"#mi", say:"Paste your sheet in here." },
   { k:/saved entr/, view:"middleton", el:"#m-log", say:"Here are your saved entries." },
@@ -5792,7 +6813,7 @@ const SPOTS = [
 const PAGES = [
   { k:/dash ?board/, view:"dashboard" }, { k:/middle ?ton|middle town/, view:"middleton" }, { k:/\brig\b|boolean/, view:"boolean" },
   { k:/candidate match|\bmatch\b/, view:"match" }, { k:/candidate notes|\bnotes\b/, view:"notes" }, { k:/job spec|\bspec\b/, view:"spec" },
-  { k:/a(d|dd) st(alk|ock)|stalk|agency/, view:"stalk" }, { k:/\bhome\b|your (mind|brain)|main screen|start screen/, view:"home" }
+  { k:/sourc(e|ing)/, view:"source" }, { k:/a(d|dd) st(alk|ock)|stalk|agency/, view:"stalk" }, { k:/\bhome\b|your (mind|brain)|main screen|start screen/, view:"home" }
 ];
 const CMD_RE = /^(ok(ay)? |hey |please |piper,? |can you |could you |would you |i want to |i need to |let me )*(open|go( back)?( to)?|back to|take me( back)?( to)?|bring (me )?(up|to|back)|pull up|show( me)?|navigate to|switch to|jump to|head to|find|wheres|where (is|are|do i|can i|would i|should i))\b/;
 function command(q){
@@ -5813,10 +6834,11 @@ const KB = [
   { k:/bullhorn|terms/, a:"Bullhorn Checked and Terms are the two boxes next to Entry # on the Middleton Method form. Bullhorn has to be ticked before an entry saves.", act:{ label:"Open Middleton Method", view:"middleton" } },
   { k:/middleton|save.*entry|log (a|the) (job|entry)|copy for excel/, a:"Middleton Method: log the company, position and hiring managers, save it, then copy it from Saved entries straight into your sheet.", act:{ label:"Open Middleton Method", view:"middleton" } },
   { k:/status|filled|unavailable|mark.*pulled/, a:"Set each job's status in Every job at the bottom of the Dashboard: Trying to pull, Pulled, or Filled / unavailable.", act:{ label:"Show me", view:"dashboard", scroll:"#d-jobs" } },
-  { k:/dashboard|overview/, a:"The Dashboard: your counts, who to reach out to today, your Manager Check In, pipeline age, manager responses, daily KPIs and the medtech news.", act:{ label:"Open the Dashboard", view:"dashboard" } }
+  { k:/dashboard|overview/, a:"The Dashboard: your counts, your To Do List, your calendar, your Manager Check In, your Terms Amendments, pipeline age, manager responses, daily KPIs and the medtech news.", act:{ label:"Open the Dashboard", view:"dashboard" } }
 ];
 function answer(raw){
   const q = raw.toLowerCase().replace(/[\u2019']/g, "").replace(/[.!?]+$/, "").trim(), P = pipeline(), fn = firstName();
+  if (q === "exit" && (TE.want || AS.want)) return protocolExit();
   const eyeWant = thirdEyeWant(raw);
   if (eyeWant) return thirdEyeReply(eyeWant);
   const astro = astroWant(raw);
@@ -5859,7 +6881,7 @@ function answer(raw){
   }
   if (/respon|replied|reply|positive|negative|neutral/.test(q)){
     const resp = P.mgrs.filter(m => m.lastResp); const c = { pos:0, neu:0, neg:0 }; resp.forEach(m => c[m.lastResp.t]++);
-    if (!resp.length) return { text:"No responses logged yet. Use + = \u2212 on a manager in Reach out today on the Dashboard as they come in.", acts:[{ label:"Open the Dashboard", view:"dashboard" }] };
+    if (!resp.length) return { text:"No responses logged yet. Use + = \u2212 on a manager in the To Do List on the Dashboard as they come in.", acts:[{ label:"Open the Dashboard", view:"dashboard" }] };
     const last = resp.sort((a, b) => (b.lastResp.ts || 0) - (a.lastResp.ts || 0))[0];
     return { text:`${c.pos} positive, ${c.neu} neutral, ${c.neg} negative. The latest was ${mgrLabel(last)} (${RESP_LABEL[last.lastResp.t].toLowerCase()}), ${ago(daysSince(last.lastResp.d))}.`, acts:[{ label:"See responses", view:"dashboard", scroll:"#d-resp" }] };
   }
@@ -5949,8 +6971,8 @@ else { micBtn.disabled = true; micBtn.title = "This browser can't take voice inp
 
 /* =========================================================
    THIRD EYE PROTOCOL
-   "Initiate the Third Eye Protocol" (typed or spoken, any capitals) turns the app into a psychedelic light theme;
-   "terminate third eye" brings it back. It stays on across reloads until it's terminated.
+   "Third Eye" or "Initiate the Third Eye Protocol" (typed or spoken, any capitals) turns the app into a psychedelic light theme;
+   "exit" or "terminate third eye" brings it back. It stays on across reloads until it's ended.
    The look is the THIRD EYE block in the stylesheet; her mind's side of it is in makeMind.
    ========================================================= */
 const TE_EYE = /\b(?:third|3rd|thurd) ?(?:eye|aye|i)\b|\bthirdeye\b/;
@@ -5974,13 +6996,13 @@ function clearStage(){
 // Her side of it. The words on screen give the off-switch; she doesn't say it out loud, so the mic can't catch her switching herself off.
 function thirdEyeReply(want){
   const fn = firstName(), on = want === "on";
-  if (on === TE.want) return on ? { text:'It\'s already open. Say or type "terminate third eye" when you\'ve seen enough.', say:"It's already open." } : { text:"It's already closed. Nothing to terminate." };
+  if (on === TE.want) return on ? { text:'It\'s already open. Say or type "exit" when you\'ve seen enough.', say:"It's already open." } : { text:"It's already closed. Nothing to terminate." };
   TE.want = on; store.set("md.thirdeye", on);
   if (on && AS.want){ AS.want = false; store.set("md.astro", false); }
   clearStage();
   tuck();
   if (!TE.busy) teRun();
-  return on ? { text:'Third Eye Protocol initiated. Say or type "terminate third eye" to come back.', say:"Third Eye Protocol initiated." }
+  return on ? { text:'Third Eye Protocol initiated. Say or type "exit" to come back.', say:"Third Eye Protocol initiated." }
     : { text:`Third Eye closed. Back to work${fn ? ", " + fn : ""}.` };
 }
 function teApply(on){
@@ -6129,13 +7151,16 @@ document.addEventListener("keydown", e => {
   if (e.target.closest && e.target.closest("input,textarea,select,[contenteditable]")) return;
   if (e.timeStamp - teKeyAt > 2500) teKeys = "";
   teKeyAt = e.timeStamp;
+  // The space in "third eye" shouldn't press a selected button or scroll the page
+  if (e.key === " " && /(third|3rd)$/i.test(teKeys)) e.preventDefault();
   teKeys = (teKeys + e.key).slice(-60);
+  const exit = /(?:^|[^a-z0-9])exit$/i.test(teKeys) && (TE.want || AS.want);
   const astro = /astro( protocol)?$/i.test(teKeys);
-  if (!astro && !/(third ?eye|3rd ?eye)( protocol)?$/i.test(teKeys)) return;
-  const want = astro ? astroWant(teKeys) : thirdEyeWant(teKeys);
+  if (!exit && !astro && !/(third ?eye|3rd ?eye)( protocol)?$/i.test(teKeys)) return;
+  const want = exit ? "off" : astro ? astroWant(teKeys) : thirdEyeWant(teKeys);
   if (!want) return;
   teKeys = "";
-  const r = astro ? astroReply(want) : thirdEyeReply(want);
+  const r = exit ? protocolExit() : astro ? astroReply(want) : thirdEyeReply(want);
   if (panel.hidden){ say(r.say || r.text); toast(r.text); } else herSay(r);
 });
 /* The garden: flat flowers with thick black outlines, like a 60s poster, all drawn here so there's nothing to download */
@@ -6762,8 +7787,8 @@ function barryArrive(){
 
 /* =========================================================
    ASTRO PROTOCOL
-   "Initiate the Astro Protocol" (typed or spoken, any capitals) takes the lift down to the conversation pit;
-   "terminate astro" comes back up. It stays on across reloads until it's terminated, and only one protocol runs at a time.
+   "Astro" or "Initiate the Astro Protocol" (typed or spoken, any capitals) takes the lift down to the conversation pit;
+   "exit" or "terminate astro" comes back up. It stays on across reloads until it's ended, and only one protocol runs at a time.
    The look is the ASTRO block in the stylesheet; her mind's side of it (the fire) is in makeMind. Everything is drawn here, so there's nothing to download.
    ========================================================= */
 const AS_WORD = /\b(?:astro|astral|austro)\b/;
@@ -6773,19 +7798,21 @@ function astroWant(text){
   if (!m || s.split(" ").length > 14) return null;
   const before = s.slice(0, m.index), after = s.slice(m.index + m[0].length).trim();
   if (TE_OFF.test(before) && /^(protocol)?$/.test(after) || /^(protocol )?(off|terminate)$/.test(after)) return "off";
-  if (TE_ON.test(before) && /^(protocol)?$/.test(after) || /^(the |piper |hey |ok |okay )*$/.test(before) && after === "protocol") return "on";
+  if (TE_ON.test(before) && /^(protocol)?$/.test(after) || /^(the |piper |hey |ok |okay )*$/.test(before) && /^(protocol)?$/.test(after)) return "on";
   return null;
 }
+// "exit" on its own ends whichever protocol is running
+function protocolExit(){ return AS.want ? astroReply("off") : thirdEyeReply("off"); }
 // As with the Third Eye, she doesn't say the off-switch out loud, so the mic can't catch her switching herself off
 function astroReply(want){
   const fn = firstName(), on = want === "on";
-  if (on === AS.want) return on ? { text:'You\'re already down here. Say or type "terminate astro" when it\'s time to head back up.', say:"You're already down here." } : { text:"We're not down there. Nothing to terminate." };
+  if (on === AS.want) return on ? { text:'You\'re already down here. Say or type "exit" when it\'s time to head back up.', say:"You're already down here." } : { text:"We're not down there. Nothing to terminate." };
   AS.want = on; store.set("md.astro", on);
   if (on && TE.want){ TE.want = false; store.set("md.thirdeye", false); }
   clearStage();
   tuck();
   if (!AS.busy) asRun();
-  return on ? { text:'Astro Protocol initiated. Mind the step, and get comfortable. Say or type "terminate astro" to head back up.', say:"Astro Protocol initiated. Mind the step, and get comfortable." }
+  return on ? { text:'Astro Protocol initiated. Mind the step, and get comfortable. Say or type "exit" to head back up.', say:"Astro Protocol initiated. Mind the step, and get comfortable." }
     : { text:`Back upstairs. Back to work${fn ? ", " + fn : ""}.` };
 }
 function asFonts(){
@@ -6843,7 +7870,7 @@ async function asRun(){
         BOT.hold = false;
         if (!AS.on) return;
         if (ASND.want) await botErrand(true); else botPlace();
-        if (AS.on) toast('I\'m Astro. Say or type "terminate astro" to head back up.');
+        if (AS.on) toast('I\'m Astro. Say or type "exit" to head back up.');
       }, 1000);
     }
   }
@@ -7423,7 +8450,7 @@ const CHORES = {
     await botMove(BOT.x, 0, 300);
   },
   async dust(job){
-    const el = BOT.el, all = [...$(CUR_VIEW === "home" ? "#home-go" : "#dash-hero .orbit").querySelectorAll(".fly button")].slice(0, 6);
+    const el = BOT.el, all = [...$(CUR_VIEW === "home" ? "#home-go" : "#dash-hero .orbit").querySelectorAll(".fly:not(:nth-child(7)) button")];
     const picks = all.sort(() => Math.random() - .5).slice(0, 2);
     el.classList.add("flying", "tool-duster");
     for (const b of picks){
@@ -7474,7 +8501,7 @@ const CHORES = {
 function botChoreClear(){ BOT.el.classList.remove("flying", "reach", "dusting", "vacuuming", "rolling", "face-r", "tool-duster"); BOT.el.style.transitionTimingFunction = ""; }
 function botChoreStop(){ if (!BOT.chore) return; BOT.chore.stop = true; BOT.chore = null; botChoreClear(); }
 // His coffee: he hovers up to the table and sets it down, or comes back and picks it up
-function botTable(){ const f = $(CUR_VIEW === "home" ? "#home-go" : "#dash-hero .orbit").querySelector(".fly:last-child"); return f && f.getBoundingClientRect().width ? f : null; }
+function botTable(){ const f = $(CUR_VIEW === "home" ? "#home-go" : "#dash-hero .orbit").querySelector(".fly:nth-child(7)"); return f && f.getBoundingClientRect().width ? f : null; }
 function botCupGone(){ if (BOT.cup){ BOT.cup.remove(); BOT.cup = null; } BOT.coffee = true; BOT.el.classList.remove("no-coffee"); }
 async function botCoffee(job, take){
   const el = BOT.el, k = botK(), table = botTable(); if (!table) return;
@@ -7543,15 +8570,16 @@ function asBot(on){
     <text class="as-t-the" x="320" y="96" text-anchor="middle">the</text><text class="as-t-astro" x="320" y="214" text-anchor="middle">Astro</text><text class="as-t-proto" x="320" y="282" text-anchor="middle">PROTOCOL</text></svg>`;
   $("#as-lift").innerHTML = `<div class="as-door l">${sign}</div><div class="as-door r">${sign}</div>
     <svg class="as-dial" viewBox="0 0 340 136"><path d="M6,130A164,124 0 0 1 334,130Z" fill="#F7E7C6" stroke="#6E4A17" stroke-width="5"/><path d="M34,126A136,98 0 0 1 306,126" fill="none" stroke="#6E5A3C" stroke-width="1.5" stroke-dasharray="2 9"/>
-    <text x="16" y="108" data-a="-68" transform="rotate(-48 50 104)">LOBBY</text><text x="170" y="42" data-a="0" text-anchor="middle">MEZZ</text><text x="264" y="108" data-a="68" transform="rotate(48 290 104)">THE PIT</text>
+    <path id="as-floors" d="M26,130A144,107 0 0 1 314,130" fill="none"/><text data-a="-68" text-anchor="middle"><textPath href="#as-floors" startOffset="17%">LOBBY</textPath></text><text data-a="0" text-anchor="middle"><textPath href="#as-floors" startOffset="50%">MEZZ</textPath></text><text data-a="68" text-anchor="middle"><textPath href="#as-floors" startOffset="83%">THE PIT</textPath></text>
     <g class="as-needle"><path d="M167,112L170,44L173,112Z" fill="#B5341C"/><path d="M170,30Q172,42 184,44Q172,46 170,58Q168,46 156,44Q168,42 170,30Z" fill="#FF9A2E"/></g><circle cx="170" cy="112" r="11" fill="#6E4A17"/><circle cx="170" cy="112" r="5" fill="#EFD389"/></svg>`;
 })();
 
 /* =========================================================
    DEMO TOUR
-   Sign in as "Demo" and PIPER walks through the features people use most, on made-up data:
-   RIG with an example job description, a Middleton entry, the Dashboard, Candidate Match with an
-   example resume, Candidate Notes, Job Spec, Ad Stalk and talking to her. Next skips ahead.
+   Sign in as "Demo" and PIPER walks through the regular interface on a made-up desk: her home
+   screen, the Dashboard (to dos, calendar and alerts, Outlook copies, KPIs, every job), Middleton
+   (the sheet reader and a new entry), then one job from Ad Stalk through Job Spec, RIG, Sourcing,
+   Candidate Match and Notes, and talking to her. Nothing is copied to the clipboard. Next skips ahead.
    ========================================================= */
 const DEMO_JD = `Senior Manager, Quality Assurance
 Location: Boston, MA (Hybrid)
@@ -7599,6 +8627,24 @@ Quality Assurance Manager | Clinical-stage biotech, Waltham, MA | 2014 to 2019
 EDUCATION
 B.S. Biology
 Lean Six Sigma Green Belt`;
+const DEMO_AD = `Our client, a growing biotech in Greater Boston, is hiring a Senior Manager of Quality Assurance.
+Lead a team of 6 supporting GMP manufacturing for its monoclonal antibody pipeline. Own deviations, CAPA and change control, and host FDA inspections.
+Posted by Brightpath Talent on behalf of a confidential client.`;
+const DEMO_CALL = `Pat: We need someone who has hosted an FDA inspection, that's the big one. The team is six people, mostly at the CDMO.
+Me: Why is the role open?
+Pat: We're filing our BLA next year and my QA lead was promoted. I'd like someone in seat by March.
+Me: What's the budget?
+Pat: 150 to 175 base plus bonus. Hybrid, three days in Boston.`;
+const DEMO_BOOL = `("Quality Assurance" OR QA) AND ("Senior Manager" OR Manager OR "Associate Director") AND (GMP OR cGMP) AND (biologics OR "monoclonal antibodies" OR biotech) AND (CAPA OR deviations OR "change control") NOT (intern OR contractor)`;
+const DEMO_QUESTIONS = `1. How many FDA inspections have you hosted, and how did they go?
+2. How large is the QA team you lead today?
+3. Which parts of batch record review and lot disposition do you own?
+4. What's your experience with Veeva Vault?
+5. Are you open to three days a week in Boston?`;
+// One more day from the sheet, laid out the way the real one is: the date on top, then numbered boxes
+const demoSheet = () => [new Date().toLocaleDateString("en-US"),
+  "1\tVireo Medical\tField Clinical Engineer", "\tDirector, Field Clinical\tJune Hartley\tjune.hartley@example.com\t(415) 555-0137", "",
+  "2\tSable Creek Labs\tAnalytical Development Manager", "\tVP, CMC\tIan Mercer\tian.mercer@example.com\t(303) 555-0148"].join("\n");
 
 const TOUR = { i:0, run:0, skip:false, finish:null };
 const pause = ms => new Promise(r => setTimeout(r, TOUR.skip ? 0 : ms));
@@ -7743,30 +8789,108 @@ async function closeWin(words){
   }
   if (words) stream(words, 14);
 }
+// Her real home screen, for the opening line. Phones get the plain stage: their grid of tiles leaves no room
+const homeFits = () => innerWidth >= 1000 && innerHeight >= 560;
+async function homeOn(){
+  await closeWin();
+  const body = document.body, dm = $(".dm");
+  body.classList.add("dh"); showView("home");
+  dm.style.transition = "none";
+  const r = $("#mind").getBoundingClientRect();
+  dm.style.left = r.left + r.width / 2 + "px"; dm.style.top = r.top + r.height / 2 + "px"; dm.style.width = r.width + "px";
+  void dm.offsetWidth; dm.style.transition = "";
+  flyIn();
+}
+// The tiles fall into her, and she moves over to make room for the page window
+async function homeOff(){
+  const body = document.body, dm = $(".dm"); if (!body.classList.contains("dh")) return;
+  const [mx, my] = mindXY(), flies = [...document.querySelectorAll("#home-go .fly")];
+  flies.forEach(f => { const r = f.getBoundingClientRect(); f.classList.add("dh-in"); f.style.transform = `translate(${mx - r.left - r.width / 2}px,${my - r.top - r.height / 2}px) scale(.1)`; });
+  await pause(420);
+  flies.forEach(f => { f.classList.remove("dh-in"); f.style.transform = ""; });
+  body.classList.remove("dh"); dm.style.left = dm.style.top = dm.style.width = "";
+}
+// Clears whatever the last step left open
+function tourTidy(){
+  if (jr.open) jr.close();
+  $("#alerts").innerHTML = ""; ALERTS_ON.clear();
+  if ($("#d-job-q").value){ $("#d-job-q").value = ""; if (!$("#view-dashboard").hidden) renderJobs(pipeline()); }
+  setMiOpen(false);
+}
+const anA = n => /^(8|11|18)/.test(String(n)) ? "an" : "a";
 const DEMO_STEPS = [
-  { say:"Hi, I'm PIPER, your Personal Intelligence for Prospecting, Execution and Recruitment. Here's the quick tour, on made-up data.",
+  { home:true, say:"Hi, I'm PIPER, your Personal Intelligence for Prospecting, Execution and Recruitment. Here's the quick tour, on made-up data.",
     bits:["PERSONAL", "INTELLIGENCE", "PROSPECTING", "EXECUTION", "RECRUITMENT"] },
-  { view:"boolean", el:"#rig-jd", say:"RIG: role, industry, location and the job description, then one click to ChatGPT for a Boolean.",
-    bits:["BOOLEAN", "QA MANAGER", "BIOTECH", "BOSTON, MA", "GMP", "CAPA", "VEEVA VAULT", "OR", "NOT"],
-    act: async () => { await typeInto("#rig-role", "Senior Manager, Quality Assurance"); await typeInto("#rig-industry", "Biotech"); await typeInto("#rig-geo", "Boston, MA"); pasteInto("#rig-jd", DEMO_JD); } },
-  { view:"middleton", el:"#m-form", say:"Middleton Method: company, position and hiring manager. Tick Bullhorn and save.",
+  { view:"dashboard", say:"The Dashboard is your morning: the counts, who to call first, and my read on your desk.", bits:["TO DO", "CALL LIST", "FOLLOW UP", "REPLIED +", "TODAY"],
+    act: async () => { await pause(1600); tourSpot("#d-todo"); await pause(2400); tourSpot("#d-read"); } },
+  { view:"dashboard", el:"#d-cal-panel", say:"Your calendar: I'll alert you before each meeting, and remind you to log your KPIs before you leave.", bits:["CALENDAR", "INTAKE CALL", "ALERT", "10 MIN"],
+    act: async () => {
+      await pause(1800);
+      const o = meetUpcoming(1)[0]; if (!o) return;
+      showAlert({ id:"demo", quiet:true, title:`${o.m.title}, ${inMins(o.at) || "at " + fmtClock(o.m.time)}`, body:`${fmtClock(o.m.time)} with ${o.m.who}`, acts:[{ label:"Snooze 5 min" }, { label:"Dismiss" }] });
+    } },
+  { view:"dashboard", el:"#d-ci-panel", say:"Manager Check In and Terms Amendments copy straight into Outlook, already formatted.", bits:["MONDAY EMAIL", "OUTLOOK", "TERMS", "APTOS 12"],
+    act: async () => { await pause(2800); unfold($("#d-terms-panel")); tourSpot("#d-terms-panel"); } },
+  { view:"dashboard", el:"#d-kpi-form", say:"Log your five KPIs and see them against your targets.", bits:["KPI", "CALLS", "BEFORE 9AM", "PHONE TIME"],
+    act: async () => {
+      for (const [id, v] of [["calls", "33"], ["early", "6"], ["emails", "31"], ["phone", "68"], ["mgrs", "4"]]) await typeInto("#kpi-" + id, v);
+      await pause(200); $("#d-kpi-form").requestSubmit(); await pause(200); tourSpot("#d-kpi-grid");
+    } },
+  { view:"dashboard", el:"#d-oldest", say:"Job age, manager replies, live medtech news, and who just got funded.", bits:["JOB AGE", "REPLIES", "MEDTECH NEWS", "FUNDING"],
+    act: async () => { await pause(1500); tourSpot("#d-resp"); await pause(1500); tourSpot("#d-news"); } },
+  { view:"dashboard", el:"#d-jobs-panel", say:"Every job in one place, searchable. Click one for its contacts, dates and candidates, and edit anything.", bits:["EVERY JOB", "SEARCH", "CONTACTS", "CANDIDATES"],
+    act: async () => {
+      await pause(900); await typeInto("#d-job-q", "northwind"); await pause(900);
+      const j = pipeline().jobs.find(x => /northwind/i.test(x.company)); if (j) openJob(j.key);
+      await pause(1600);
+      const dates = [...document.querySelectorAll("#jr-body .jr-sec")].find(x => /dates/i.test(x.textContent));
+      if (dates) jr.scrollTo({ top:dates.offsetTop - 12, behavior:REDUCED ? "auto" : "smooth" });
+    } },
+  { view:"middleton", el:"#mi", say:"Middleton Method: paste your Excel sheet and I read it, merged with what's already here.", bits:["EXCEL", "PASTE", "JOBS", "MANAGERS", "DATES"],
+    act: async () => { setMiOpen(true); await pause(700); pasteInto("#mi-paste", demoSheet()); await pause(700); runImport(gridFromTSV(miPaste.value)); } },
+  { view:"middleton", el:"#m-form", say:"Or log one by hand: company, position, hiring manager. Tick Bullhorn, save, and it copies straight into Excel.",
     bits:["ACME BIOLOGICS", "PAT RIVERA", "VP OF QUALITY", "BULLHORN", "HIRING MANAGER"],
     act: async () => {
-      await typeInto("#m-company", "Acme Biologics"); await typeInto("#m-position", "Senior Manager, Quality Assurance");
+      LOG = LOG.filter(x => x.company !== "Acme Biologics");
+      await typeInto("#m-company", "Acme Biologics"); await pause(350); await typeInto("#m-position", "Senior Manager, Quality Assurance"); await pause(350);
       await typeInto("#mg0-title", "VP of Quality"); await typeInto("#mg0-name", "Pat Rivera"); await typeInto("#mg0-phone", "6175550199");
+      await pause(900);
       const b = $("#m-bullhorn"); if (!b.checked){ b.checked = true; b.dispatchEvent(new Event("change", { bubbles:true })); }
+      await pause(1200); $("#m-form").requestSubmit(); await pause(200); tourSpot("#m-log");
     } },
-  { view:"middleton", el:"#m-log", say:"Saved. It copies straight into your Excel tracker.", bits:["SAVED", "EXCEL", "TRACKER"], act: async () => { $("#m-form").requestSubmit(); } },
-  { view:"dashboard", el:"#d-kpi-form", say:"Dashboard: today's calls, job age, replies and your KPIs.", bits:["KPI", "CALLS", "REPLIES", "JOB AGE", "TODAY"] },
-  { view:"match", el:"#x-resume", say: () => `Candidate Match: paste a resume, get the keyword score. Jordan's a ${scoreMatch(jdEl.value, DEMO_RESUME).score}% match.`,
-    bits:["JORDAN ELLIS", "RESUME", "MATCH", "13 YRS GMP", "FDA", "CAPA"],
-    act: async () => { await pause(300); pasteInto("#x-resume", DEMO_RESUME); } },
-  { view:"notes", el:"#notes-name", say:"Candidate Notes: your intake for the candidate call, ready for the CRM.", bits:["INTAKE", "CRM", "JORDAN ELLIS", "NOTES"],
-    act: async () => { await typeInto("#notes-name", "Jordan Ellis"); } },
+  { view:"stalk", el:"#s-jd", say:"Ad Stalk finds the real client behind an agency's ad.", bits:["AGENCY AD", "END CLIENT", "WHO IS IT", "SEARCH"],
+    act: async () => { await typeInto("#s-agency", "Brightpath Talent"); pasteInto("#s-jd", DEMO_AD); } },
   { view:"spec", el:"#spec-transcript", say:"Job Spec: paste the hiring manager call and ChatGPT fills in what you missed.", bits:["TRANSCRIPT", "SPEED SPEC", "CHATGPT", "MONEY", "AUTHORITY", "NEED"],
-    act: async () => { if (NOTES.spec._open !== "speed") $('#spec-form [data-panel="speed"]')?.click(); } },
-  { view:"stalk", el:"#s-jd", say:"Ad Stalk finds the real client behind an agency's ad.", bits:["AGENCY AD", "END CLIENT", "WHO IS IT", "SEARCH"] },
-  { dock:true, el:"#piper-dock", say:"And ask me anything, by voice or chat, right here.", bits:["VOICE", "CHAT", "ASK"] },
+    act: async () => { if (NOTES.spec._open !== "speed") $('#spec-form [data-panel="speed"]')?.click(); await pause(500); pasteInto("#spec-transcript", DEMO_CALL); tourSpot("#spec-transcript"); } },
+  { view:"boolean", el:"#rig-jd", say:"RIG: role, industry, location and the job description, then one click to ChatGPT for a Boolean.",
+    bits:["BOOLEAN", "QA MANAGER", "BIOTECH", "BOSTON, MA", "GMP", "CAPA", "VEEVA VAULT", "OR", "NOT"],
+    act: async () => {
+      await typeInto("#rig-role", "Senior Manager, Quality Assurance"); await typeInto("#rig-industry", "Biotech"); await typeInto("#rig-geo", "Boston, MA"); pasteInto("#rig-jd", DEMO_JD);
+      await pause(1200); tourSpot("#g-answer"); pasteInto("#g-answer", DEMO_BOOL); await pause(500); $("#g-use").click();
+    } },
+  { view:"source", el:"#so-recs", say:"Candidate Sourcing: one card for each person you find, then copy them straight into your sourcing sheet.", bits:["SOURCING", "RILEY CHEN", "GOOD FIT", "NEED TO CALL", "EXCEL"],
+    act: async () => {
+      const r = soView().find(x => !soHas(x)); if (!r) return;
+      await pause(1300);
+      const f = n => `#so-${r.id}-${n}`;
+      document.querySelector(f("name")).scrollIntoView({ behavior:REDUCED ? "auto" : "smooth", block:"center" });
+      await typeInto(f("name"), "Jordan Ellis"); await typeInto(f("phone"), "(617) 555-0142");
+      await typeInto(f("email"), "jordan.ellis@example.com");
+      document.querySelectorAll(`[data-id="${r.id}"] [data-b="need"],[data-id="${r.id}"] [data-b="good"]`).forEach(b => { if (!b.checked) b.click(); });
+    } },
+  { view:"match", el:"#x-resume", say: () => { const n = scoreMatch(jdEl.value, DEMO_RESUME).score; return `Candidate Match: paste a resume, get the keyword score. Jordan's ${anA(n)} ${n}% match, with five proof points drafted for your client.`; },
+    bits:["JORDAN ELLIS", "RESUME", "MATCH", "13 YRS GMP", "FDA", "CAPA"],
+    act: async () => { await pause(300); pasteInto("#x-resume", DEMO_RESUME); await pause(2200); tourSpot("#x-keywords"); await pause(2600); tourSpot("#x-bullets"); } },
+  { view:"notes", el:"#notes-name", say:"Candidate Notes: your intake for the call and your screening questions, numbered to read off, ready for the CRM.", bits:["INTAKE", "SCREENING", "CRM", "JORDAN ELLIS"],
+    act: async () => { await typeInto("#notes-name", "Jordan Ellis"); await pause(1000); setScrOpen(true); pasteInto("#scr-q", DEMO_QUESTIONS); tourSpot("#scr"); } },
+  { dock:true, say:"And just ask me, by voice or chat: who to call, the short version of a resume, or take me to any page.", bits:["VOICE", "CHAT", "ASK"],
+    act: async () => {
+      ppLog.innerHTML = ""; openPanel(true, true);
+      for (const q of ["Who should I call first?", "Summarize the resume"]){
+        await pause(1500); addMsg("me", esc(q)); await pause(350); herSay(answer(q), false); await pause(1600);
+      }
+      await pause(1400);
+    } },
   { say:"That's it. Exit the demo and sign in with your name to start.", bits:["READY"] }
 ];
 async function runTour(){
@@ -7775,14 +8899,16 @@ async function runTour(){
   for (TOUR.i = 0; TOUR.i < DEMO_STEPS.length; TOUR.i++){
     const s = DEMO_STEPS[TOUR.i]; TOUR.skip = false;
     $("#tour-n").textContent = `${TOUR.i + 1} / ${DEMO_STEPS.length}`;
-    tuck(); openPanel(false, true); tourSpot(null);
+    tuck(); openPanel(false, true); tourSpot(null); tourTidy();
     document.body.classList.toggle("dock", !!s.dock);
     const line = typeof s.say === "function" ? s.say() : s.say;
     // She starts talking as the page streams in; the typing waits for the page to land
     await Promise.all([
       narrate(line),
       (async () => {
-        if (s.view) await unlock(s.view, s.bits); else await closeWin(s.bits);
+        if (s.home && homeFits()){ await homeOn(); stream(s.bits, 14); }
+        else if (s.view){ await homeOff(); await unlock(s.view, s.bits); }
+        else { await homeOff(); await closeWin(s.bits); }
         if (run !== TOUR.run) return;
         tourSpot(s.el);
         if (s.act) await s.act();

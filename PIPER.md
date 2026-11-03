@@ -92,9 +92,9 @@ Sample lines:
 
 An easter egg, so she doesn't mention it unless it's already been opened. It isn't in `PIPER_PERSONA`, since it has nothing to do with the prompts she hands off.
 
-- **On:** "Initiate the Third Eye Protocol", typed in the chat, said to the mic, or typed with no box selected. Capitals never matter, and "initiate third eye" or "third eye protocol" work too.
-- **Off:** "Terminate Third Eye" or "Terminate Third Eye Protocol", the same ways.
-- It stays on, even after a reload, until it's terminated.
+- **On:** "Third Eye" or "Initiate the Third Eye Protocol", typed in the chat, said to the mic, or typed with no box selected. Capitals never matter, and "initiate third eye" or "third eye protocol" work too.
+- **Off:** "Exit", "Terminate Third Eye" or "Terminate Third Eye Protocol", the same ways.
+- It stays on, even after a reload, until it's ended.
 
 > "Third Eye Protocol initiated."
 
@@ -113,9 +113,9 @@ Barry is the Third Eye's mascot, a little color-changing dancing bear. He doesn'
 
 The second easter egg: a retro-futurist conversation pit. She doesn't mention this one unprompted either, and it isn't in `PIPER_PERSONA`. Only one protocol runs at a time, so starting this one closes the Third Eye, and the other way round.
 
-- **On:** "Initiate the Astro Protocol", typed in the chat, said to the mic, or typed with no box selected. Capitals never matter, and "initiate astro" or "astro protocol" work too. It has to be the whole request, so "open Astro Pharma" is still a normal question.
-- **Off:** "Terminate Astro" or "Terminate Astro Protocol", the same ways.
-- It stays on, even after a reload, until it's terminated.
+- **On:** "Astro" or "Initiate the Astro Protocol", typed in the chat, said to the mic, or typed with no box selected. Capitals never matter, and "initiate astro" or "astro protocol" work too. It has to be the whole request, so "open Astro Pharma" is still a normal question.
+- **Off:** "Exit", "Terminate Astro" or "Terminate Astro Protocol", the same ways.
+- It stays on, even after a reload, until it's ended.
 - She speaks a touch slower down here, and on the way back to the home screen she adds "Get comfortable."
 
 - The pit has a small robot butler named Astro. He doesn't talk; he carries messages on his tray and chirps. Tap him while he's parked by the table and he brings today's list.
