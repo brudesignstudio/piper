@@ -555,7 +555,8 @@ main > section[role="tabpanel"]:not(.home){min-height:100vh;min-height:100dvh}
 /* Middleton: the pasted-sheet reader */
 .mi{margin-bottom:24px;background:var(--surface)}
 .mi .spec-body{display:grid;gap:16px}
-#mi-paste{min-height:140px;font-family:var(--f-mono);font-size:12.5px;white-space:pre;overflow-wrap:normal;overflow-x:auto}
+#mi-paste,#mi-new-paste{min-height:140px;font-family:var(--f-mono);font-size:12.5px;white-space:pre;overflow-wrap:normal;overflow-x:auto}
+#mi-paste{height:220px;cursor:default}
 .mi-tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
 @media (max-width:620px){.mi-tiles{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .mi-tiles .tile{background:var(--bg)}
@@ -649,13 +650,9 @@ span.tick{cursor:default}
 .cal-count{font-style:normal;font-variant-numeric:tabular-nums;color:var(--accent)}
 .cal-count.late{color:var(--warn)}
 /* New Entry, on Paste your sheet */
-.mi-newbar{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:6px 12px;align-items:end;padding:12px 14px;margin-bottom:12px;border:1px solid var(--accent);border-radius:10px}
-.mi-newbar[hidden]{display:none}
-.mi-newbar b{grid-column:1/-1;font-size:14px}
-.mi-newbar p{margin:0;font-size:12.5px;color:var(--muted);line-height:1.45}
-.mi-newbar .field{margin:0}
-.mi-newbar .field label{font-size:12px}
-@media (max-width:620px){.mi-newbar{grid-template-columns:minmax(0,1fr)}}
+.mi-new-box{display:grid;gap:10px;padding:12px 14px;margin-bottom:14px;border:1px solid var(--accent);border-radius:10px}
+.mi-new-box[hidden]{display:none}
+.mi-new-box .field{margin:0}
 /* Candidates on Paste your sheet can be removed */
 .mi-cand-h{display:flex;align-items:start;gap:8px}
 .mi-cand-h b{flex:1;min-width:0;overflow-wrap:anywhere}
@@ -2103,16 +2100,18 @@ html.astro ::selection{background:#F7A134;color:#2A1208}
       <div class="spec-panel mi" id="mi">
         <button type="button" class="spec-toggle" id="mi-toggle" aria-expanded="false" aria-controls="mi-body"><span class="spec-name">Paste your sheet</span><span class="spec-count" id="mi-count"></span><span class="spec-chev" aria-hidden="true"></span></button>
         <div class="spec-body" id="mi-body" hidden>
-          <div class="mi-newbar" id="mi-newbar" hidden>
-            <b>New entry</b>
-            <p>Paste the day's rows below. They add to what's already here, and any row without a date of its own gets this one.</p>
-            <div class="field"><label for="mi-new-date">Date for these rows</label><input type="date" id="mi-new-date"></div>
-            <button type="button" class="btn ghost" id="mi-new-cancel">Cancel</button>
+          <div class="mi-new-box" id="mi-new-box" hidden>
+            <div class="field">
+              <label for="mi-new-paste">New entry: copy the rows from your Excel sheet, with the date above them, and paste them here</label>
+              <textarea id="mi-new-paste" spellcheck="false" placeholder="Select the rows in Excel, copy, click here and paste"></textarea>
+            </div>
+            <p class="mi-warn" id="mi-new-msg" role="alert" hidden></p>
+            <div class="row"><button type="button" class="btn primary" id="mi-new-save">Save</button><button type="button" class="btn ghost" id="mi-new-cancel">Cancel</button></div>
           </div>
           <div class="field">
-            <label for="mi-paste">Copy the rows from your Excel tracking sheet and paste them here</label>
-            <textarea id="mi-paste" spellcheck="false" placeholder="Select the rows in Excel, copy, click here and paste"></textarea>
-            <span class="hint">It reads it as soon as you paste: every job, every hiring manager once, the candidates, and every date it finds. Dates in a manager's row count for that manager; dates on the company row count for everyone on that job.</span>
+            <label for="mi-paste">Everything from your sheet so far</label>
+            <textarea id="mi-paste" readonly spellcheck="false" placeholder="Nothing here yet. Press New entry, then paste your rows from Excel."></textarea>
+            <span class="hint">Every job, every hiring manager once, the candidates, and every date, read from the sheet itself. Dates in a manager's row count for that manager; dates on the company row or above the boxes count for everyone on that job.</span>
           </div>
           <div class="row"><button type="button" class="btn primary" id="mi-new">New entry</button><button type="button" class="btn" id="mi-read">Read it again</button><span class="grow"></span><button type="button" class="btn ghost" id="mi-clear">Clear the paste</button></div>
           <div id="mi-out"></div>
@@ -3220,8 +3219,9 @@ $("#m-del-all").addEventListener("click", e => {
   b.dataset.armed = ""; b.textContent = "Delete all";
   const keep = LOG.filter(x => !isExampleEntry(x)).map(x => { const d = entryDate(x); return cleanJob({ company:x.company, position:x.position, link:x.link, terms:x.terms, candidates:x.candidates || [], managers:(x.managers || []).map(m => ({ ...m, key:mgrKey(m, x.company), dates:[] })), dates:d ? [d] : [] }); }).filter(Boolean);
   if (keep.length){
-    IMPORT = { ...(IMPORT || { v:2, at:Date.now(), mode:"your saved entries", text:"", days:[] }), jobs:mergeJobs(IMPORT?.jobs || [], keep) };
+    IMPORT = { ...(IMPORT || { at:Date.now(), mode:"your saved entries", text:"", days:[] }), v:3, jobs:mergeJobs(IMPORT?.jobs || [], keep), text:miJoin(IMPORT?.text, sheetTextOf(keep)) };
     store.set("md.import", IMPORT);
+    miPaste.value = IMPORT.text;
   }
   const editing = E.id && LOG.some(x => x.id === E.id);
   LOG = []; saveLog();
@@ -6149,7 +6149,7 @@ function goToKpis(){
 const mmDue = d => d.getDay() === 5 ? 15 * 60 + 15 : d.getDay() >= 1 && d.getDay() <= 4 ? 16 * 60 : null;
 function goToNewEntry(){
   showView("middleton");
-  setTimeout(() => { setMiOpen(true); miNewStart(isoToday()); spotlight($("#mi")); miPaste.focus({ preventScroll:true }); }, 150);
+  setTimeout(() => { miNewStart(); spotlight($("#mi")); miNewBox.scrollIntoView({ behavior:REDUCED ? "auto" : "smooth", block:"center" }); miNew.focus({ preventScroll:true }); }, 150);
 }
 // The alert cards are built here so the demo tour shows the same ones the real app does
 const mmAlert = () => ({ id:"mm", title:"Time to add today's Middleton Method", body:"Paste the day's entries in, so today's jobs, managers and dates are all counted.", speak:"Time to add today's Middleton Method entries.", acts:[
@@ -6640,7 +6640,7 @@ function mergeJobs(base, add){
   return [...map.values()];
 }
 // A sheet read before the dates and numbers were handled gets read again from its saved text, keeping the links that only the first read could see
-if (IMPORT && IMPORT.v !== 2){
+if (IMPORT && (IMPORT.v || 0) < 2){
   const again = IMPORT.text ? readSheet(gridFromTSV(IMPORT.text)) : { jobs:[] };
   if (again.jobs.length){
     const old = new Map((IMPORT.jobs || []).map(j => [jobKey(j.company, j.position), j]));
@@ -6650,47 +6650,98 @@ if (IMPORT && IMPORT.v !== 2){
   store.set("md.import", IMPORT);
 }
 
-const miPaste = $("#mi-paste"), miToggle = $("#mi-toggle");
+/* The one box: every paste, oldest first, a line of dashes between them. It can be read back, so a paste is kept as the words it came in.
+   Reading them one at a time keeps a date cell from one day off the rows of the next */
+const MI_SEP = "----------", MI_MAX = 400000;
+const miChunks = t => String(t || "").split(/\n-{10}\n/).map(x => x.trim()).filter(Boolean);
+function miJoin(text, more){
+  const all = [...miChunks(text), String(more || "").trim()].filter(Boolean).join(`\n${MI_SEP}\n`);
+  return all.length > MI_MAX ? all.slice(all.indexOf("\n", all.length - MI_MAX) + 1) : all;
+}
+// Jobs written back out the way the sheet has them, for anything whose original paste wasn't kept
+function sheetTextOf(jobs){
+  const us = iso => { const [y, m, d] = iso.split("-"); return `${+m}/${+d}/${y}`; }, days = new Map();
+  jobs.filter(j => j.company).forEach(j => {
+    const ds = [...new Set(j.dates || [])].sort(), day = ds[ds.length - 1] || "";
+    if (!days.has(day)) days.set(day, []);
+    days.get(day).push({ j, more:ds.slice(0, -1) });
+  });
+  // Undated ones first: a date cell counts for every row under it
+  return [...days.keys()].sort().map(day => {
+    const blocks = days.get(day).map(({ j, more }, i) => {
+      const cands = j.candidates || [], mgrs = j.managers || [];
+      const rows = [[i + 1, j.company, j.position, "", "", cands[0] || "", ...more.map(us)]];
+      for (let r = 0, n = Math.max(mgrs.length, cands.length - 1, j.terms ? 1 : 0); r < n; r++){
+        const m = mgrs[r] || {};
+        rows.push([r === 0 && j.terms ? "TERMS" : "", m.title || "", m.name || "", m.email || "", m.phone || "", cands[r + 1] || "", ...(m.dates || []).map(us)]);
+      }
+      return rows.map(c => c.join("\t")).join("\n");
+    }).join("\n\n");
+    return (day ? us(day) + "\n" : "") + blocks;
+  }).join("\n\n");
+}
+// Sheets saved when only the last paste was kept: whatever that text doesn't cover gets written into it, once
+if (IMPORT && IMPORT.v !== 3){
+  const seen = new Set(miChunks(IMPORT.text).flatMap(t => readSheet(gridFromTSV(t)).jobs.map(j => jobKey(j.company, j.position))));
+  const missing = (IMPORT.jobs || []).filter(j => !seen.has(jobKey(j.company, j.position)));
+  IMPORT = { ...IMPORT, v:3, text:missing.length ? miJoin(sheetTextOf(missing), IMPORT.text) : IMPORT.text };
+  store.set("md.import", IMPORT);
+}
+
+const miPaste = $("#mi-paste"), miToggle = $("#mi-toggle"), miNew = $("#mi-new-paste"), miNewBox = $("#mi-new-box");
 let miFilter = "";
 function setMiOpen(open){ miToggle.setAttribute("aria-expanded", String(open)); $("#mi-body").hidden = !open; $("#mi").classList.toggle("open", open); store.set("md.mi.open", open); }
 miToggle.addEventListener("click", () => setMiOpen(miToggle.getAttribute("aria-expanded") !== "true"));
-/* New entry: a clean box for one day's rows. Rows that carry no date of their own get its date */
-let MI_NEW = "";
-function miNewStart(day){
-  MI_NEW = day; miPaste.value = "";
-  $("#mi-new-date").value = day; $("#mi-newbar").hidden = false;
-  $("#mi-read").textContent = "Read it";
+/* New entry: its own box above the list. Nothing is read until Save */
+let MI_GRID = null;   // The table Excel put on the clipboard, which keeps merged cells and links, for as long as the box still holds that paste
+function miNewMsg(text){ const m = $("#mi-new-msg"); m.textContent = text || ""; m.hidden = !text; }
+function miNewStart(){ setMiOpen(true); miNewBox.hidden = false; $("#mi-new").hidden = true; miNewMsg(""); }
+function miNewEnd(){ miNewBox.hidden = true; $("#mi-new").hidden = false; miNew.value = ""; MI_GRID = null; miNewMsg(""); }
+$("#mi-new").addEventListener("click", () => { miNewStart(); miNew.focus(); });
+$("#mi-new-cancel").addEventListener("click", miNewEnd);
+function miTake(e){
+  const html = e.clipboardData?.getData("text/html"), text = e.clipboardData?.getData("text/plain") || "";
+  const grid = html && /<table/i.test(html) ? gridFromHTML(html) : null, plain = text || (grid ? grid.map(r => r.map(c => c.v).join("\t")).join("\n") : "");
+  e.preventDefault();
+  const empty = !miNew.value.trim();
+  if (empty) miNew.value = plain; else miNew.setRangeText(plain, miNew.selectionStart, miNew.selectionEnd, "end");
+  MI_GRID = empty && grid ? { grid, text:miNew.value } : null;
+  miNewMsg("");
 }
-function miNewEnd(){ MI_NEW = ""; $("#mi-newbar").hidden = true; $("#mi-read").textContent = "Read it again"; }
-$("#mi-new").addEventListener("click", () => { setMiOpen(true); miNewStart(isoToday()); miPaste.focus(); });
-$("#mi-new-date").addEventListener("change", e => { if (e.target.value) MI_NEW = e.target.value; else e.target.value = MI_NEW; });
-$("#mi-new-cancel").addEventListener("click", () => { miNewEnd(); miPaste.value = IMPORT?.text || ""; });
-function runImport(grid){
+miNew.addEventListener("paste", miTake);
+// The list only fills through New entry, so rows pasted straight into it go there
+miPaste.addEventListener("paste", e => { miNewStart(); miNew.focus(); miTake(e); toast("That's in New entry. Press Save to add it."); });
+function addToSheet(grid, text){
   const res = readSheet(grid);
-  if (!res.jobs.length){ renderImport(); $("#mi-out").insertAdjacentHTML("afterbegin", `<p class="mi-warn">I couldn't find any jobs in that. Copy the rows straight from the sheet, including the date above them and the entry numbers.</p>`); return; }
+  // The loosest layout takes any line as a company, so a stray word with nothing under it doesn't count as a job
+  if (!res.jobs.length || (res.mode.startsWith("blocks") && res.jobs.every(j => !j.position && !j.managers.length))) return false;
   res.jobs.forEach(j => j.managers.forEach(m => { m.key = mgrKey(m, j.company); }));
-  const stamp = MI_NEW;
-  if (stamp) res.jobs.forEach(j => { if (!j.dates.length && !j.managers.some(m => m.dates?.length)) j.dates = [stamp]; });
-  const days = [...new Set(res.jobs.flatMap(j => j.dates))].sort();
-  IMPORT = { v:2, at:Date.now(), mode:res.mode, jobs:mergeJobs(IMPORT?.jobs || [], res.jobs), text:miPaste.value.slice(0, 400000), days };
+  const days = [...new Set(res.jobs.flatMap(j => j.dates))].sort(), chunk = text.trim();
+  IMPORT = { v:3, at:Date.now(), mode:res.mode, jobs:mergeJobs(IMPORT?.jobs || [], res.jobs), text:miChunks(IMPORT?.text).includes(chunk) ? IMPORT.text : miJoin(IMPORT?.text, chunk), days };
   store.set("md.import", IMPORT);
-  if (days.includes(isoToday()) && !DEMO){ ALERTED.mm = isoToday(); saveAlerted(); }   // The 4pm reminder has nothing left to ask for
-  if (stamp) miNewEnd();
+  miPaste.value = IMPORT.text; miPaste.scrollTop = miPaste.scrollHeight;
+  if (days.includes(isoToday()) && !DEMO){ ALERTED.mm = isoToday(); saveAlerted(); }   // The end-of-day reminder has nothing left to ask for
   renderImport();
   if (!$("#view-dashboard").hidden) renderDash();
   const mc = new Set(res.jobs.flatMap(j => j.managers.map(m => m.key))).size;
-  toast(`Read ${res.jobs.length} job${res.jobs.length === 1 ? "" : "s"} and ${mc} manager${mc === 1 ? "" : "s"}${days.length ? `, ${days.length} date${days.length === 1 ? "" : "s"}` : ", no dates"}`);
+  toast(`Added ${res.jobs.length} job${res.jobs.length === 1 ? "" : "s"} and ${mc} manager${mc === 1 ? "" : "s"}${days.length ? `, ${days.length} date${days.length === 1 ? "" : "s"}` : ", no dates"}`);
+  return true;
 }
-miPaste.addEventListener("paste", e => {
-  const html = e.clipboardData?.getData("text/html"), text = e.clipboardData?.getData("text/plain");
-  if (html && /<table/i.test(html)){
-    e.preventDefault();
-    const grid = gridFromHTML(html);
-    miPaste.value = text || grid.map(r => r.map(c => c.v).join("\t")).join("\n");
-    runImport(grid);
-  } else setTimeout(() => runImport(gridFromTSV(miPaste.value)), 0);
+$("#mi-new-save").addEventListener("click", () => {
+  const text = miNew.value;
+  if (!text.trim()){ miNewMsg("Paste your rows first."); miNew.focus(); return; }
+  if (!addToSheet(MI_GRID?.text === text ? MI_GRID.grid : gridFromTSV(text), text)){ miNewMsg("I couldn't find any jobs in that. Copy the rows straight from the sheet, including the date above them and the entry numbers."); return; }
+  miNewEnd();
 });
-$("#mi-read").addEventListener("click", () => { if (miPaste.value.trim()) runImport(gridFromTSV(miPaste.value)); else { toast("Paste your sheet first"); miPaste.focus(); } });
+$("#mi-read").addEventListener("click", () => {
+  const chunks = miChunks(IMPORT?.text);
+  if (!chunks.length){ toast("Nothing here yet. Press New entry to add your rows."); return; }
+  const jobs = chunks.reduce((all, t) => { const r = readSheet(gridFromTSV(t)); r.jobs.forEach(j => j.managers.forEach(m => { m.key = mgrKey(m, j.company); })); return mergeJobs(all, r.jobs); }, IMPORT.jobs || []);
+  IMPORT = { ...IMPORT, at:Date.now(), jobs }; store.set("md.import", IMPORT);
+  renderImport();
+  if (!$("#view-dashboard").hidden) renderDash();
+  toast("Read it all again. Nothing already here was lost.");
+});
 $("#mi-clear").addEventListener("click", e => {
   const b = e.currentTarget;
   if (b.dataset.armed !== "1"){ b.dataset.armed = "1"; b.textContent = "Confirm clear"; setTimeout(() => { b.dataset.armed = ""; b.textContent = "Clear the paste"; }, 3000); return; }
@@ -7298,7 +7349,7 @@ function doAct(a){
   tuck();
   if (a.view === "home"){ showView("home"); $("#home-go").classList.add("show"); return; }
   if (a.view){ showView(a.view); window.scrollTo(0, 0); }
-  if (a.open === "mi"){ setMiOpen(true); setTimeout(() => miPaste.focus({ preventScroll:true }), 30); }
+  if (a.open === "mi"){ miNewStart(); setTimeout(() => miNew.focus({ preventScroll:true }), 30); }
   if (a.open === "scr") setScrOpen(true);
   const target = a.el || a.scroll;
   if (target) setTimeout(() => spotlight($(target)), 120);
@@ -9337,7 +9388,7 @@ function tourTidy(){
   if ($("#jm").open) $("#jm").close();
   $("#alerts").innerHTML = ""; ALERTS_ON.clear();
   if ($("#d-job-q").value){ $("#d-job-q").value = ""; if (!$("#view-dashboard").hidden) renderJobs(pipeline()); }
-  if (MI_NEW) miNewEnd();
+  miNewEnd();
   setMiOpen(false);
 }
 const tourTap = sel => { const el = typeof sel === "string" ? $(sel) : sel; if (el) el.click(); return !!el; };
@@ -9405,8 +9456,8 @@ const DEMO_STEPS = [
       setMiOpen(true); await pause(150); tourSpot("#mi"); showAlert({ ...mmAlert(), quiet:true });
       await pause(2800);
       tourTap("#alerts .alert .btn.primary");   // Its own scroll lands first, then the box being filled comes back into view
-      await pause(350); tourSpot("#mi-paste");
-      await pause(700); pasteInto("#mi-paste", demoSheet()); await pause(1100); tourTap("#mi-read");
+      await pause(350); tourSpot("#mi-new-box");
+      await pause(700); pasteInto("#mi-new-paste", demoSheet()); await pause(1100); tourTap("#mi-new-save");
       await pause(200); tourSpot("#mi-out .mi-tiles");
     } },
   { view:"middleton", el:"#mi-copy", say:"Tick who you're calling, and your call list copies in Middleton format, so it pastes straight into the sheet.", bits:["CALL LIST", "MIDDLETON FORMAT", "EXCEL"],
