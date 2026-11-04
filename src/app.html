@@ -471,9 +471,13 @@ main > section[role="tabpanel"]:not(.home){min-height:100vh;min-height:100dvh}
 .age-cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
 @media (max-width:620px){.age-cols{grid-template-columns:minmax(0,1fr)}}
 .age-h{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
-.age{list-style:none;margin:0;padding:0;display:grid;gap:10px}
-.age li{display:grid;gap:4px}
-.age .top-line{display:flex;gap:8px;align-items:baseline;font-size:13.5px}
+.age{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:minmax(0,1fr);gap:4px}
+.age li{min-width:0}
+.age-row{display:grid;grid-template-columns:minmax(0,1fr);gap:4px;width:100%;min-width:0;padding:6px 8px;text-align:left;font:inherit;color:inherit;background:none;border:1px solid transparent;border-radius:8px;cursor:pointer}
+.age-row:hover,.age-row:focus-visible{border-color:var(--line-strong);background:rgba(255,220,0,.05);outline:none}
+.age-row .bar{display:block}
+.age-row .sub{display:block}
+.age .top-line{display:flex;gap:8px;align-items:baseline;min-width:0;font-size:13.5px}
 .age .top-line b{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-right:auto}
 .age .top-line span{font-family:var(--f-mono);font-size:12.5px;white-space:nowrap;font-variant-numeric:tabular-nums}
 .age .sub{font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -530,7 +534,7 @@ main > section[role="tabpanel"]:not(.home){min-height:100vh;min-height:100dvh}
 .job-table td{padding:7px 8px;border-bottom:1px solid var(--line);vertical-align:middle}
 .job-table td.num{font-family:var(--f-mono);font-variant-numeric:tabular-nums;white-space:nowrap}
 .job-table select{padding:5px 8px;font-size:13px;width:auto}
-.table-scroll{overflow-x:auto}
+.table-scroll{overflow-x:auto;position:relative}
 .dash-empty{border:1px dashed var(--line-strong);border-radius:8px;padding:14px;font-size:13px;color:var(--muted)}
 .ci-head,.ci-row{display:grid;grid-template-columns:72px 1.1fr 1.2fr 1.1fr 1.4fr 1.6fr 52px;gap:8px;align-items:start}
 .ci-head{font-size:13px;font-weight:600;margin-bottom:6px}
@@ -615,10 +619,62 @@ span.tick{cursor:default}
 .panel.folded > .fold-btn::after,.panel.folded > .card-h .fold-btn::after{transform:translateY(-2px) rotate(45deg)}
 .panel.folded > :not(.card-h){display:none}
 .panel.folded > .card-h{margin-bottom:0}
+.panel.folded{align-self:start}
 /* Every job */
 .job-search{display:flex;align-items:center;gap:12px;margin-bottom:12px}
 .job-search input{flex:1;min-width:0}
 .job-search small{font-size:12.5px;color:var(--muted);white-space:nowrap}
+.job-tools{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:12px;padding:8px 12px;border:1px solid var(--accent);border-radius:10px;font-size:13px}
+.job-tools b{margin-right:4px}
+.job-tools .btn{padding:6px 10px;font-size:12.5px}
+.job-dups{display:grid;gap:6px;margin-bottom:12px;padding:10px 12px;border:1px solid var(--line-strong);border-radius:10px;font-size:13px}
+.job-dups > b{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--warn)}
+.job-dup{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.job-dup span{flex:1 1 280px;min-width:0}
+.job-dup .btn{padding:5px 9px;font-size:12.5px}
+.job-table .sel-cell{width:30px;padding-right:0;cursor:default}
+.job-table .sel-cell input{display:block;width:16px;height:16px;margin:0;accent-color:var(--accent);cursor:pointer}
+.jm-opt{display:grid;grid-template-columns:18px minmax(0,1fr);gap:10px;align-items:start;padding:10px 12px;border:1px solid var(--line);border-radius:8px;cursor:pointer;margin-bottom:8px}
+.jm-opt:has(input:checked){border-color:var(--accent)}
+.jm-opt input{margin:2px 0 0;accent-color:var(--accent)}
+.jm-opt b{display:block;font-size:14px}
+.jm-opt small{display:block;font-size:12.5px;color:var(--muted);margin-top:2px}
+/* Meeting record */
+.mr-count{margin:12px 0 14px;font-family:var(--f-mono);font-size:26px;font-weight:600;font-variant-numeric:tabular-nums;color:var(--accent)}
+.mr-count .late,.alert-count.late{color:var(--warn)}
+.mr-facts{display:grid;grid-template-columns:90px minmax(0,1fr);gap:8px 12px;margin:0;font-size:14px}
+.mr-facts dt{color:var(--muted);font-size:12.5px;padding-top:1px}
+.mr-facts dd{margin:0;white-space:pre-wrap;overflow-wrap:anywhere}
+.alert-count{font-family:var(--f-mono);font-size:22px;font-weight:600;font-variant-numeric:tabular-nums;color:var(--accent);margin:2px 0 6px}
+.cal-count{font-style:normal;font-variant-numeric:tabular-nums;color:var(--accent)}
+.cal-count.late{color:var(--warn)}
+/* New Entry, on Paste your sheet */
+.mi-newbar{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:6px 12px;align-items:end;padding:12px 14px;margin-bottom:12px;border:1px solid var(--accent);border-radius:10px}
+.mi-newbar[hidden]{display:none}
+.mi-newbar b{grid-column:1/-1;font-size:14px}
+.mi-newbar p{margin:0;font-size:12.5px;color:var(--muted);line-height:1.45}
+.mi-newbar .field{margin:0}
+.mi-newbar .field label{font-size:12px}
+@media (max-width:620px){.mi-newbar{grid-template-columns:minmax(0,1fr)}}
+/* Candidates on Paste your sheet can be removed */
+.mi-cand-h{display:flex;align-items:start;gap:8px}
+.mi-cand-h b{flex:1;min-width:0;overflow-wrap:anywhere}
+.mi-x{flex:none;background:none;border:0;padding:0 4px;font:inherit;font-size:15px;line-height:1.3;color:var(--muted);cursor:pointer;white-space:nowrap}
+.mi-x:hover,.mi-x:focus-visible{color:var(--not);outline:none}
+.mi-x.armed{color:var(--not);font-size:12.5px}
+.mi-cand .mi-cand-job{display:flex;align-items:start;gap:6px}
+.mi-cand-job i{flex:1;min-width:0;font-style:normal}
+/* Check In saved tag, set-aside to-dos, pinned newsletter */
+.ci-saved{grid-column:2/-1;margin-top:-4px;font-size:12px;color:var(--good)}
+/* When the list itself is narrow (the demo's page window, a small laptop) the buttons drop under the words, so the names stay readable */
+#d-todo{container-type:inline-size}
+@container (max-width:520px){.todo li{grid-template-columns:24px minmax(0,1fr)}.todo .why,.todo .t,.todo .acts{grid-column:2}.todo .acts{justify-content:flex-start}}
+.todo-skipped{display:flex;align-items:center;gap:10px;margin-top:8px;font-size:12.5px;color:var(--muted)}
+.news-pin{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;padding:8px 10px;margin-bottom:8px;border:1px solid var(--line);border-radius:8px;text-decoration:none;color:var(--ink);font-size:13.5px}
+.news-pin:hover,.news-pin:focus-visible{border-color:var(--accent);outline:none}
+.news-pin b{font-weight:600}
+.news-pin span{font-size:12px;color:var(--muted)}
+@media (min-width:961px){#d-tiles{grid-template-columns:repeat(auto-fit,minmax(128px,1fr))}}
 .job-table tbody tr[data-job]{cursor:pointer}
 .job-table tbody tr[data-job]:hover td{background:rgba(255,220,0,.05)}
 .job-table td.who{max-width:230px;font-size:12.5px;color:var(--muted)}
@@ -997,9 +1053,12 @@ body.demo.dh .home-bar,body.demo.dh .home-say{display:none}
 body.demo .fly.dh-in{transition:transform .42s cubic-bezier(.6,0,.9,.5),opacity .42s ease-in;opacity:0}
 body.demo .alerts{left:72.25vw;top:auto;bottom:8vh}
 body.demo.dw .toast{left:72.25vw}
-body.demo .pick.jr{position:fixed;z-index:44;top:8vh;left:49vw;right:4.5vw;width:auto;max-width:none;margin:0;max-height:84vh;overflow:auto}
+body.demo .pick.jr,body.demo #mr,body.demo #jm{position:fixed;z-index:44;top:8vh;left:49vw;right:4.5vw;width:auto;max-width:none;margin:0;max-height:84vh;overflow:auto}
 body.demo .demo-bg,body.demo .dm,body.demo .demo-flow{display:block}
 body.demo:not(.dock) .piper-dock{visibility:hidden}
+body.demo [data-fold] > .card-h{flex-wrap:nowrap}
+body.demo [data-fold] > .card-h > small{flex:1 1 0;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+body.demo [data-fold] > .card-h > h2{flex:none}
 .demo-bg{position:fixed;inset:0;z-index:29;background:radial-gradient(ellipse 30% 34% at 50% 44%,rgba(255,205,0,.05),transparent 72%)}
 .dm{position:fixed;z-index:30;left:50%;top:42%;width:min(74vh,88vw);aspect-ratio:1;transform:translate(-50%,-50%);pointer-events:none;transition:left .8s cubic-bezier(.65,0,.25,1),top .8s cubic-bezier(.65,0,.25,1),width .8s cubic-bezier(.65,0,.25,1)}
 .dm canvas{display:block;width:100%;height:100%}
@@ -1043,7 +1102,7 @@ body.demo.dh .tour{left:20vw;width:min(480px,34vw)}
   body.demo .piper-panel{bottom:150px;height:calc(100dvh - 170px)}
   body.demo .alerts{left:50%;bottom:170px}
   body.demo.dw .toast{left:50%;bottom:170px}
-  body.demo .pick.jr{top:29vh;left:10px;right:10px;max-height:calc(71vh - 170px)}
+  body.demo .pick.jr,body.demo #mr,body.demo #jm{top:29vh;left:10px;right:10px;max-height:calc(71vh - 170px)}
 }
 @media (prefers-reduced-motion:reduce){main.dw-open,.dw-frame.dw-open,main.dw-shut,.dw-frame.dw-shut,.dw-bit,.dw-frame.scan .dw-scan::before{animation:none}.dm,body.demo .tour{transition:none}}
 .tour-spot{box-shadow:0 0 0 2px var(--accent),0 0 34px 6px rgba(255,220,0,.38)!important;transition:box-shadow .3s}
@@ -1722,6 +1781,7 @@ html.astro ::selection{background:#F7A134;color:#2A1208}
               </div>
               <div class="field"><label for="cal-who">With</label><input type="text" id="cal-who" placeholder="Optional" autocomplete="off"></div>
               <div class="field"><label for="cal-link">Meeting link</label><input type="url" id="cal-link" placeholder="Optional: Teams or Zoom link" autocomplete="off"></div>
+              <div class="field"><label for="cal-notes">Details</label><textarea id="cal-notes" rows="2" placeholder="Optional: agenda, dial-in, what to prep"></textarea></div>
               <div class="cal-2">
                 <div class="field"><label for="cal-lead">Alert me</label><select id="cal-lead"><option value="0">When it starts</option><option value="5">5 minutes before</option><option value="10" selected>10 minutes before</option><option value="15">15 minutes before</option><option value="30">30 minutes before</option><option value="60">1 hour before</option></select></div>
                 <div class="field"><label for="cal-repeat">Repeats</label><select id="cal-repeat"><option value="none">Doesn't repeat</option><option value="daily">Every day</option><option value="weekdays">Monday to Friday</option><option value="weekly">Every week</option></select></div>
@@ -1732,13 +1792,14 @@ html.astro ::selection{background:#F7A134;color:#2A1208}
         </div>
 
         <div class="panel c12" id="d-ci-panel" data-fold="ci">
-          <div class="card-h"><h2>Manager Check In</h2><small>Your Monday email to your manager</small></div>
+          <div class="card-h"><h2>Manager Check In</h2><small id="d-ci-sub">Your Monday email to your manager</small></div>
           <div class="ci-head" aria-hidden="true"><span>#</span><span>Company name</span><span>Open position</span><span>Hiring manager name</span><span>Last point of contact</span><span>Next steps</span></div>
           <div class="ci-list" id="d-ci"></div>
           <div class="row" style="margin-top:12px">
             <button type="button" class="btn" id="d-ci-add">+ Add line</button>
             <span class="grow"></span>
             <button type="button" class="btn ghost" id="d-ci-clear">Clear list</button>
+            <button type="button" class="btn" id="d-ci-save">Save entry</button>
             <button type="button" class="btn primary" id="d-ci-copy">Copy for Outlook</button>
           </div>
         </div>
@@ -1754,7 +1815,7 @@ html.astro ::selection{background:#F7A134;color:#2A1208}
         </div>
 
         <div class="panel c7">
-          <div class="card-h"><h2>Pipeline age</h2><small>Days since you last reached out</small></div>
+          <div class="card-h"><h2>Pipeline age</h2><small>Days since you last reached out. Click a job to open it</small></div>
           <div class="age-cols">
             <div><div class="age-h">5 oldest jobs</div><ul class="age" id="d-oldest"></ul></div>
             <div><div class="age-h">5 newest jobs</div><ul class="age" id="d-newest"></ul></div>
@@ -1794,13 +1855,15 @@ html.astro ::selection{background:#F7A134;color:#2A1208}
           </details>
         </div>
 
-        <div class="panel c7">
+        <div class="panel c7" id="d-news-panel" data-fold="news">
           <div class="card-h"><h2>Medical device news</h2><small id="d-news-sub"></small><button type="button" class="btn ghost" id="d-news-refresh">Refresh</button></div>
+          <a class="news-pin" href="https://www.linkedin.com/newsletters/gs-medtech-weekly-7340299365296603136" target="_blank" rel="noopener"><b>GS Medtech Weekly &#8599;</b><span>Newsletter on LinkedIn</span></a>
           <ul class="news" id="d-news"></ul>
         </div>
 
-        <div class="panel c5">
+        <div class="panel c5" id="d-fund-panel" data-fold="fund">
           <div class="card-h"><h2>New medtech money</h2><small>Funded companies hire</small></div>
+          <a class="news-pin" href="https://www.linkedin.com/newsletters/gs-medtech-weekly-7340299365296603136" target="_blank" rel="noopener"><b>GS Medtech Weekly &#8599;</b><span>Newsletter on LinkedIn</span></a>
           <ul class="news" id="d-fund"></ul>
           <p class="lede" style="margin-top:12px">For today's Form D filings and funding rounds, copy the research prompt and open a new tab. It checks FormDs.com and SEC EDGAR and lists who's likely to hire.</p>
           <div class="row" style="margin-top:10px">
@@ -1814,12 +1877,14 @@ html.astro ::selection{background:#F7A134;color:#2A1208}
         </div>
 
         <div class="panel c12" id="d-jobs-panel" data-fold="jobs">
-          <div class="card-h"><h2>Every job</h2><small>Click a job to view, edit or delete it</small><button type="button" class="btn" id="d-job-add">+ Add job</button></div>
+          <div class="card-h"><h2>Every job</h2><small>Click a job to view, edit or delete it. Tick two or more to merge them</small><button type="button" class="btn" id="d-job-add">+ Add job</button></div>
           <div class="job-search">
             <label class="sr" for="d-job-q">Search every job</label>
             <input type="search" id="d-job-q" placeholder="Search companies, positions, contacts or candidates" autocomplete="off">
             <small id="d-job-count"></small>
           </div>
+          <div class="job-tools" id="d-job-tools" hidden></div>
+          <div id="d-job-dups"></div>
           <div id="d-jobs"></div>
         </div>
       </div>
@@ -2038,12 +2103,18 @@ html.astro ::selection{background:#F7A134;color:#2A1208}
       <div class="spec-panel mi" id="mi">
         <button type="button" class="spec-toggle" id="mi-toggle" aria-expanded="false" aria-controls="mi-body"><span class="spec-name">Paste your sheet</span><span class="spec-count" id="mi-count"></span><span class="spec-chev" aria-hidden="true"></span></button>
         <div class="spec-body" id="mi-body" hidden>
+          <div class="mi-newbar" id="mi-newbar" hidden>
+            <b>New entry</b>
+            <p>Paste the day's rows below. They add to what's already here, and any row without a date of its own gets this one.</p>
+            <div class="field"><label for="mi-new-date">Date for these rows</label><input type="date" id="mi-new-date"></div>
+            <button type="button" class="btn ghost" id="mi-new-cancel">Cancel</button>
+          </div>
           <div class="field">
             <label for="mi-paste">Copy the rows from your Excel tracking sheet and paste them here</label>
             <textarea id="mi-paste" spellcheck="false" placeholder="Select the rows in Excel, copy, click here and paste"></textarea>
             <span class="hint">It reads it as soon as you paste: every job, every hiring manager once, the candidates, and every date it finds. Dates in a manager's row count for that manager; dates on the company row count for everyone on that job.</span>
           </div>
-          <div class="row"><button type="button" class="btn" id="mi-read">Read it again</button><span class="grow"></span><button type="button" class="btn ghost" id="mi-clear">Clear the paste</button></div>
+          <div class="row"><button type="button" class="btn primary" id="mi-new">New entry</button><button type="button" class="btn" id="mi-read">Read it again</button><span class="grow"></span><button type="button" class="btn ghost" id="mi-clear">Clear the paste</button></div>
           <div id="mi-out"></div>
         </div>
       </div>
@@ -2091,6 +2162,12 @@ html.astro ::selection{background:#F7A134;color:#2A1208}
           </div>
 
           <div class="step">
+            <div class="step-h"><span class="k">CANDIDATES</span><h2>Candidates</h2><small id="m-cand-count"></small></div>
+            <div class="jr-chips" id="m-cands"></div>
+            <div class="jr-add"><label class="sr" for="m-cand-in">Add a candidate</label><input type="text" id="m-cand-in" placeholder="Candidate name" autocomplete="off"><button type="button" class="btn" id="m-cand-add">Add</button></div>
+          </div>
+
+          <div class="step">
             <div class="row">
               <button type="submit" class="btn primary big" id="m-save">Save to log</button>
               <button type="button" class="btn ghost" id="m-new">Clear form</button>
@@ -2103,6 +2180,7 @@ html.astro ::selection{background:#F7A134;color:#2A1208}
             <div class="log-h">
               <h2>Saved entries</h2>
               <button class="btn" id="m-copy-all" disabled>Copy all for Excel</button>
+              <button type="button" class="btn ghost" id="m-del-all" disabled>Delete all</button>
             </div>
             <div id="m-log"></div>
             <p class="note">Select Copy (or Copy all), click the cell where the block should start in Excel or Google Sheets, and paste. Borders, bold, the merged position cell and the job link come with it.</p>
@@ -2322,9 +2400,33 @@ html.astro ::selection{background:#F7A134;color:#2A1208}
       <button type="button" class="btn ghost" id="jr-del">Delete job</button>
       <span class="grow"></span>
       <button type="button" class="btn ghost" id="jr-source">Add people in Candidate Sourcing</button>
+      <button type="button" class="btn" id="jr-mm">Add to Middleton Method</button>
       <button type="submit" class="btn primary">Save</button>
     </div>
   </form>
+</dialog>
+
+<dialog class="pick" id="jm" aria-labelledby="jm-h">
+  <div class="pick-h">
+    <h2 id="jm-h">Merge jobs</h2>
+    <button type="button" class="btn ghost" id="jm-close">Cancel</button>
+  </div>
+  <p class="pick-sub">Contacts, candidates, dates and notes all end up on one job. Pick the name to keep.</p>
+  <div id="jm-list"></div>
+  <div class="row jr-foot"><span class="grow"></span><button type="button" class="btn primary" id="jm-go">Merge</button></div>
+</dialog>
+
+<dialog class="pick" id="mr" aria-labelledby="mr-h">
+  <div class="pick-h">
+    <h2 id="mr-h">Meeting</h2>
+    <button type="button" class="btn ghost" id="mr-close">Close</button>
+  </div>
+  <div id="mr-body"></div>
+  <div class="row jr-foot">
+    <button type="button" class="btn ghost" id="mr-edit">Edit</button>
+    <span class="grow"></span>
+    <a class="btn primary" id="mr-join" target="_blank" rel="noopener">Join meeting &#8599;</a>
+  </div>
 </dialog>
 
 <div class="alerts" id="alerts" aria-live="assertive"></div>
@@ -2435,18 +2537,24 @@ if (DEMO){
     ["Lakeshore Vascular", "Principal R&D Engineer", mgr("Sr. Director, R&D", "Marcus Oyelaran", "(612) 555-0127", 21, 6)],
     ["Harbor Point Diagnostics", "Quality Engineering Manager", mgr("VP, Quality", "Renee Castillo", "(858) 555-0134", 18, 4), "", ["Lena Fischer"]],
     ["Silverline Medical", "Clinical Affairs Manager", mgr("Director, Clinical", "Tom Brandt", "(949) 555-0146", 30, 9)],
+    // Close to the one above, but it could be a second job, so she asks. This is the merge in the tour
+    ["Silverline Medical", "Senior Clinical Affairs Manager", mgr("Clinical Ops Lead", "Ben Achebe", "(949) 555-0147", 27, 11), "", ["Nadia Ross"]],
     ["Bluefin Biosciences", "MSAT Scientist, Cell Therapy", mgr("Head of MSAT", "Priya Raman", "(919) 555-0152", 33, 16)],
     ["Cedar Ridge Orthopedics", "Sr. Regulatory Specialist", mgr("Regulatory Director", "Alicia Moreno", "(574) 555-0161", 40, 25), "filled"],
-    ["Kestrel Pharma", "Supply Chain Manager", mgr("VP, Operations", "Hannah Lowe", "(908) 555-0175", 8, 3)]
+    ["Kestrel Pharma", "Supply Chain Manager", mgr("VP, Operations", "Hannah Lowe", "(908) 555-0175", 8, 3)],
+    // The same job written another way, so it combines by itself and Every Job says so
+    ["Kestrel Pharma, Inc.", "Supply Chain Mgr", mgr("VP, Operations", "Hannah Lowe", "(908) 555-0175", 5)],
+    ["Granite Peak Devices", "Quality Director", mgr("VP, Quality", "Evan Sato", "(801) 555-0138", 60, 30), "bigwheel"]
   ];
-  DEMO_MEM.set("md.import", { v:2, at:now - 864e5, mode:"Middleton blocks", text:"", days:[], jobs:desk.map(([company, position, m, , candidates = []]) => ({ company, position, link:"", terms:false, managers:[m], candidates, dates:[...m.dates] })) });
+  DEMO_MEM.set("md.bigwheel", { [jk("Granite Peak Devices", "Quality Director")]:{ since:back(30) } });
+  DEMO_MEM.set("md.import", { v:2, at:now - 864e5, mode:"Middleton blocks", text:"", jobs:desk.map(([company, position, m, , candidates = []]) => ({ company, position, link:"", terms:false, managers:[m], candidates, dates:[...m.dates] })) });
   DEMO_MEM.set("md.jobstat", { ...Object.fromEntries(desk.filter(j => j[3]).map(j => [jk(j[0], j[1]), j[3]])), [jk("Acme Biologics", "Senior Manager, Quality Assurance")]:"pulled" });
   DEMO_MEM.set("md.log", [["Tidewater Biosciences", "Process Development Lead", "Director, PD", "Owen Park", "(858) 555-0183", 2], ["Orchard Surgical", "Sr. Manufacturing Engineer", "Plant Manager", "Grace Lin", "(408) 555-0191", 1]].map(([company, position, title, name, phone, k], i) => (
     { id:"demo" + i, num:String(i + 1), bullhorn:true, terms:!i, company, position, link:"", managers:[{ title, name, email:mail(name), phone }], candidates:[], created:back(k) })));
   const said = (t, k, note) => ({ dates:[], resp:[{ t, d:back(k), note, ts:now - k * 864e5 }] });
   DEMO_MEM.set("md.touch", { [mail("Dana Whitfield")]:said("pos", 1, "Wants to see two resumes this week."), [mail("Renee Castillo")]:said("neu", 4, "Hiring's on hold until January."), [mail("Alicia Moreno")]:said("neg", 25, "Filled internally.") });
   DEMO_MEM.set("md.callnext", [mail("Hannah Lowe")]);
-  DEMO_MEM.set("md.todos", [{ id:"demo", text:"Prep for the Northwind intake", day:back(0), done:false }]);
+  DEMO_MEM.set("md.todos", [{ id:"demo", text:"Prep for the Northwind intake", day:back(0), done:false }, { id:"demo2", text:"Tidy up the old tabs in the sheet", day:back(0), done:false }]);
   DEMO_MEM.set("md.checkin", [
     { num:"1", company:"Northwind Therapeutics", position:"Director, Regulatory Affairs", manager:"Dana Whitfield", last:"Positive reply yesterday", next:"Intake call today, then send two resumes" },
     { num:"2", company:"Harbor Point Diagnostics", position:"Quality Engineering Manager", manager:"Renee Castillo", last:"Spoke last week, on hold", next:"Check back in January" },
@@ -2455,7 +2563,7 @@ if (DEMO){
   DEMO_MEM.set("md.terms", ["Northwind Therapeutics, Inc.", "200 Harbor Way, Boston, MA", "25%", "Standard is fine", "Net 30 requested", "None", "Yes", "Dana Whitfield, " + mail("Dana Whitfield")]);
   const soon = new Date(now + 10 * 60e3), clock = x => `${String(x.getHours()).padStart(2, "0")}:${String(x.getMinutes()).padStart(2, "0")}`;
   DEMO_MEM.set("md.meet", [
-    { id:"demo1", title:"Intake call with Northwind", date:iso(soon), time:clock(soon), who:"Dana Whitfield", link:"", lead:10, repeat:"none" },
+    { id:"demo1", title:"Intake call with Northwind", date:iso(soon), time:clock(soon), who:"Dana Whitfield", notes:"Dana wants two resumes this week. Ask about the January start.", link:"https://example.com/intake", lead:10, repeat:"none" },
     { id:"demo2", title:"Team huddle", date:back(6), time:"08:45", who:"", link:"", lead:5, repeat:"weekly" },
     { id:"demo3", title:"Candidate prep with Sam Okafor", date:back(-1), time:"14:30", who:"Sam Okafor", link:"", lead:10, repeat:"none" }
   ]);
@@ -2861,6 +2969,7 @@ function copyableLog(){ return LOG.filter(x => !isExampleEntry(x)).sort((a, b) =
 function updateCopyState(){
   const ex = isExampleEntry(E);
   $("#m-copy-all").disabled = !copyableLog().length;
+  $("#m-del-all").disabled = !LOG.length;
 }
 // Typing into the example starts a clean entry, so none of the sample names carry into a real one
 $("#m-form").addEventListener("focusin", e => {
@@ -3056,7 +3165,7 @@ $("#m-form").addEventListener("submit", e => {
   if (!rec.id) rec.id = "e" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
   if (!rec.created) rec.created = entryDate(rec) || isoToday();
   const i = LOG.findIndex(l => l.id === rec.id);
-  if (i >= 0){ rec.candidates = LOG[i].candidates || []; LOG[i] = rec; } else LOG.push(rec);
+  if (i >= 0) LOG[i] = rec; else LOG.push(rec);
   saveLog(); renderLog(); renderImport();
   toast(`Saved #${rec.num}`);
   newEntry();
@@ -3069,6 +3178,7 @@ $("#m-copy-all").addEventListener("click", async () => {
   const ok = await copyRich(rowsToClipboardHTML(rows), rowsToTSV(rows));
   toast(ok ? `Copied ${sorted.length} ${sorted.length === 1 ? "entry" : "entries"}` : "Copy was blocked by this browser.");
 });
+function entryInProgress(){ return !E.example && !!(E.company.trim() || E.link.trim() || E.managers.some(m => Object.values(m).some(v => String(v).trim()))); }
 function newEntry(blank){
   E = { example:false, id:null, num: blank ? "" : nextNum(), bullhorn:false, terms:false, company:"", position:"", link:"", managers:[blankMgr()], candidates:[] };
   if (!blank) prefillPositionFromRig(true);
@@ -3083,7 +3193,44 @@ function prefillPositionFromRig(force){
     if (!force){ $("#m-position").value = E.position; updateCopyState(); }
   }
 }
-function renderEntryForm(){ renderTopFields(); renderMgrs(); updateCopyState(); }
+function renderEntryForm(){ renderTopFields(); renderMgrs(); renderEntryCands(); updateCopyState(); }
+function renderEntryCands(){
+  const c = (E.candidates || []).filter(v => String(v).trim());
+  $("#m-cands").innerHTML = c.map(n => `<span class="jr-chip">${esc(n)}<button type="button" data-rm-e-cand="${esc(n)}" aria-label="Remove ${esc(n)}">\u00d7</button></span>`).join("");
+  $("#m-cand-count").textContent = c.length ? `${c.length} ${c.length === 1 ? "candidate" : "candidates"}` : "";
+}
+function addEntryCand(){
+  const el = $("#m-cand-in"), v = el.value.trim();
+  if (!v){ el.focus(); return; }
+  if (isPhoneName(v)){ toast("That's a phone number, not a name."); el.select(); return; }
+  if (!(E.candidates || []).some(c => norm(c) === norm(v))) E.candidates = [...(E.candidates || []), v];
+  candUngone(v); el.value = ""; markEdited(); saveE(); renderEntryCands(); el.focus();
+}
+$("#m-cand-add").addEventListener("click", addEntryCand);
+$("#m-cand-in").addEventListener("keydown", e => { if (e.key === "Enter"){ e.preventDefault(); addEntryCand(); } });
+$("#m-cands").addEventListener("click", e => {
+  const b = e.target.closest("[data-rm-e-cand]"); if (!b) return;
+  E.candidates = E.candidates.filter(c => norm(c) !== norm(b.dataset.rmECand));
+  markEdited(); saveE(); renderEntryCands();
+});
+// The saved list empties, but the jobs on it stay in Every job with their dates, contacts and candidates
+$("#m-del-all").addEventListener("click", e => {
+  const b = e.currentTarget;
+  if (b.dataset.armed !== "1"){ b.dataset.armed = "1"; b.textContent = "Confirm delete all"; setTimeout(() => { b.dataset.armed = ""; b.textContent = "Delete all"; }, 3000); return; }
+  b.dataset.armed = ""; b.textContent = "Delete all";
+  const keep = LOG.filter(x => !isExampleEntry(x)).map(x => { const d = entryDate(x); return cleanJob({ company:x.company, position:x.position, link:x.link, terms:x.terms, candidates:x.candidates || [], managers:(x.managers || []).map(m => ({ ...m, key:mgrKey(m, x.company), dates:[] })), dates:d ? [d] : [] }); }).filter(Boolean);
+  if (keep.length){
+    IMPORT = { ...(IMPORT || { v:2, at:Date.now(), mode:"your saved entries", text:"", days:[] }), jobs:mergeJobs(IMPORT?.jobs || [], keep) };
+    store.set("md.import", IMPORT);
+  }
+  const editing = E.id && LOG.some(x => x.id === E.id);
+  LOG = []; saveLog();
+  if (editing) newEntry();
+  renderLog(); renderImport(); updateCopyState();
+  $("#m-num").placeholder = nextNum();
+  if (!E.id && !E.company.trim() && !E.position.trim()){ E.num = nextNum(); $("#m-num").value = E.num; saveE(); }
+  toast("Saved entries cleared. Their jobs stay in Every job.");
+});
 
 /* =========================================================
    PAGE 2 \u2014 CANDIDATE MATCH
@@ -3754,6 +3901,7 @@ $("#x-pick-list").addEventListener("click", e => {
   x.candidates = (x.candidates || []).filter(v => String(v).trim());
   if (x.candidates.some(v => norm(v) === norm(name))){ pick.close(); toast(`${name} is already on #${x.num}`); return; }
   x.candidates.push(name);
+  candUngone(name);
   saveLog(); renderLog();
   if (E.id === x.id){ E.candidates = [...x.candidates]; saveE(); }
   pick.close();
@@ -4318,7 +4466,7 @@ $("#s-copy").addEventListener("click", async () => {
 $("#s-to-middleton").addEventListener("click", () => {
   const company = S.company.trim(), position = S.position.trim();
   if (!company && !position){ toast("Add the company or position first"); $("#s-company").focus(); return; }
-  const inProgress = !E.example && (E.company.trim() || E.link.trim() || E.managers.some(m => Object.values(m).some(v => String(v).trim())));
+  const inProgress = entryInProgress();
   if (inProgress && !confirm("The Middleton Method form already has an entry in progress. Replace it with this company and position?")) return;
   if (E.example || inProgress) newEntry(true);
   if (!String(E.num).trim()) E.num = nextNum();
@@ -4919,16 +5067,35 @@ const dd = n => n == null ? "\u2014" : n + "d";
 const jobKey = (c, p) => norm(c) + "|" + norm(p);
 const mgrKey = (m, company) => m.email && /@/.test(m.email) ? norm(m.email) : "n:" + norm(m.name || m.title || m.phone) + "@" + norm(company);
 const FOLLOW_UP_DAYS = 3;
-const STATUS = { pursuing:"Trying to pull", pulled:"Pulled", filled:"Filled / unavailable" };
+const STATUS = { pursuing:"Trying to pull", pulled:"Pulled", filled:"Filled / unavailable", bigwheel:"No job ATM / Big Wheel" };
+const notLive = s => s === "filled" || s === "bigwheel";   // Nothing to pull right now, so no follow-ups or age on these
+
+/* Two ways of writing the same job come out the same here: "Acme, Inc." is "ACME" and "Sr. Mgr, Quality" is "Quality Senior Manager" */
+const CO_TAIL = /\s+(?:incorporated|inc|llc|ltd|limited|corp|corporation|co|company|plc|gmbh|llp|lp)$/;
+const POS_SWAP = { sr:"senior", snr:"senior", jr:"junior", mgr:"manager", mngr:"manager", dir:"director", assoc:"associate", engr:"engineer", eng:"engineer", mfg:"manufacturing", ops:"operations", vp:"vice president", svp:"senior vice president", evp:"executive vice president", qa:"quality assurance", qc:"quality control", ra:"regulatory affairs", rd:"research development", hr:"human resources" };
+const POS_SKIP = new Set(["of", "and", "the", "a", "an", "for", "in"]);
+const looseWords = s => String(s ?? "").toLowerCase().replace(/r\s*&\s*d/g, "rd").replace(/&/g, " and ").replace(/[^a-z0-9]+/g, " ").trim();
+function looseCo(c){ let t = looseWords(c).replace(/^the /, ""), was; do { was = t; t = t.replace(CO_TAIL, ""); } while (t !== was); return t.replace(/ /g, ""); }
+const posWords = p => looseWords(p).split(" ").filter(Boolean).flatMap(w => (POS_SWAP[w] || w).split(" ")).filter(w => !POS_SKIP.has(w));
+const loosePos = p => posWords(p).sort().join(" ");
+const looseKey = (c, p) => looseCo(c) + "|" + loosePos(p);
+const looseOfId = id => { const i = id.indexOf("|"); return i < 0 ? "" : looseKey(id.slice(0, i), id.slice(i + 1)); };
 
 let IMPORT = store.get("md.import", null);   // the last sheet pasted on the Middleton Method tab, read
 let TOUCH = store.get("md.touch", {});       // { managerKey: { dates:[iso], resp:[{ t:"pos"|"neu"|"neg", d:iso, ts }], calledTs } }
 let JOBSTAT = store.get("md.jobstat", {});   // { jobKey: "pursuing" | "pulled" | "filled" }
 let CALLNEXT = store.get("md.callnext", []); // manager keys ticked for the next call list
 let TODOS = store.get("md.todos", []);       // [{ id, text, day, done }]
+let BIGWHEEL = store.get("md.bigwheel", {}); // { jobKey: { since:iso, done:iso } } for jobs marked No job ATM / Big Wheel
+let CANDGONE = new Set(store.get("md.candgone", []));   // "jobKey::name" taken off a job on Paste your sheet, so pasting again doesn't bring them back
+const saveCandGone = () => store.set("md.candgone", [...CANDGONE]);
+const candUngone = name => { const end = "::" + norm(name); let hit = false; for (const k of [...CANDGONE]) if (k.endsWith(end)){ CANDGONE.delete(k); hit = true; } if (hit) saveCandGone(); };
+let JOBNOTDUP = store.get("md.jobnotdup", []);   // pairs marked "Not the same"
 const saveTouch = () => store.set("md.touch", TOUCH);
 const saveCallNext = () => store.set("md.callnext", CALLNEXT);
 let JOBEDIT = store.get("md.jobedit", {});   // { key: the whole job as edited here, or { deleted:true } }. Wins over the sheet and saved entries, and survives pasting again
+// Merges made before the fix saved these as lists inside lists, which read as "NaN days" and let removed contacts come back
+Object.values(JOBEDIT).forEach(e => ["dates", "gone", "goneC", "goneD"].forEach(f => { if (Array.isArray(e[f])) e[f] = e[f].flat(Infinity); }));
 const saveJobEdit = () => store.set("md.jobedit", JOBEDIT);
 let SO = Object.assign({ rows:[], job:"*", box:"tf" }, store.get("md.source", {}));   // Candidate Sourcing
 // The sourcing sheet uses clickable Excel checkboxes. Anything saved before that was known moves over, once; a choice made after it stays
@@ -4944,6 +5111,8 @@ const soHas = r => !!(r.name || r.phone || r.email || r.notes || SO_BOXES.some(b
    filler words. Neither one is a company, a person or a candidate, so neither gets into the pipeline. */
 const NUM_CELL = /^#?\s*\d{1,4}\s*[.):\-]?$/;
 const FILLER_RE = /^(?:(?:hiring )?(?:manager|mgr|hm)(?:['\u2019]?s)?(?: job)?(?: title| name| e-?mail| phone(?: number)?)?|job title|title|name|e-?mail(?: address)?|phone(?: number| #| no\.?)?|contact(?: name)?|company(?: name)?|position(?:\s*\/\s*link)?|candidate(?: name)?|#|n\/?a|tbd|none|x+)$/i;
+// A number where a candidate's name goes: "(617) 555-0118", "617.555.0118 x12"
+const isPhoneName = v => { const s = String(v ?? "").trim(); return /\d/.test(s) && !/[a-z]/i.test(s.replace(/\b(?:ext\.?|x)\s*\d+$/i, "")) && s.replace(/\D/g, "").length >= 7; };
 function isFiller(v){ const s = String(v ?? "").replace(/\s+/g, " ").trim(); return !s || /^[-\u2013\u2014._]+$/.test(s) || FILLER_RE.test(s); }
 const keepText = v => { const s = String(v ?? "").trim(); return isFiller(s) || NUM_CELL.test(s) ? "" : s; };
 function cleanMgr(m){ return { ...m, title:keepText(m.title), name:keepText(m.name), email:isFiller(m.email) ? "" : String(m.email).trim(), phone:isFiller(m.phone) ? "" : String(m.phone).trim() }; }
@@ -4956,7 +5125,13 @@ function cleanJob(j){
     if (!company && managers[0]?.name){ company = managers[0].name; managers[0] = { ...managers[0], name:"" }; }
   }
   if (!company && !position) return null;
-  return { ...j, company, position, managers:managers.filter(m => m.title || m.name || m.email || m.phone), candidates:(j.candidates || []).map(keepText).filter(Boolean), dates:j.dates || [] };
+  return { ...j, company, position, managers:managers.filter(m => m.title || m.name || m.email || m.phone), candidates:(j.candidates || []).map(keepText).filter(c => c && !isPhoneName(c)), dates:j.dates || [] };
+}
+// Numbers that were already saved as candidate names come off once, here
+{
+  const noPhones = x => { const c = x.candidates || [], kept = c.filter(v => !isPhoneName(v)); if (kept.length !== c.length){ x.candidates = kept; return true; } return false; };
+  if (LOG.map(noPhones).some(Boolean)) saveLog();
+  if (noPhones(E)) saveE();
 }
 
 // Entries saved before dates were stored still carry their save time inside the id
@@ -4978,17 +5153,31 @@ function pipeline(){
     return k;
   }
   // A job edited here keeps the key it started with, so its status stays with it, and anything pasted later under its old or new name lands on it
-  const edited = new Map();
-  for (const [id, e] of Object.entries(JOBEDIT)){ edited.set(id, id); if (!e.deleted) edited.set(jobKey(e.company, e.position), id); }
+  const edited = new Map(), loose = new Map(), alias = new Map(), into = new Map();
+  const follow = id => { const seen = new Set(); while (JOBEDIT[id]?.into && !seen.has(id)){ seen.add(id); id = JOBEDIT[id].into; } return id; };
+  const allEdits = Object.entries(JOBEDIT);
+  // Deleted and merged-away jobs first, so a live job of the same name wins
+  for (const [id, e] of allEdits) if (e.deleted){
+    if (looseOfId(id)) edited.set(looseOfId(id), id);
+    if (e.company != null) edited.set(looseKey(e.company, e.position), id);
+    if (e.into) into.set(id, follow(id));
+  }
+  for (const [id, e] of allEdits) if (!e.deleted){
+    if (looseOfId(id)) edited.set(looseOfId(id), id);
+    edited.set(looseKey(e.company, e.position), id);
+  }
   function addJob(j, src, own){
     j = cleanJob(j); if (!j) return;
-    const id = own || edited.get(jobKey(j.company, j.position)), e = id ? JOBEDIT[id] : null;
+    const id = own || follow(edited.get(looseKey(j.company, j.position))), e = id ? JOBEDIT[id] : null;
     if (e?.deleted) return;
     if (e && !own){
       const managers = j.managers.map(m => ({ ...m, key:m.key || mgrKey(m, j.company) })).filter(m => !(e.gone || []).includes(m.key));
       j = { ...j, company:e.company, position:e.position, managers, candidates:j.candidates.filter(c => !(e.goneC || []).includes(norm(c))), dates:j.dates.filter(d => !(e.goneD || []).includes(d)) };
     }
-    const k = id || jobKey(j.company, j.position);
+    // The same job written two ways lands on one record
+    let k = id || jobKey(j.company, j.position);
+    const lk = looseKey(j.company, j.position), held = loose.get(lk);
+    if (held && held !== k){ alias.set(k, held); k = held; } else loose.set(lk, k);
     let r = jobs.get(k);
     if (!r){ r = { key:k, company:String(j.company || "").trim(), position:String(j.position || "").trim(), link:"", terms:false, notes:e?.notes || "", mgrs:new Set(), rawM:new Map(), cands:new Set(), dates:new Set(), src:new Set(), sourced:[] }; jobs.set(k, r); }
     r.src.add(src);
@@ -4996,8 +5185,8 @@ function pipeline(){
     if (own) r.locked = true;
     j.dates.forEach(d => r.dates.add(d));
     j.candidates.forEach(c => {
-      c = String(c).trim(); if (!c) return;
-      r.cands.add(c);
+      c = String(c).trim(); if (!c || CANDGONE.has(k + "::" + norm(c))) return;
+      if (![...r.cands].some(x => norm(x) === norm(c))) r.cands.add(c);
       const ck = norm(c); if (!cands.has(ck)) cands.set(ck, { name:c, jobs:new Set() });
       cands.get(ck).jobs.add(k);
     });
@@ -5011,6 +5200,17 @@ function pipeline(){
   for (const [id, e] of Object.entries(JOBEDIT)) if (!e.deleted) addJob(e, "edit", id);
   (IMPORT?.jobs || []).forEach(j => addJob(j, "sheet"));
   LOG.forEach(x => { const d = entryDate(x); addJob({ company:x.company, position:x.position, link:x.link, terms:x.terms, candidates:x.candidates, managers:x.managers, dates:d ? [d] : [] }, "saved"); });
+  const dupes = alias.size;
+  into.forEach((to, from) => alias.set(from, to));
+  // Anything filed under another spelling of the job moves to the one record
+  let moved = false;
+  alias.forEach((to, from) => {
+    if (JOBSTAT[from]){ if (!JOBSTAT[to]) JOBSTAT[to] = JOBSTAT[from]; delete JOBSTAT[from]; moved = true; }
+    if (BIGWHEEL[from]){ if (!BIGWHEEL[to]) BIGWHEEL[to] = BIGWHEEL[from]; delete BIGWHEEL[from]; moved = true; }
+    SO.rows.forEach(s => { if (s.job === from) s.job = to; });
+    if (SO.job === from) SO.job = to;
+  });
+  if (moved){ store.set("md.jobstat", JOBSTAT); store.set("md.bigwheel", BIGWHEEL); }
   SO.rows.forEach(s => { if (soHas(s)) jobs.get(s.job)?.sourced.push(s); });
   for (const [k, t] of Object.entries(TOUCH)){ const r = mgrs.get(k); if (r) (t.dates || []).forEach(d => r.dates.add(d)); }
   for (const m of mgrs.values()){
@@ -5025,7 +5225,28 @@ function pipeline(){
     j.first = s[0] || null; j.last = s[s.length - 1] || null;
     j.status = JOBSTAT[j.key] || "pursuing";
   }
-  return { jobs:[...jobs.values()], mgrs:[...mgrs.values()], cands:[...cands.values()], byMgr:mgrs, byJob:jobs };
+  const byJob = new Map(jobs);
+  alias.forEach((to, from) => { if (jobs.has(to)) byJob.set(from, jobs.get(to)); });
+  return { jobs:[...jobs.values()], mgrs:[...mgrs.values()], cands:[...cands.values()], byMgr:mgrs, byJob, dupes };
+}
+function setJobStatus(key, s){
+  if (s === "pursuing") delete JOBSTAT[key]; else JOBSTAT[key] = s;
+  if (s === "bigwheel"){ if (!BIGWHEEL[key]) BIGWHEEL[key] = { since:isoToday() }; } else delete BIGWHEEL[key];
+  store.set("md.jobstat", JOBSTAT); store.set("md.bigwheel", BIGWHEEL);
+}
+/* No job ATM / Big Wheel: a check-in every 20 working days (4 weeks), counted from the last time you reached them */
+const BW_DAYS = 20;
+function addWorkdays(iso, n){ let d = iso; while (n > 0){ d = isoShift(d, 1); if (isWorkday(d)) n--; } return d; }
+const bwBase = j => { const b = BIGWHEEL[j.key] || {}; return [b.since, b.done, j.last].filter(Boolean).sort().pop() || isoToday(); };
+const bwNext = j => addWorkdays(bwBase(j), BW_DAYS);
+const bwDue = P => P.jobs.filter(j => j.status === "bigwheel" && bwNext(j) <= isoToday());
+const bwWho = (j, P) => [...j.mgrs].map(k => P.byMgr.get(k)).filter(Boolean).map(mgrLabel).join(", ") || "the manager";
+function bwDone(key){
+  const P = pipeline(), j = P.byJob.get(key); if (!j) return;
+  [...j.mgrs].forEach(markCalled);
+  BIGWHEEL[j.key] = { ...(BIGWHEEL[j.key] || {}), done:isoToday() }; store.set("md.bigwheel", BIGWHEEL);
+  afterJobChange();
+  toast(`Logged. I'll remind you again ${longDate(bwNext({ key:j.key, last:isoToday() }))}.`);
 }
 function touch(k){ return TOUCH[k] = TOUCH[k] || { dates:[], resp:[] }; }
 function markCalled(k){
@@ -5063,7 +5284,7 @@ function toggleDaily(id){
 }
 function todayList(P){
   const today = isoToday(), out = (isWorkday(today) ? DAILY : []).map(d => ({ kind:"daily", why:"Daily", cls:"list", id:d.id, text:d.text, note:d.note, scroll:d.scroll, auto:!!d.auto, done:dailyDone(d.id) })), seen = new Set();
-  const live = m => [...m.jobs].some(k => P.byJob.get(k)?.status !== "filled");
+  const live = m => [...m.jobs].some(k => !notLive(P.byJob.get(k)?.status));
   const add = (m, why, cls, note) => { if (seen.has(m.key)) return; seen.add(m.key); out.push({ kind:"mgr", m, why, cls, note }); };
   P.mgrs.filter(m => m.lastResp?.t === "pos" && (m.lastResp.ts || 0) > (TOUCH[m.key]?.calledTs || 0))
     .sort((a, b) => (a.lastResp.ts || 0) - (b.lastResp.ts || 0))
@@ -5074,8 +5295,14 @@ function todayList(P){
     .forEach(m => add(m, "Follow up", "due", `Last reached ${ago(daysSince(m.last))}`));
   // Stays on the list while you're still adding people, until there's someone in the sheet or submitted
   P.jobs.filter(j => j.status === "pulled" && !j.cands.size && !j.sourced.some(s => s.submitted)).forEach(j => out.push({ kind:"task", why:"Source", cls:"due", text:`Source candidates for ${j.position || "the role"}${j.company ? " at " + j.company : ""}`, note:j.sourced.length ? `Pulled, ${j.sourced.length} sourced so far` : "Pulled, no candidates yet", job:j.key }));
-  return out;
+  bwDue(P).forEach(j => out.push({ kind:"task", why:"Big Wheel", cls:"list", text:`Check in with ${bwWho(j, P)}${j.company ? " at " + j.company : ""}`, note:`No job right now. Last reached ${ago(daysSince(j.last))}. Keep the relationship going.`, bw:j.key }));
+  const off = skipToday();
+  return out.filter(x => !off.includes(todoId(x)));
 }
+// "Not today": off the list and out of the counts until tomorrow
+let SKIP = store.get("md.skip", { day:"", ids:[] });
+function skipToday(){ if (SKIP.day !== isoToday()) SKIP = { day:isoToday(), ids:[] }; return SKIP.ids; }
+const todoId = x => x.kind === "mgr" ? "m:" + x.m.key : x.kind === "daily" ? "d:" + x.id : x.kind === "task" ? "t:" + (x.job || x.bw || x.text) : "u:" + x.id;
 
 /* =========================================================
    DASHBOARD
@@ -5138,7 +5365,7 @@ function dashRead(P){
   if (pos.length) out.push(`${pos.length === 1 ? mgrLabel(pos[0].m) + " replied" : pos.length + " managers replied"} positively and ${pos.length === 1 ? "hasn't" : "haven't"} had a call back. Start there.`);
   const due = T.filter(x => x.cls === "due").length, listed = T.filter(x => x.cls === "list").length;
   if (due || listed) out.push(`${due ? `${due} manager${due === 1 ? " is" : "s are"} due a follow-up` : ""}${due && listed ? " and " : ""}${listed ? `${listed} ${listed === 1 ? "is" : "are"} on your call list` : ""} today.`);
-  const quiet = P.jobs.filter(j => j.status !== "filled" && j.last).sort((a, b) => a.last < b.last ? -1 : 1)[0];
+  const quiet = P.jobs.filter(j => !notLive(j.status) && j.last).sort((a, b) => a.last < b.last ? -1 : 1)[0];
   if (quiet && daysSince(quiet.last) >= 7) out.push(`Quietest job: ${quiet.position || "a role"}${quiet.company ? " at " + quiet.company : ""}, ${daysSince(quiet.last)} days without a touch. Either it's filled or they've forgotten you. One call settles it.`);
   const noDate = P.mgrs.filter(m => !m.last).length;
   if (noDate) out.push(`${noDate} manager${noDate === 1 ? " has" : "s have"} no contact date, so I can't age ${noDate === 1 ? "them" : "them"}. Add dates to the sheet or mark the calls here.`);
@@ -5173,35 +5400,37 @@ function renderDash(){
   $("#dash-say").textContent = `${fn ? fn + ", " : ""}${due ? `${due} thing${due === 1 ? "" : "s"} on today's list. ${due === 1 ? "It's" : "They're"} just below.` : "nothing's due today. Where to next?"}`;
   const tiles = [
     { n:P.jobs.length, l:"Jobs tried to pull", hi:true }, { n:by("pursuing"), l:"Still trying to pull" }, { n:by("pulled"), l:"Pulled" },
-    { n:by("filled"), l:"Filled / unavailable" }, { n:P.mgrs.length, l:"Hiring managers" }, { n:P.cands.length, l:"Candidates in play" }
+    { n:by("filled"), l:"Filled / unavailable" }, ...(by("bigwheel") ? [{ n:by("bigwheel"), l:"Big Wheel" }] : []), { n:P.mgrs.length, l:"Hiring managers" }, { n:P.cands.length, l:"Candidates in play" }
   ];
   $("#d-tiles").innerHTML = tiles.map(t => `<div class="tile${t.hi ? " hi" : ""}"><b>${t.n}</b><span>${esc(t.l)}</span></div>`).join("");
 
   // To Do List
-  const T = todayList(P), todos = TODOS.filter(x => x.day === today || !x.done);
+  const T = todayList(P), off = skipToday(), todos = TODOS.filter(x => (x.day === today || !x.done) && !off.includes("u:" + x.id));
+  const notToday = x => x.done ? "" : `<button type="button" class="btn ghost" data-skip="${esc(todoId(x))}" title="Take this off today's list. It comes back tomorrow.">Not today</button>`;
   const left = T.filter(x => !x.done).length + todos.filter(x => !x.done).length;
   $("#d-todo-sub").textContent = left ? `${left} to do` : "All done";
   const tick = (attr, on, what) => `<button type="button" class="tick${on ? " on" : ""}" ${attr} aria-pressed="${on}" aria-label="${on ? "Done" : "Mark done"}: ${esc(what)}"></button>`;
   const mgrRow = x => `<li><span></span><span class="why ${x.cls}">${esc(x.why)}</span><span class="t"><b>${esc(mgrLabel(x.m))}</b><span>${esc([x.m.name && x.m.title, x.m.company].filter(Boolean).join(" \u00b7 "))}${x.note ? " \u00b7 " + esc(x.note) : ""}</span><span>${esc([x.m.phone, x.m.email].filter(Boolean).join(" \u00b7 "))}</span></span>
-    <span class="acts"><button type="button" class="btn" data-called="${esc(x.m.key)}">Called</button><button type="button" class="btn resp-btn pos" data-r="pos" data-k="${esc(x.m.key)}" aria-label="Positive response" title="Positive response">+</button><button type="button" class="btn resp-btn" data-r="neu" data-k="${esc(x.m.key)}" aria-label="Neutral response" title="Neutral response">=</button><button type="button" class="btn resp-btn neg" data-r="neg" data-k="${esc(x.m.key)}" aria-label="Negative response" title="Negative response">\u2212</button></span></li>`;
-  const taskRow = x => `<li><span></span><span class="why ${x.cls}">${esc(x.why)}</span><span class="t"><b>${esc(x.text)}</b><span>${esc(x.note || "")}</span></span><span class="acts">${x.job ? `<button type="button" class="btn" data-source-job="${esc(x.job)}">Open</button>` : x.view ? `<button type="button" class="btn" data-goto="${x.view}">Open</button>` : x.scroll ? `<button type="button" class="btn" data-scroll="${x.scroll}">Go</button>` : ""}</span></li>`;
-  const dailyRow = x => `<li class="${x.done ? "done" : ""}">${x.auto ? `<span class="tick${x.done ? " on" : ""}" role="img" aria-label="${x.done ? "Logged" : "Not logged yet"}"></span>` : tick(`data-daily="${x.id}"`, x.done, x.text)}<span class="why ${x.cls}">${esc(x.why)}</span><span class="t"><b>${esc(x.text)}</b><span>${esc(x.done ? (x.auto ? "Logged" : "Done for today") : x.note || "")}</span></span><span class="acts">${x.auto ? (x.done ? "" : `<button type="button" class="btn" data-scroll="${x.scroll}">Go</button>`) : x.done ? `<button type="button" class="undo" data-daily="${x.id}">Undo</button>` : ""}</span></li>`;
-  const todoRow = x => `<li class="${x.done ? "done" : ""}">${tick(`data-todo-done="${x.id}"`, x.done, x.text)}<span class="why">To do</span><span class="t"><b>${esc(x.text)}</b></span><span class="acts">${x.done ? `<button type="button" class="undo" data-todo-done="${x.id}">Undo</button>` : ""}<button type="button" class="btn ghost" data-todo-del="${x.id}" aria-label="Delete">\u00d7</button></span></li>`;
+    <span class="acts"><button type="button" class="btn" data-called="${esc(x.m.key)}">Called</button><button type="button" class="btn resp-btn pos" data-r="pos" data-k="${esc(x.m.key)}" aria-label="Positive response" title="Positive response">+</button><button type="button" class="btn resp-btn" data-r="neu" data-k="${esc(x.m.key)}" aria-label="Neutral response" title="Neutral response">=</button><button type="button" class="btn resp-btn neg" data-r="neg" data-k="${esc(x.m.key)}" aria-label="Negative response" title="Negative response">\u2212</button>${notToday(x)}</span></li>`;
+  const taskRow = x => `<li><span></span><span class="why ${x.cls}">${esc(x.why)}</span><span class="t"><b>${esc(x.text)}</b><span>${esc(x.note || "")}</span></span><span class="acts">${x.bw ? `<button type="button" class="btn" data-open-job="${esc(x.bw)}">Open</button><button type="button" class="btn" data-bw-done="${esc(x.bw)}">Reached out</button>` : x.job ? `<button type="button" class="btn" data-source-job="${esc(x.job)}">Open</button>` : x.view ? `<button type="button" class="btn" data-goto="${x.view}">Open</button>` : x.scroll ? `<button type="button" class="btn" data-scroll="${x.scroll}">Go</button>` : ""}${notToday(x)}</span></li>`;
+  const dailyRow = x => `<li class="${x.done ? "done" : ""}">${x.auto ? `<span class="tick${x.done ? " on" : ""}" role="img" aria-label="${x.done ? "Logged" : "Not logged yet"}"></span>` : tick(`data-daily="${x.id}"`, x.done, x.text)}<span class="why ${x.cls}">${esc(x.why)}</span><span class="t"><b>${esc(x.text)}</b><span>${esc(x.done ? (x.auto ? "Logged" : "Done for today") : x.note || "")}</span></span><span class="acts">${x.auto ? (x.done ? "" : `<button type="button" class="btn" data-scroll="${x.scroll}">Go</button>`) : x.done ? `<button type="button" class="undo" data-daily="${x.id}">Undo</button>` : ""}${notToday(x)}</span></li>`;
+  const todoRow = x => `<li class="${x.done ? "done" : ""}">${tick(`data-todo-done="${x.id}"`, x.done, x.text)}<span class="why">To do</span><span class="t"><b>${esc(x.text)}</b></span><span class="acts">${x.done ? `<button type="button" class="undo" data-todo-done="${x.id}">Undo</button>` : ""}${notToday({ ...x, kind:"todo" })}<button type="button" class="btn ghost" data-todo-del="${x.id}" aria-label="Delete">\u00d7</button></span></li>`;
   $("#d-todo").innerHTML = T.length || todos.length
     ? `<ul class="todo">${T.map(x => x.kind === "mgr" ? mgrRow(x) : x.kind === "daily" ? dailyRow(x) : taskRow(x)).join("")}${todos.map(todoRow).join("")}</ul>`
-    : `<div class="dash-empty">Nothing due. Paste your sheet on the Middleton Method tab, or tick managers there for your call list, and they'll show up here.</div>`;
+    : `<div class="dash-empty">${off.length ? "Nothing else for today." : "Nothing due. Paste your sheet on the Middleton Method tab, or tick managers there for your call list, and they'll show up here."}</div>`;
+  if (off.length) $("#d-todo").insertAdjacentHTML("beforeend", `<div class="todo-skipped"><span>${off.length} set aside until tomorrow</span><button type="button" class="undo" data-skip-undo>Bring ${off.length === 1 ? "it" : "them"} back</button></div>`);
 
   // PIPER's read
   $("#d-read").innerHTML = dashRead(P).map(s => `<li>${esc(s)}</li>`).join("");
 
   // Pipeline age
-  const live = P.jobs.filter(j => j.status !== "filled");
+  const live = P.jobs.filter(j => !notLive(j.status));
   const dated = live.filter(j => j.first);
   const oldest = [...dated].sort((a, b) => a.first < b.first ? -1 : a.first > b.first ? 1 : 0).slice(0, 5);
   const newest = [...dated].sort((a, b) => a.first > b.first ? -1 : a.first < b.first ? 1 : 0).slice(0, 5);
   const maxD = Math.max(14, ...dated.map(j => daysSince(j.last) || 0));
   const ageRow = j => { const n = daysSince(j.last), cls = n >= 14 ? "bad" : n >= 7 ? "warn" : "";
-    return `<li><div class="top-line"><b title="${esc(j.position)}">${esc(j.position || "Untitled role")}</b><span>${n === 0 ? "today" : n + "d since"}</span></div><div class="bar" role="img" aria-label="${n} days since last reached"><i class="${cls}" style="width:${Math.max(3, Math.round(n / maxD * 100))}%"></i></div><div class="sub">${esc(j.company)} \u00b7 first reached ${ago(daysSince(j.first))}</div></li>`; };
+    return `<li><button type="button" class="age-row" data-open-job="${esc(j.key)}" aria-label="Open ${esc(jobLabel(j))}, ${n} days since last reached"><span class="top-line"><b title="${esc(j.position)}">${esc(j.position || "Untitled role")}</b><span>${n === 0 ? "today" : n + "d since"}</span></span><span class="bar"><i class="${cls}" style="width:${Math.max(3, Math.round(n / maxD * 100))}%"></i></span><span class="sub">${esc(j.company)} \u00b7 first reached ${ago(daysSince(j.first))}</span></button></li>`; };
   const emptyAge = `<li class="dash-empty">No dated jobs yet.</li>`;
   $("#d-oldest").innerHTML = oldest.map(ageRow).join("") || emptyAge;
   $("#d-newest").innerHTML = newest.map(ageRow).join("") || emptyAge;
@@ -5247,15 +5476,20 @@ const blankCi = () => ({ num:nextCi(), company:"", position:"", manager:"", last
 // In number order, with any line missing a number last
 const ciOrder = (a, b) => (Number(a.num) || Infinity) - (Number(b.num) || Infinity);
 function ciGrow(el){ el.style.height = "auto"; el.style.height = el.scrollHeight + el.offsetHeight - el.clientHeight + "px"; }
+// Monday of this week through today
+function ciWeek(){ const d = fromISO(isoToday()), mon = isoShift(isoToday(), -((d.getDay() + 6) % 7)); return CHECKIN.filter(r => r.saved && r.saved >= mon).length; }
 function renderCheckin(){
   if (!CHECKIN.length) CHECKIN.push(blankCi());
   CHECKIN.sort(ciOrder);
+  const wk = ciWeek();
+  $("#d-ci-sub").textContent = wk ? `Your Monday email to your manager \u00b7 ${wk} saved this week` : "Your Monday email to your manager";
   $("#d-ci").innerHTML = CHECKIN.map((r, i) => `<div class="ci-row" data-i="${i}">
     <div class="field"><label for="ci${i}-num">#</label><input type="number" id="ci${i}-num" data-f="num" min="1" inputmode="numeric" value="${esc(r.num)}"></div>
     ${CI_FIELDS.map(f => `<div class="field"><label for="ci${i}-${f.k}">${f.label}</label>${f.long
       ? `<textarea id="ci${i}-${f.k}" data-f="${f.k}" rows="1">${esc(r[f.k])}</textarea>`
       : `<input type="text" id="ci${i}-${f.k}" data-f="${f.k}" value="${esc(r[f.k])}" autocomplete="off">`}</div>`).join("")}
     <button type="button" class="btn ghost ci-rm" data-ci-rm="${i}" aria-label="Remove line ${esc(r.num)}" title="Remove line">×</button>
+    ${r.saved ? `<small class="ci-saved">Saved ${esc(fromISO(r.saved).toLocaleDateString("en-US", { weekday:"short", month:"short", day:"numeric" }))}</small>` : ""}
   </div>`).join("");
   $("#d-ci").querySelectorAll("textarea").forEach(ciGrow);
 }
@@ -5284,6 +5518,19 @@ $("#d-ci-add").addEventListener("click", () => {
   const r = blankCi(); CHECKIN.push(r); saveCheckin(); renderCheckin();
   document.getElementById(`ci${CHECKIN.indexOf(r)}-company`).focus();
 });
+// Logs the lines typed so far and leaves a fresh one ready. The whole list goes out when you copy it for Monday
+$("#d-ci-save").addEventListener("click", () => {
+  const filled = r => CI_FIELDS.some(f => String(r[f.k] ?? "").trim()), fresh = CHECKIN.filter(r => filled(r) && !r.saved);
+  if (!CHECKIN.some(filled)){ toast("Nothing to save yet. Fill in a line first."); return; }
+  if (!fresh.length){ toast("Those are already saved."); return; }
+  fresh.forEach(r => { r.saved = isoToday(); });
+  let blank = CHECKIN.find(r => !filled(r));
+  if (!blank){ blank = blankCi(); CHECKIN.push(blank); }
+  saveCheckin(); renderCheckin();
+  document.getElementById(`ci${CHECKIN.indexOf(blank)}-company`)?.focus({ preventScroll:true });
+  const wk = ciWeek();
+  toast(`Saved. ${wk} ${wk === 1 ? "entry" : "entries"} logged this week.`);
+});
 $("#d-ci-clear").addEventListener("click", e => {
   const b = e.currentTarget;
   if (b.dataset.armed !== "1"){ b.dataset.armed = "1"; b.textContent = "Confirm clear"; setTimeout(() => { b.dataset.armed = ""; b.textContent = "Clear list"; }, 3000); return; }
@@ -5311,6 +5558,10 @@ $("#view-dashboard").addEventListener("click", e => {
   if (b.dataset.r && b.dataset.k){ logResp(b.dataset.k, b.dataset.r); renderDash(); toast(`${RESP_LABEL[b.dataset.r]} response logged`); return; }
   if (b.dataset.goto){ showView(b.dataset.goto); window.scrollTo(0, 0); return; }
   if (b.dataset.sourceJob){ openSourcing(b.dataset.sourceJob); return; }
+  if (b.dataset.openJob){ openJob(b.dataset.openJob); return; }
+  if (b.dataset.bwDone){ bwDone(b.dataset.bwDone); return; }
+  if (b.dataset.skip){ skipToday().push(b.dataset.skip); store.set("md.skip", SKIP); renderDash(); toast("Off the list for today"); return; }
+  if ("skipUndo" in b.dataset){ SKIP = { day:isoToday(), ids:[] }; store.set("md.skip", SKIP); renderDash(); return; }
   if (b.dataset.scroll){ $(b.dataset.scroll)?.scrollIntoView({ behavior:"smooth", block:"center" }); return; }
   if (b.dataset.daily){ toggleDaily(b.dataset.daily); renderDash(); return; }
   if (b.dataset.todoDone){ const x = TODOS.find(t => t.id === b.dataset.todoDone); if (x){ x.done = !x.done; x.day = isoToday(); store.set("md.todos", TODOS); renderDash(); } return; }
@@ -5474,33 +5725,136 @@ const jobLabel = j => [j.company, j.position].filter(Boolean).join(" \u00b7 ") |
 const jobContacts = (j, P) => [...j.mgrs].map(k => P.byMgr.get(k)).filter(Boolean);
 function renderJobs(P){
   const host = $("#d-jobs"), q = norm($("#d-job-q").value);
+  JOBSEL = new Set([...JOBSEL].filter(k => P.byJob.has(k)));
+  renderJobTools(); renderJobDups(P);
   if (!P.jobs.length){ host.innerHTML = `<div class="dash-empty">No jobs yet. Paste your sheet or save entries on the Middleton Method tab, or add one here.</div>`; $("#d-job-count").textContent = ""; return; }
   const hay = j => norm([j.company, j.position, j.notes, ...jobContacts(j, P).flatMap(m => [m.name, m.title, m.email, m.phone]), ...j.cands, ...j.sourced.map(s => s.name), STATUS[j.status]].join(" "));
-  const order = { pursuing:0, pulled:1, filled:2 };
+  const order = { pursuing:0, pulled:1, filled:2, bigwheel:3 };
   const rows = P.jobs.filter(j => !q || q.split(/\s+/).every(w => hay(j).includes(w))).sort((a, b) => order[a.status] - order[b.status] || (a.last || "").localeCompare(b.last || ""));
-  $("#d-job-count").textContent = q ? `${rows.length} of ${P.jobs.length}` : `${P.jobs.length} job${P.jobs.length === 1 ? "" : "s"}`;
+  $("#d-job-count").textContent = (q ? `${rows.length} of ${P.jobs.length}` : `${P.jobs.length} job${P.jobs.length === 1 ? "" : "s"}`) + (P.dupes ? ` \u00b7 ${P.dupes} duplicate${P.dupes === 1 ? "" : "s"} combined` : "");
   if (!rows.length){ host.innerHTML = `<div class="dash-empty">No jobs match that search.</div>`; return; }
-  host.innerHTML = `<div class="table-scroll"><table class="job-table"><thead><tr><th>Company</th><th>Position</th><th>Contacts</th><th>Candidates</th><th>First reached</th><th>Last reached</th><th>Status</th><th><span class="sr">Edit</span></th></tr></thead><tbody>${rows.map(j => `<tr data-job="${esc(j.key)}">
+  host.innerHTML = `<div class="table-scroll"><table class="job-table"><thead><tr><th class="sel-cell"><input type="checkbox" id="d-job-all" aria-label="Select every job shown"></th><th>Company</th><th>Position</th><th>Contacts</th><th>Candidates</th><th>First reached</th><th>Last reached</th><th>Status</th><th><span class="sr">Edit</span></th></tr></thead><tbody>${rows.map(j => `<tr data-job="${esc(j.key)}">
+    <td class="sel-cell"><input type="checkbox" data-sel="${esc(j.key)}"${JOBSEL.has(j.key) ? " checked" : ""} aria-label="Select ${esc(jobLabel(j))}"></td>
     <td>${esc(j.company)}</td><td>${j.link ? `<a href="${esc(j.link)}" target="_blank" rel="noopener" style="color:inherit">${esc(j.position)}</a>` : esc(j.position)}</td>
-    <td class="who">${esc(jobContacts(j, P).map(mgrLabel).join(", "))}</td><td class="who">${esc([...j.cands, ...j.sourced.map(s => s.name).filter(Boolean)].join(", "))}</td><td class="num">${esc(ago(daysSince(j.first)))}</td><td class="num">${esc(ago(daysSince(j.last)))}</td>
+    <td class="who">${esc(jobContacts(j, P).map(mgrLabel).join(", "))}</td><td class="who">${esc([...new Map([...j.cands, ...j.sourced.map(s => s.name).filter(Boolean)].map(c => [norm(c), c])).values()].join(", "))}</td><td class="num">${esc(ago(daysSince(j.first)))}</td><td class="num">${esc(ago(daysSince(j.last)))}</td>
     <td><label class="sr" for="st-${esc(j.key)}">Status</label><select id="st-${esc(j.key)}" data-status="${esc(j.key)}">${Object.entries(STATUS).map(([k, l]) => `<option value="${k}"${j.status === k ? " selected" : ""}>${l}</option>`).join("")}</select></td>
     <td><button type="button" class="btn ghost" data-job-edit="${esc(j.key)}">Edit</button></td></tr>`).join("")}</tbody></table></div>`;
 }
 $("#d-job-q").addEventListener("input", () => renderJobs(pipeline()));
+
+/* Merge: several records become one. The ones merged away keep pointing at it, so a later paste of an old name lands in the right place */
+let JOBSEL = new Set(), MERGE_UNDO = null, JM = null;
+function renderJobTools(){
+  const n = JOBSEL.size, el = $("#d-job-tools");
+  el.hidden = !n && !MERGE_UNDO;
+  el.innerHTML = (n ? `<b>${n} selected</b><button type="button" class="btn primary" data-jt="merge"${n < 2 ? ` disabled title="Tick at least two"` : ""}>Merge selected</button><button type="button" class="btn ghost" data-jt="clear">Clear</button>` : "")
+    + (MERGE_UNDO ? `<span class="grow"></span><button type="button" class="undo" data-jt="undo">Undo the last merge</button>` : "");
+}
+$("#d-job-tools").addEventListener("click", e => {
+  const b = e.target.closest("[data-jt]"); if (!b) return;
+  if (b.dataset.jt === "merge" && JOBSEL.size > 1) openMerge([...JOBSEL]);
+  if (b.dataset.jt === "clear"){ JOBSEL.clear(); renderJobs(pipeline()); }
+  if (b.dataset.jt === "undo" && MERGE_UNDO){
+    ({ JOBEDIT, JOBSTAT, BIGWHEEL } = MERGE_UNDO);
+    CANDGONE = new Set(MERGE_UNDO.gone);
+    SO.rows.forEach(r => { if (r.id in MERGE_UNDO.so) r.job = MERGE_UNDO.so[r.id]; });
+    SO.job = MERGE_UNDO.soJob; MERGE_UNDO = null;
+    saveJobEdit(); store.set("md.jobstat", JOBSTAT); store.set("md.bigwheel", BIGWHEEL); saveCandGone(); saveSo();
+    renderDash(); toast("Merge undone");
+  }
+});
+function openMerge(keys){
+  const P = pipeline(), list = keys.map(k => P.byJob.get(k)).filter(Boolean);
+  if (list.length < 2) return;
+  const weight = j => j.mgrs.size + j.cands.size + j.dates.size;
+  const best = [...list].sort((a, b) => weight(b) - weight(a))[0];
+  JM = { keys:list.map(j => j.key), keep:best.key };
+  $("#jm-h").textContent = `Merge ${list.length} jobs`;
+  const plural = (n, w) => `${n} ${w}${n === 1 ? "" : "s"}`;
+  $("#jm-list").innerHTML = list.map(j => `<label class="jm-opt"><input type="radio" name="jm-keep" value="${esc(j.key)}"${j === best ? " checked" : ""}><span><b>${esc(jobLabel(j))}</b><small>${plural(j.mgrs.size, "contact")} \u00b7 ${plural(j.cands.size, "candidate")} \u00b7 ${esc(STATUS[j.status])}</small></span></label>`).join("");
+  if (DEMO) $("#jm").show(); else $("#jm").showModal();
+}
+$("#jm-list").addEventListener("change", e => { if (e.target.name === "jm-keep") JM.keep = e.target.value; });
+$("#jm-close").addEventListener("click", () => $("#jm").close());
+$("#jm").addEventListener("click", e => { if (e.target === $("#jm")) $("#jm").close(); });
+$("#jm-go").addEventListener("click", () => { mergeInto(JM.keys, JM.keep); $("#jm").close(); });
+function mergeInto(keys, keepKey){
+  const P = pipeline(), list = keys.map(k => P.byJob.get(k)).filter(Boolean), keep = P.byJob.get(keepKey);
+  if (!keep || list.length < 2) return;
+  const others = list.filter(j => j !== keep), union = (...a) => [...new Set(a.flat(Infinity).filter(Boolean))];
+  MERGE_UNDO = { JOBEDIT:structuredClone(JOBEDIT), JOBSTAT:{ ...JOBSTAT }, BIGWHEEL:structuredClone(BIGWHEEL), gone:[...CANDGONE], so:Object.fromEntries(SO.rows.map(r => [r.id, r.job])), soJob:SO.job };
+  const mgrs = new Map(), names = new Map();
+  list.forEach(j => {
+    j.rawM.forEach(x => { const m = P.byMgr.get(x.key); if (m) mgrs.set(x.key, { key:x.key, title:m.title, name:m.name, email:m.email, phone:m.phone, dates:union(mgrs.get(x.key)?.dates, x.dates) }); });
+    j.cands.forEach(c => { if (!names.has(norm(c))) names.set(norm(c), c); });
+  });
+  const was = list.map(j => JOBEDIT[j.key] || {});
+  JOBEDIT[keep.key] = {
+    company:keep.company, position:keep.position, link:keep.link || others.find(j => j.link)?.link || "", terms:list.some(j => j.terms),
+    notes:union(list.map(j => j.notes)).join("\n"), dates:union(list.map(j => [...j.dates])).sort(), candidates:[...names.values()], managers:[...mgrs.values()],
+    gone:union(was.map(e => e.gone)), goneC:union(was.map(e => e.goneC)), goneD:union(was.map(e => e.goneD))
+  };
+  // The furthest along wins when the job you're keeping is still just "Trying to pull"
+  const st = keep.status !== "pursuing" ? keep.status : ["pulled", "bigwheel", "filled"].find(s => others.some(j => j.status === s)) || "pursuing";
+  const bw = others.map(j => BIGWHEEL[j.key]).find(Boolean);
+  others.forEach(j => {
+    JOBEDIT[j.key] = { deleted:true, into:keep.key, company:j.company, position:j.position };
+    delete JOBSTAT[j.key]; delete BIGWHEEL[j.key];
+    SO.rows.forEach(r => { if (r.job === j.key) r.job = keep.key; });
+    if (SO.job === j.key) SO.job = keep.key;
+    for (const g of [...CANDGONE]) if (g.startsWith(j.key + "::")){ CANDGONE.delete(g); CANDGONE.add(keep.key + g.slice(j.key.length)); }
+  });
+  if (st === "bigwheel" && bw && !BIGWHEEL[keep.key]) BIGWHEEL[keep.key] = bw;
+  setJobStatus(keep.key, st);
+  saveJobEdit(); saveCandGone(); saveSo();
+  JOBSEL.clear(); renderDash();
+  toast(`Merged into ${jobLabel(keep)}`);
+}
+// Same company with close to the same title. These wait for you to decide, since "Quality Manager" and "Senior Quality Manager" can be two real jobs
+function possibleDups(P){
+  const by = new Map(), out = [];
+  P.jobs.forEach(j => { const c = looseCo(j.company); if (c){ if (!by.has(c)) by.set(c, []); by.get(c).push(j); } });
+  by.forEach(list => {
+    for (let a = 0; a < list.length; a++) for (let b = a + 1; b < list.length; b++){
+      const A = new Set(posWords(list[a].position)), B = new Set(posWords(list[b].position));
+      const both = [...A].filter(w => B.has(w)).length, any = new Set([...A, ...B]).size;
+      const near = !A.size || !B.size ? list.length === 2 : both / any >= .6;
+      const id = [list[a].key, list[b].key].sort().join("\n");
+      if (near && !JOBNOTDUP.includes(id)) out.push({ id, a:list[a], b:list[b] });
+    }
+  });
+  return out;
+}
+function renderJobDups(P){
+  const d = possibleDups(P);
+  $("#d-job-dups").innerHTML = d.length ? `<div class="job-dups"><b>Possible duplicates (${d.length})</b>${d.slice(0, 5).map(x => `<div class="job-dup" data-id="${esc(x.id)}"><span>${esc(jobLabel(x.a))} <i style="color:var(--muted)">and</i> ${esc(jobLabel(x.b))}</span><button type="button" class="btn" data-dup="merge">Merge</button><button type="button" class="btn ghost" data-dup="no">Not the same</button></div>`).join("")}</div>` : "";
+}
+$("#d-job-dups").addEventListener("click", e => {
+  const b = e.target.closest("[data-dup]"); if (!b) return;
+  const id = b.closest("[data-id]").dataset.id;
+  if (b.dataset.dup === "merge") openMerge(id.split("\n"));
+  else { JOBNOTDUP.push(id); store.set("md.jobnotdup", JOBNOTDUP); renderJobDups(pipeline()); }
+});
 $("#d-job-add").addEventListener("click", () => openJob(null));
 $("#d-jobs").addEventListener("change", e => {
   const s = e.target.closest("[data-status]"); if (!s) return;
-  if (s.value === "pursuing") delete JOBSTAT[s.dataset.status]; else JOBSTAT[s.dataset.status] = s.value;
-  store.set("md.jobstat", JOBSTAT); renderDash(); toast(`Marked ${STATUS[s.value].toLowerCase()}`);
+  setJobStatus(s.dataset.status, s.value); renderDash();
+  if (s.value === "bigwheel"){ const j = pipeline().byJob.get(s.dataset.status); toast(`Marked No job ATM / Big Wheel. I'll remind you to check in ${longDate(bwNext(j))}.`); }
+  else toast(`Marked ${STATUS[s.value].toLowerCase()}`);
+});
+$("#d-jobs").addEventListener("change", e => {
+  const sel = e.target.closest("[data-sel]"), all = e.target.closest("#d-job-all");
+  if (sel){ if (sel.checked) JOBSEL.add(sel.dataset.sel); else JOBSEL.delete(sel.dataset.sel); renderJobTools(); }
+  if (all){ $("#d-jobs").querySelectorAll("[data-sel]").forEach(c => { c.checked = all.checked; if (all.checked) JOBSEL.add(c.dataset.sel); else JOBSEL.delete(c.dataset.sel); }); renderJobTools(); }
 });
 $("#d-jobs").addEventListener("click", e => {
-  if (e.target.closest("select, label, a")) return;
+  if (e.target.closest("select, label, a, .sel-cell")) return;
   const r = e.target.closest("[data-job]"); if (r) openJob(r.dataset.job);
 });
 
 /* One job, opened up. Changes are kept as a record of their own, so pasting the sheet again won't undo them */
 const jr = $("#jr");
-let JR = null;
+let JR = null, JR_START = "";
 function openJob(key){
   const P = pipeline(), j = key ? P.byJob.get(key) : null;
   if (key && !j) return;
@@ -5509,12 +5863,14 @@ function openJob(key){
     dates:[...j.dates].sort(), candidates:[...j.cands], sourced:j.sourced.map(s => s.name).filter(Boolean), gone:[], goneC:[], goneD:[],
     managers:[...j.rawM.values()].map(x => { const m = P.byMgr.get(x.key); return { key:x.key, title:m.title, name:m.name, email:m.email, phone:m.phone, dates:x.dates, last:m.last }; })
   } : { key:"u" + Date.now().toString(36), isNew:true, company:"", position:"", link:"", terms:false, notes:"", status:"pursuing", dates:[isoToday()], candidates:[], sourced:[], gone:[], goneC:[], goneD:[], managers:[{ key:"m" + Date.now().toString(36), title:"", name:"", email:"", phone:"", dates:[] }] };
-  $("#jr-del").hidden = JR.isNew; $("#jr-source").hidden = JR.isNew;
+  JR_START = JSON.stringify(JR);
+  $("#jr-del").hidden = JR.isNew; $("#jr-source").hidden = JR.isNew; $("#jr-mm").hidden = JR.isNew;
   const del = $("#jr-del"); del.dataset.armed = ""; del.classList.remove("armed"); del.textContent = "Delete job";
   renderJr();
   if (DEMO) jr.show(); else jr.showModal();   // In the tour it opens over the page window, so Next and Exit still work
   if (JR.isNew) $("#jr-company").focus();
 }
+const jrBwLine = J => `I'll remind you to check in on ${longDate(bwNext({ key:J.key, last:J.last }))}, and every 20 working days after that.`;
 function renderJr(){
   const J = JR;
   $("#jr-h").textContent = J.isNew ? "Add a job" : jobLabel(J);
@@ -5527,6 +5883,7 @@ function renderJr(){
         <div class="field"><label for="jr-link">Job description link</label><input type="url" id="jr-link" data-j="link" value="${esc(J.link)}" autocomplete="off"></div>
         <div class="field"><label for="jr-status">Status</label><select id="jr-status" data-j="status">${Object.entries(STATUS).map(([k, l]) => `<option value="${k}"${J.status === k ? " selected" : ""}>${l}</option>`).join("")}</select></div>
       </div>
+      <p class="jr-meta" id="jr-bw"${J.status === "bigwheel" ? "" : " hidden"}>${esc(jrBwLine(J))}</p>
       <label class="check" style="margin-top:10px"><input type="checkbox" id="jr-terms" data-j="terms"${J.terms ? " checked" : ""}> Terms</label>
       <div class="field" style="margin-top:10px"><label for="jr-notes">Notes</label><textarea id="jr-notes" data-j="notes" rows="2">${esc(J.notes)}</textarea></div>
     </div>
@@ -5558,6 +5915,7 @@ function renderJr(){
 $("#jr-body").addEventListener("input", e => {
   const f = e.target.closest("[data-j]"), m = e.target.closest("[data-m]");
   if (f) JR[f.dataset.j] = f.type === "checkbox" ? f.checked : f.value;
+  if (f?.id === "jr-status"){ const n = $("#jr-bw"); n.hidden = f.value !== "bigwheel"; if (!n.hidden) n.textContent = jrBwLine(JR); }
   if (m) JR.managers[Number(m.closest(".jr-mgr").dataset.i)][m.dataset.m] = m.value;
   if (f?.tagName === "TEXTAREA") ciGrow(f);
 });
@@ -5566,7 +5924,7 @@ $("#jr-body").addEventListener("focusout", e => {
   m.value = JR.managers[Number(m.closest(".jr-mgr").dataset.i)].phone = formatPhone(m.value);
 });
 function jrAddDate(){ const el = $("#jr-date"); if (!el.value) { el.focus(); return; } if (!JR.dates.includes(el.value)) JR.dates = [...JR.dates, el.value].sort(); renderJr(); }
-function jrAddCand(){ const el = $("#jr-cand"), v = el.value.trim(); if (!v) { el.focus(); return; } if (!JR.candidates.some(c => norm(c) === norm(v))) JR.candidates.push(v); renderJr(); $("#jr-cand").focus(); }
+function jrAddCand(){ const el = $("#jr-cand"), v = el.value.trim(); if (!v) { el.focus(); return; } if (isPhoneName(v)){ toast("That's a phone number, not a name."); el.select(); return; } if (!JR.candidates.some(c => norm(c) === norm(v))) JR.candidates.push(v); renderJr(); $("#jr-cand").focus(); }
 $("#jr-body").addEventListener("keydown", e => {
   if (e.key !== "Enter") return;
   if (e.target.id === "jr-cand"){ e.preventDefault(); jrAddCand(); }
@@ -5596,10 +5954,38 @@ function saveJob(){
     gone:more(was.gone, J.gone), goneC:more(was.goneC, J.goneC), goneD:more(was.goneD, J.goneD).filter(d => !J.dates.includes(d))
   };
   saveJobEdit();
-  if (J.status === "pursuing") delete JOBSTAT[J.key]; else JOBSTAT[J.key] = J.status;
-  store.set("md.jobstat", JOBSTAT);
+  J.candidates.forEach(c => { if (CANDGONE.delete(J.key + "::" + norm(c))) saveCandGone(); });
+  setJobStatus(J.key, J.status);
   return true;
 }
+/* An existing job into the Middleton Method form, candidates included. It stops at the form because Bullhorn still has to be checked before saving */
+function jobToMiddleton(key){
+  const P = pipeline(), j = P.byJob.get(key); if (!j) return false;
+  if (entryInProgress() && !(E.id && looseKey(E.company, E.position) === looseKey(j.company, j.position)) && !confirm("The Middleton Method form already has an entry in progress. Replace it with this job?")) return false;
+  const mgrs = jobContacts(j, P).map(m => ({ title:m.title, name:m.name, email:m.email, phone:m.phone }));
+  const names = [...j.cands, ...j.sourced.filter(s => s.name && !s.notfit && !s.reject).map(s => s.name)].map(c => String(c).trim()).filter(c => c && !isPhoneName(c));
+  const saved = LOG.find(x => looseKey(x.company, x.position) === looseKey(j.company, j.position));
+  if (saved){
+    E = structuredClone(saved); E.example = false;
+    E.managers = E.managers?.length ? E.managers : [];
+    mgrs.forEach(m => { const k = mgrKey(m, j.company); if (!E.managers.some(x => mgrKey(x, j.company) === k)) E.managers.push(m); });
+    if (!E.managers.length) E.managers = [blankMgr()];
+  } else {
+    E = { example:false, id:null, num:nextNum(), bullhorn:false, terms:!!j.terms, company:j.company, position:j.position, link:j.link || "", managers:mgrs.length ? mgrs : [blankMgr()], candidates:[] };
+  }
+  E.candidates = [...new Map([...(E.candidates || []), ...names].map(c => [norm(c), c])).values()];
+  saveE(); renderEntryForm();
+  showView("middleton");
+  setTimeout(() => { $("#m-form").scrollIntoView({ behavior:REDUCED ? "auto" : "smooth", block:"start" }); $("#m-bullhorn").focus({ preventScroll:true }); }, 150);
+  const n = E.candidates.length;
+  toast(`${saved ? `Opened #${E.num}` : "Filled in"}${n ? ` with ${n} candidate${n === 1 ? "" : "s"}` : ""}. Check Bullhorn, then save.`);
+  return true;
+}
+$("#jr-mm").addEventListener("click", () => {
+  if (JSON.stringify(JR) !== JR_START && !saveJob()) return;
+  const key = JR.key; jr.close();
+  jobToMiddleton(key);
+});
 $("#jr-form").addEventListener("submit", e => {
   e.preventDefault();
   if (!saveJob()) return;
@@ -5639,8 +6025,9 @@ function renderMeet(){
   $("#d-cal-sub").textContent = n ? `${n} meeting${n === 1 ? "" : "s"} today` : "Nothing today";
   const days = [...new Set(list.map(o => o.iso))];
   $("#d-cal").innerHTML = days.length ? days.slice(0, 7).map(d => `<div class="cal-day">${d === today ? "Today" : d === tomorrow ? "Tomorrow" : esc(fromISO(d).toLocaleDateString("en-US", { weekday:"long", month:"short", day:"numeric" }))}</div>
-    <ul class="cal-list">${list.filter(o => o.iso === d).map(o => { const soon = inMins(o.at); return `<li class="${soon && d === today ? "soon" : ""}"><span class="at">${esc(fmtClock(o.m.time))}</span><span class="t"><b>${esc(o.m.title)}</b><span>${esc([d === today ? soon : "", o.m.who, o.m.repeat !== "none" ? "Repeats" : ""].filter(Boolean).join(" \u00b7 "))}</span></span><span class="acts">${o.m.link ? `<a class="btn" href="${esc(o.m.link)}" target="_blank" rel="noopener">Open</a>` : ""}<button type="button" class="btn ghost" data-meet-edit="${esc(o.m.id)}">Edit</button><button type="button" class="btn ghost" data-meet-del="${esc(o.m.id)}" aria-label="Delete ${esc(o.m.title)}">\u00d7</button></span></li>`; }).join("")}</ul>`).join("")
+    <ul class="cal-list">${list.filter(o => o.iso === d).map(o => { const soon = inMins(o.at), live = soon && d === today; return `<li class="${live ? "soon" : ""}"><span class="at">${esc(fmtClock(o.m.time))}</span><span class="t"><b>${esc(o.m.title)}</b><span>${live ? `<i class="cal-count" data-count="${o.at.getTime()}"></i>${o.m.who || o.m.repeat !== "none" ? " \u00b7 " : ""}` : ""}${esc([o.m.who, o.m.repeat !== "none" ? "Repeats" : ""].filter(Boolean).join(" \u00b7 "))}</span></span><span class="acts"><button type="button" class="btn" data-meet-open="${esc(o.m.id)}" data-iso="${esc(d)}">Open</button><button type="button" class="btn ghost" data-meet-edit="${esc(o.m.id)}">Edit</button><button type="button" class="btn ghost" data-meet-del="${esc(o.m.id)}" aria-label="Delete ${esc(o.m.title)}">\u00d7</button></span></li>`; }).join("")}</ul>`).join("")
     : `<div class="dash-empty">No meetings coming up. Add one and I'll give you a heads up before it starts.</div>`;
+  tickCounts();
   if (!$("#cal-date").value) $("#cal-date").value = today;
   const nb = $("#d-cal-notify");
   nb.hidden = !("Notification" in window) || DEMO;
@@ -5655,7 +6042,7 @@ $("#d-cal-form").addEventListener("submit", e => {
   const title = $("#cal-title").value.trim(), date = $("#cal-date").value, time = $("#cal-time").value;
   if (!title){ toast("Name the meeting first"); $("#cal-title").focus(); return; }
   if (!date || !time){ toast("Add the date and time"); (date ? $("#cal-time") : $("#cal-date")).focus(); return; }
-  const rec = { id:MEET_EDIT || "c" + Date.now().toString(36), title, date, time, who:$("#cal-who").value.trim(), link:normUrl($("#cal-link").value), lead:Number($("#cal-lead").value), repeat:$("#cal-repeat").value };
+  const rec = { id:MEET_EDIT || "c" + Date.now().toString(36), title, date, time, who:$("#cal-who").value.trim(), notes:$("#cal-notes").value.trim(), link:normUrl($("#cal-link").value), lead:Number($("#cal-lead").value), repeat:$("#cal-repeat").value };
   const i = MEET.findIndex(m => m.id === rec.id);
   if (i >= 0) MEET[i] = rec; else MEET.push(rec);
   saveMeet(); meetFormReset(); renderMeet(); checkAlerts();
@@ -5663,16 +6050,62 @@ $("#d-cal-form").addEventListener("submit", e => {
 });
 $("#cal-cancel").addEventListener("click", meetFormReset);
 $("#d-cal").addEventListener("click", e => {
-  const ed = e.target.closest("[data-meet-edit]"), del = e.target.closest("[data-meet-del]");
-  if (ed){
-    const m = MEET.find(x => x.id === ed.dataset.meetEdit); if (!m) return;
-    MEET_EDIT = m.id; $("#cal-title").value = m.title; $("#cal-date").value = m.date; $("#cal-time").value = m.time; $("#cal-who").value = m.who; $("#cal-link").value = m.link; $("#cal-lead").value = String(m.lead); $("#cal-repeat").value = m.repeat;
-    $("#cal-save").textContent = "Save meeting"; $("#cal-cancel").hidden = false; $("#cal-title").focus();
-  }
+  const ed = e.target.closest("[data-meet-edit]"), del = e.target.closest("[data-meet-del]"), op = e.target.closest("[data-meet-open]");
+  if (op) openMeet(op.dataset.meetOpen, op.dataset.iso);
+  if (ed) editMeet(ed.dataset.meetEdit);
   if (del){
     if (del.dataset.armed !== "1"){ del.dataset.armed = "1"; del.classList.add("armed"); del.textContent = "Sure?"; setTimeout(() => { if (del.isConnected){ del.dataset.armed = ""; del.classList.remove("armed"); del.textContent = "\u00d7"; } }, 3000); return; }
     MEET = MEET.filter(m => m.id !== del.dataset.meetDel); saveMeet(); if (MEET_EDIT === del.dataset.meetDel) meetFormReset(); renderMeet();
   }
+});
+function editMeet(id){
+  const m = MEET.find(x => x.id === id); if (!m) return;
+  MEET_EDIT = m.id; $("#cal-title").value = m.title; $("#cal-date").value = m.date; $("#cal-time").value = m.time; $("#cal-who").value = m.who; $("#cal-notes").value = m.notes || ""; $("#cal-link").value = m.link; $("#cal-lead").value = String(m.lead); $("#cal-repeat").value = m.repeat;
+  $("#cal-save").textContent = "Save meeting"; $("#cal-cancel").hidden = false; $("#cal-title").focus();
+}
+/* Live countdowns: anything marked data-count (a time in ms) ticks every second, in the pop up, the record and the calendar */
+function fmtCount(ms){
+  const pos = ms >= 0, s = pos ? Math.ceil(ms / 1000) : Math.floor(-ms / 1000), p = n => String(n).padStart(2, "0");
+  if (!s) return "Starting now";
+  const d = Math.floor(s / 86400), h = Math.floor(s % 86400 / 3600), m = Math.floor(s % 3600 / 60), t = d ? `${d}d ${h}h ${m}m` : h ? `${h}:${p(m)}:${p(s % 60)}` : `${p(m)}:${p(s % 60)}`;
+  return pos ? `Starts in ${t}` : `Started ${t} ago`;
+}
+function tickCounts(){
+  document.querySelectorAll("[data-count]").forEach(el => {
+    const ms = Number(el.dataset.count) - Date.now(), t = fmtCount(ms);
+    if (el.textContent !== t) el.textContent = t;
+    el.classList.toggle("late", ms < -999);
+  });
+}
+setInterval(tickCounts, 1000);
+/* The meeting opened up: every detail, the countdown, and the link if it has one */
+const mr = $("#mr");
+let MR = null;
+function openMeet(id, iso){
+  const m = MEET.find(x => x.id === id); if (!m) return;
+  const day = iso || m.date, at = occAt(day, m.time);
+  MR = id;
+  const REPEAT = { daily:"Every day", weekdays:"Monday to Friday", weekly:"Every week" };
+  const fact = (k, v) => v ? `<dt>${k}</dt><dd>${esc(v)}</dd>` : "";
+  const safe = /^https?:\/\//i.test(m.link || "");
+  $("#mr-h").textContent = m.title;
+  $("#mr-body").innerHTML = `<div class="mr-count"><span data-count="${at.getTime()}"></span></div><dl class="mr-facts">
+    ${fact("When", `${fromISO(day).toLocaleDateString("en-US", { weekday:"long", month:"long", day:"numeric" })} at ${fmtClock(m.time)}`)}
+    ${fact("With", m.who)}${fact("Details", m.notes)}${fact("Repeats", REPEAT[m.repeat])}
+    ${fact("Alert", m.lead ? `${m.lead} minutes before` : "When it starts")}
+    ${fact("Link", m.link || "None on this one. Edit the meeting to add it.")}</dl>`;
+  const j = $("#mr-join"); j.hidden = !safe;
+  if (safe) j.href = m.link; else j.removeAttribute("href");
+  tickCounts();
+  if (mr.open) return;
+  if (DEMO) mr.show(); else mr.showModal();
+}
+$("#mr-close").addEventListener("click", () => mr.close());
+mr.addEventListener("click", e => { if (e.target === mr) mr.close(); });
+$("#mr-edit").addEventListener("click", () => {
+  const id = MR; mr.close();
+  showView("dashboard");
+  setTimeout(() => { unfold($("#d-cal")); editMeet(id); spotlight($("#d-cal-form")); }, 150);
 });
 $("#d-cal-notify").addEventListener("click", async () => {
   const r = await Notification.requestPermission(); renderMeet();
@@ -5681,11 +6114,11 @@ $("#d-cal-notify").addEventListener("click", async () => {
 
 /* Alerts: a card that stays up until it's answered. Only while the app is open in this browser */
 const ALERTS_ON = new Set();
-function showAlert({ id, title, body, speak, acts, quiet }){
+function showAlert({ id, title, body, speak, acts, quiet, countTo, notifyTitle }){
   if (ALERTS_ON.has(id)) return;
   ALERTS_ON.add(id);
   const el = document.createElement("div"); el.className = "alert"; el.setAttribute("role", "alertdialog"); el.setAttribute("aria-label", title);
-  el.innerHTML = `<b>${esc(title)}</b><p>${esc(body)}</p><div class="row"></div>`;
+  el.innerHTML = `<b>${esc(title)}</b>${countTo ? `<div class="alert-count" data-count="${countTo}"></div>` : ""}<p>${esc(body)}</p><div class="row"></div>`;
   const close = () => { ALERTS_ON.delete(id); el.remove(); };
   acts.forEach((a, i) => {
     const b = a.href ? document.createElement("a") : document.createElement("button");
@@ -5695,15 +6128,16 @@ function showAlert({ id, title, body, speak, acts, quiet }){
     el.querySelector(".row").append(b);
   });
   $("#alerts").append(el);
+  tickCounts();
   if (!quiet) say(speak || title);
   try {
     if (document.hidden && window.Notification && Notification.permission === "granted"){
-      const n = new Notification(title, { body, icon:"icons/icon-192.png", tag:id });
+      const n = new Notification(notifyTitle || title, { body, icon:"icons/icon-192.png", tag:id });
       n.onclick = () => { focus(); n.close(); };
     }
   } catch(_){}
 }
-let ALERTED = Object.assign({ kpi:"", meet:{} }, store.get("md.alerted", {}));
+let ALERTED = Object.assign({ kpi:"", meet:{}, mm:"", mmSnooze:0, bw:{} }, store.get("md.alerted", {}));
 const saveAlerted = () => store.set("md.alerted", ALERTED);
 // Monday to Thursday 4:55pm, Friday 3:25pm, once a day, unless today's numbers are already in
 const kpiDue = d => d.getDay() === 5 ? 15 * 60 + 25 : d.getDay() >= 1 && d.getDay() <= 4 ? 16 * 60 + 55 : null;
@@ -5711,23 +6145,54 @@ function goToKpis(){
   showView("dashboard");
   setTimeout(() => { spotlight($("#d-kpi-form")); $("#kpi-calls")?.focus({ preventScroll:true }); }, 150);
 }
+// Monday to Thursday 4pm, Friday 3:15pm, ahead of the Friday KPI alert
+const mmDue = d => d.getDay() === 5 ? 15 * 60 + 15 : d.getDay() >= 1 && d.getDay() <= 4 ? 16 * 60 : null;
+function goToNewEntry(){
+  showView("middleton");
+  setTimeout(() => { setMiOpen(true); miNewStart(isoToday()); spotlight($("#mi")); miPaste.focus({ preventScroll:true }); }, 150);
+}
+// The alert cards are built here so the demo tour shows the same ones the real app does
+const mmAlert = () => ({ id:"mm", title:"Time to add today's Middleton Method", body:"Paste the day's entries in, so today's jobs, managers and dates are all counted.", speak:"Time to add today's Middleton Method entries.", acts:[
+  { label:"Add entries", fn:goToNewEntry },
+  { label:"Snooze 30 min", fn:() => { ALERTED.mm = ""; ALERTED.mmSnooze = Date.now() + 30 * 60e3; saveAlerted(); } },
+  { label:"Dismiss" }
+] });
+const bwAlert = (j, P) => { const key = j.key; return { id:"bw:" + key, title:`Check in with ${bwWho(j, P)}`, body:`${j.company || "This manager"} has no job right now, but it's been four weeks. Last reached ${ago(daysSince(j.last))}. A quick hello keeps the relationship going.`, acts:[
+  { label:"Open record", fn:() => openJob(key) },
+  { label:"Reached out", fn:() => bwDone(key) },
+  { label:"Tomorrow" }
+] }; };
+const meetKey = o => `${o.m.id}@${o.iso}T${o.m.time}`;
+const meetAlert = o => { const key = meetKey(o), when = inMins(o.at) || `at ${fmtClock(o.m.time)}`; return { id:key, title:o.m.title, notifyTitle:`${o.m.title}, ${when}`, countTo:o.at.getTime(), body:[fmtClock(o.m.time), o.m.who && `with ${o.m.who}`].filter(Boolean).join(" "), speak:`${o.m.title} is ${when.replace(/\bmin\b/, "minutes")}.`, acts:[
+  { label:"Open meeting", fn:() => openMeet(o.m.id, o.iso) },
+  { label:"Snooze 5 min", fn:() => { ALERTED.meet[key] = Date.now() + 5 * 60e3; saveAlerted(); } },
+  { label:"Dismiss" }
+] }; };
 function checkAlerts(){
   if (DEMO || !gate.hidden) return;
   const now = new Date(), today = isoToday(), due = kpiDue(now);
+  if (mmDue(now) != null && now.getHours() * 60 + now.getMinutes() >= mmDue(now) && ALERTED.mm !== today && now.getTime() >= (ALERTED.mmSnooze || 0)){
+    ALERTED.mm = today; saveAlerted();
+    showAlert(mmAlert());
+  }
+  if (isWorkday(today) && Object.keys(BIGWHEEL).length){
+    const P = pipeline();
+    for (const j of bwDue(P)){
+      if (ALERTED.bw[j.key] === today) continue;
+      if ([...ALERTS_ON].filter(x => x.startsWith("bw:")).length >= 2) break;   // A couple at a time; the rest follow as these are answered
+      ALERTED.bw[j.key] = today; saveAlerted();
+      showAlert(bwAlert(j, P));
+    }
+  }
   if (due != null && now.getHours() * 60 + now.getMinutes() >= due && ALERTED.kpi !== today && !KPI.days[today]){
     ALERTED.kpi = today; saveAlerted();
     showAlert({ id:"kpi", title:"Time to add your KPIs", body:"The day's almost done. Log today's numbers before you head out.", acts:[{ label:"Take me there", fn:goToKpis }, { label:"Dismiss" }] });
   }
   for (const o of meetUpcoming(1)){
-    const key = `${o.m.id}@${o.iso}T${o.m.time}`, left = o.at - now;
+    const key = meetKey(o), left = o.at - now;
     if (left > o.m.lead * 60e3 || now.getTime() < (ALERTED.meet[key] || 0)) continue;
     ALERTED.meet[key] = 1e15; saveAlerted();
-    const when = inMins(o.at) || `at ${fmtClock(o.m.time)}`;
-    showAlert({ id:key, title:`${o.m.title}, ${when}`, body:[fmtClock(o.m.time), o.m.who && `with ${o.m.who}`].filter(Boolean).join(" "), speak:`${o.m.title} is ${when.replace(/\bmin\b/, "minutes")}.`, acts:[
-      ...(o.m.link ? [{ label:"Open meeting", href:o.m.link }] : []),
-      { label:"Snooze 5 min", fn:() => { ALERTED.meet[key] = Date.now() + 5 * 60e3; saveAlerted(); } },
-      { label:"Dismiss" }
-    ] });
+    showAlert(meetAlert(o));
   }
   if (!$("#view-dashboard").hidden) renderMeet();
 }
@@ -5789,7 +6254,7 @@ function soJobGroups(P, sel, label){
   const group = (l, list) => list.length ? `<optgroup label="${l}">${list.map(opt).join("")}</optgroup>` : "";
   // A job that's since been deleted still shows, so the candidate doesn't silently lose their match
   const gone = sel && sel !== "*" && !P.byJob.has(sel) ? `<option value="${esc(sel)}" selected>${esc(label || "A deleted job")}</option>` : "";
-  return gone + group("Pulled", by("pulled")) + group("Still trying to pull", by("pursuing")) + group("Filled / unavailable", by("filled"));
+  return gone + group("Pulled", by("pulled")) + group("Still trying to pull", by("pursuing")) + group("Filled / unavailable", by("filled")) + group("No job ATM / Big Wheel", by("bigwheel"));
 }
 function soRecHTML(r, P){
   const id = f => `so-${esc(r.id)}-${f}`;
@@ -5917,6 +6382,8 @@ const NEWS_FEEDS = [
   { name:"Fierce Biotech", url:"https://www.fiercebiotech.com/rss/medtech/xml" },
   { name:"Google News", url:"https://news.google.com/rss/search?q=%22medical%20device%22%20when%3A2d&hl=en-US&gl=US&ceid=US%3Aen" }
 ];
+// LinkedIn newsletters don't publish a feed, so this one is a pinned link on both panels and part of the research prompt
+const GS_WEEKLY = "https://www.linkedin.com/newsletters/gs-medtech-weekly-7340299365296603136";
 const FUND_RE = /\b(rais(e|es|ed|ing)|funding|financing|series [a-f]\b|seed round|seed funding|venture|investment round|closes? \$|\$\d[\d.,]*\s?(m|mm|million|b|billion)\b|ipo\b|form d|backed)/i;
 const stripTags = s => String(s || "").replace(/<[^>]*>/g, "").replace(/&amp;/g, "&").replace(/&#0?39;|&apos;/g, "'").replace(/&quot;/g, '"').replace(/&nbsp;/g, " ").trim();
 let newsBusy = false;
@@ -5960,7 +6427,7 @@ function fundPrompt(){
   return `Today is ${longDate(isoToday())}. Research new money in US medical device (medtech) companies.
 
 1. Check FormDs.com (https://www.formds.com/) and SEC EDGAR Form D filings from the last 7 days for medical device, diagnostics and medtech companies.
-2. Add medtech funding rounds, IPOs and acquisitions announced in the last 7 days (MedTech Dive, MassDevice, Fierce Biotech, company press releases).
+2. Add medtech funding rounds, IPOs and acquisitions announced in the last 7 days (MedTech Dive, MassDevice, Fierce Biotech, the GS Medtech Weekly newsletter at ${GS_WEEKLY}, company press releases).
 
 For each company give: name, city and state, amount raised and round, filing or announcement date, lead investors, what the product does, and the roles they're most likely to hire next (as job titles I could recruit for). Newest first. Only include companies you can source, with the link for each. Don't invent anything.`;
 }
@@ -6187,13 +6654,28 @@ const miPaste = $("#mi-paste"), miToggle = $("#mi-toggle");
 let miFilter = "";
 function setMiOpen(open){ miToggle.setAttribute("aria-expanded", String(open)); $("#mi-body").hidden = !open; $("#mi").classList.toggle("open", open); store.set("md.mi.open", open); }
 miToggle.addEventListener("click", () => setMiOpen(miToggle.getAttribute("aria-expanded") !== "true"));
+/* New entry: a clean box for one day's rows. Rows that carry no date of their own get its date */
+let MI_NEW = "";
+function miNewStart(day){
+  MI_NEW = day; miPaste.value = "";
+  $("#mi-new-date").value = day; $("#mi-newbar").hidden = false;
+  $("#mi-read").textContent = "Read it";
+}
+function miNewEnd(){ MI_NEW = ""; $("#mi-newbar").hidden = true; $("#mi-read").textContent = "Read it again"; }
+$("#mi-new").addEventListener("click", () => { setMiOpen(true); miNewStart(isoToday()); miPaste.focus(); });
+$("#mi-new-date").addEventListener("change", e => { if (e.target.value) MI_NEW = e.target.value; else e.target.value = MI_NEW; });
+$("#mi-new-cancel").addEventListener("click", () => { miNewEnd(); miPaste.value = IMPORT?.text || ""; });
 function runImport(grid){
   const res = readSheet(grid);
   if (!res.jobs.length){ renderImport(); $("#mi-out").insertAdjacentHTML("afterbegin", `<p class="mi-warn">I couldn't find any jobs in that. Copy the rows straight from the sheet, including the date above them and the entry numbers.</p>`); return; }
   res.jobs.forEach(j => j.managers.forEach(m => { m.key = mgrKey(m, j.company); }));
+  const stamp = MI_NEW;
+  if (stamp) res.jobs.forEach(j => { if (!j.dates.length && !j.managers.some(m => m.dates?.length)) j.dates = [stamp]; });
   const days = [...new Set(res.jobs.flatMap(j => j.dates))].sort();
   IMPORT = { v:2, at:Date.now(), mode:res.mode, jobs:mergeJobs(IMPORT?.jobs || [], res.jobs), text:miPaste.value.slice(0, 400000), days };
   store.set("md.import", IMPORT);
+  if (days.includes(isoToday()) && !DEMO){ ALERTED.mm = isoToday(); saveAlerted(); }   // The 4pm reminder has nothing left to ask for
+  if (stamp) miNewEnd();
   renderImport();
   if (!$("#view-dashboard").hidden) renderDash();
   const mc = new Set(res.jobs.flatMap(j => j.managers.map(m => m.key))).size;
@@ -6215,6 +6697,20 @@ $("#mi-clear").addEventListener("click", e => {
   b.dataset.armed = ""; b.textContent = "Clear the paste";
   miPaste.value = ""; IMPORT = null; store.set("md.import", null); renderImport(); toast("Paste cleared. Saved entries and your call list stay.");
 });
+// The call list as Middleton blocks, so it pastes straight into the sheet with the position it's about.
+// One block per job, holding the ticked managers on it. A manager on two live jobs shows up under both.
+function callListBlocks(P){
+  const list = CALLNEXT.map(k => P.byMgr.get(k)).filter(Boolean), perJob = new Map();
+  for (const m of list){
+    const jobs = [...m.jobs].map(k => P.byJob.get(k)).filter(Boolean), live = jobs.filter(j => !notLive(j.status));
+    for (const j of live.length ? live : jobs){
+      if (!perJob.has(j.key)) perJob.set(j.key, { j, mgrs:[] });
+      perJob.get(j.key).mgrs.push(m);
+    }
+  }
+  const blocks = [...perJob.values()].map(({ j, mgrs }, i) => entryRows({ num:String(i + 1), company:j.company, position:j.position, link:j.link, terms:j.terms, candidates:[...j.cands], managers:mgrs.map(m => ({ title:m.title, name:m.name, email:m.email, phone:m.phone })) }));
+  return { blocks, people:list.length };
+}
 const BUCKETS = [
   { l:"Not reached in 14+ days", t:n => n >= 14 }, { l:"7\u201313 days", t:n => n >= 7 && n < 14 }, { l:"3\u20136 days", t:n => n >= 3 && n < 7 },
   { l:"1\u20132 days", t:n => n >= 1 && n < 3 }, { l:"Reached today", t:n => n === 0 }, { l:"No date found", t:n => n == null }
@@ -6249,7 +6745,21 @@ function renderImport(){
         <span class="days"><span>${dd(daysSince(m.last))}<small>since last</small></span><span>${dd(daysSince(m.first))}<small>since first</small></span><span>${m.touches}<small>touches</small></span><button type="button" class="btn ghost mi-edit" data-job="${esc([...m.jobs][0])}">Edit</button></span></li>`;
     }).join("")}</ul></div>`).join("") || `<p class="mi-note">No managers match that filter.</p>`}</div>
     <details class="rules"><summary>Jobs (${P.jobs.length}). Click one to edit it</summary><div class="table-scroll"><table class="job-table"><thead><tr><th>Company</th><th>Position</th><th>Contacts</th><th>Since first</th><th>Since last</th></tr></thead><tbody>${[...P.jobs].sort((a, b) => a.company.localeCompare(b.company)).map(j => `<tr data-job="${esc(j.key)}"><td>${esc(j.company)}${j.terms ? ` <span class="badge ok">Terms</span>` : ""}</td><td>${esc(j.position)}</td><td class="num">${j.mgrs.size}</td><td class="num">${dd(daysSince(j.first))}</td><td class="num">${dd(daysSince(j.last))}</td></tr>`).join("")}</tbody></table></div></details>
-    <details class="rules"><summary>Candidates (${P.cands.length})</summary>${P.cands.length ? `<div class="mi-cands">${P.cands.sort((a, b) => a.name.localeCompare(b.name)).map(c => `<div class="mi-cand"><b>${esc(c.name)}</b>${[...c.jobs].map(k => { const j = P.byJob.get(k); return `<span>${esc(j.position || "Untitled role")} \u00b7 ${esc(j.company)}</span>`; }).join("")}</div>`).join("")}</div>` : `<p class="mi-note">No candidates found in column F.</p>`}</details>`;
+    <details class="rules" id="mi-cands-box"${miCandsOpen ? " open" : ""}><summary>Candidates (${P.cands.length})</summary>${P.cands.length ? `<div class="mi-cands">${P.cands.sort((a, b) => a.name.localeCompare(b.name)).map(c => `<div class="mi-cand" data-cand="${esc(c.name)}"><div class="mi-cand-h"><b>${esc(c.name)}</b><button type="button" class="mi-x" data-cand-rm aria-label="Remove ${esc(c.name)}" title="Remove ${esc(c.name)}">\u00d7</button></div>${[...c.jobs].map(k => { const j = P.byJob.get(k); return `<span class="mi-cand-job"><i>${esc(j.position || "Untitled role")} \u00b7 ${esc(j.company)}</i>${c.jobs.size > 1 ? `<button type="button" class="mi-x" data-cand-rm-job="${esc(k)}" aria-label="Remove ${esc(c.name)} from this job" title="Remove from this job only">\u00d7</button>` : ""}</span>`; }).join("")}</div>`).join("")}</div>` : `<p class="mi-note">No candidates found in column F.</p>`}</details>`;
+}
+let miCandsOpen = false;
+$("#mi-out").addEventListener("toggle", e => { if (e.target.id === "mi-cands-box") miCandsOpen = e.target.open; }, true);
+// Off the job here, off the sheet read and the saved entry too, and it stays off when the same rows are pasted again
+function removeCand(name, keys){
+  const P = pipeline(), n = norm(name), jobs = keys.map(k => P.byJob.get(k)).filter(Boolean), lk = new Set(jobs.map(j => looseKey(j.company, j.position)));
+  jobs.forEach(j => { CANDGONE.add(j.key + "::" + n); const e = JOBEDIT[j.key]; if (e?.candidates) e.candidates = e.candidates.filter(c => norm(c) !== n); });
+  const strip = x => { if (lk.has(looseKey(x.company, x.position)) && x.candidates) x.candidates = x.candidates.filter(c => norm(c) !== n); };
+  (IMPORT?.jobs || []).forEach(strip); LOG.forEach(strip);
+  if (E.id && LOG.some(x => x.id === E.id && lk.has(looseKey(x.company, x.position)))){ strip(E); saveE(); renderEntryCands(); }
+  saveCandGone(); saveJobEdit(); saveLog(); store.set("md.import", IMPORT);
+  renderLog(); renderImport();
+  if (!$("#view-dashboard").hidden) renderDash();
+  toast(`${name} removed`);
 }
 $("#mi-out").addEventListener("change", e => {
   const c = e.target.closest("[data-tick]"); if (!c) return;
@@ -6262,6 +6772,18 @@ $("#mi-out").addEventListener("input", e => {
   renderImport(); const f = $("#mi-filter"); f.focus(); f.setSelectionRange(pos, pos);
 });
 $("#mi-out").addEventListener("click", async e => {
+  const crm = e.target.closest("[data-cand-rm], [data-cand-rm-job]");
+  if (crm){
+    // Two clicks, like everywhere else something comes off
+    if (crm.dataset.armed !== "1"){
+      crm.dataset.armed = "1"; crm.classList.add("armed"); crm.textContent = "Sure?";
+      setTimeout(() => { if (crm.isConnected){ crm.dataset.armed = ""; crm.classList.remove("armed"); crm.textContent = "\u00d7"; } }, 3000);
+      return;
+    }
+    const name = crm.closest("[data-cand]").dataset.cand, P = pipeline(), c = P.cands.find(x => norm(x.name) === norm(name));
+    removeCand(name, crm.dataset.candRmJob ? [crm.dataset.candRmJob] : [...(c?.jobs || [])]);
+    return;
+  }
   const je = e.target.closest("[data-job]");
   if (je){ openJob(je.dataset.job); return; }
   const g = e.target.closest("[data-tick-group]");
@@ -6272,13 +6794,10 @@ $("#mi-out").addEventListener("click", async e => {
   }
   if (e.target.closest("#mi-untick")){ CALLNEXT = []; saveCallNext(); renderImport(); toast("Call list cleared"); return; }
   if (e.target.closest("#mi-copy")){
-    const P = pipeline(), list = CALLNEXT.map(k => P.byMgr.get(k)).filter(Boolean);
-    const head = ["Name", "Title", "Company", "Phone", "Email", "Last reached", "First reached"];
-    const rows = list.map(m => [m.name, m.title, m.company, m.phone, m.email, ago(daysSince(m.last)), ago(daysSince(m.first))]);
-    const td = v => `<td style="font-family:'Aptos Narrow',Aptos,Calibri,sans-serif;font-size:11pt;border:.5pt solid windowtext">${esc(v)}</td>`;
-    const html = `<meta charset="utf-8"><table style="border-collapse:collapse"><tr>${head.map(h => td(h).replace("<td ", "<td ").replace("font-size:11pt", "font-size:11pt;font-weight:bold")).join("")}</tr>${rows.map(r => `<tr>${r.map(td).join("")}</tr>`).join("")}</table>`;
-    const ok = await copyRich(html, [head, ...rows].map(r => r.join("\t")).join("\n"));
-    toast(ok ? `Copied ${list.length} manager${list.length === 1 ? "" : "s"}` : "Copy was blocked by this browser.");
+    const { blocks, people } = callListBlocks(pipeline());
+    const rows = blocksToRows(blocks);
+    const ok = await copyRich(rowsToClipboardHTML(rows), rowsToTSV(rows));
+    toast(ok ? `Copied ${people} manager${people === 1 ? "" : "s"} on ${blocks.length} job${blocks.length === 1 ? "" : "s"}, in Middleton format. Paste it into your sheet.` : "Copy was blocked by this browser.");
   }
 });
 
@@ -6875,7 +7394,7 @@ function answer(raw){
   }
   if (/oldest|stale|quiet|longest|aging|ageing|neglect/.test(q) || /newest|latest|recent|new job/.test(q)){
     const newest = /newest|latest|recent|new job/.test(q);
-    const live = P.jobs.filter(j => j.status !== "filled" && j.first).sort((a, b) => newest ? (a.first < b.first ? 1 : -1) : (a.first < b.first ? -1 : 1)).slice(0, 5);
+    const live = P.jobs.filter(j => !notLive(j.status) && j.first).sort((a, b) => newest ? (a.first < b.first ? 1 : -1) : (a.first < b.first ? -1 : 1)).slice(0, 5);
     if (!live.length) return { text:"I don't have any dated jobs yet. Paste your sheet with its dates, or save entries on the Middleton Method tab." };
     return { text:`Your ${live.length} ${newest ? "newest" : "oldest"} live jobs, and how long since you last reached out:`, list:live.map(j => `${j.position || "Untitled"} at ${j.company}: ${ago(daysSince(j.last))}`), acts:[{ label:"Pipeline age", view:"dashboard" }] };
   }
@@ -6888,7 +7407,7 @@ function answer(raw){
   if (/how many|count|pipeline|pulled|tried to pull|jobs/.test(q) && !/where|how do/.test(q)){
     if (!P.jobs.length) return { text:"No jobs yet. Paste your sheet on the Middleton Method tab.", acts:[{ label:"Paste my sheet", view:"middleton", open:"mi" }] };
     const by = s => P.jobs.filter(j => j.status === s).length;
-    return { text:`You've tried to pull ${P.jobs.length} job${P.jobs.length === 1 ? "" : "s"}: ${by("pursuing")} still in play, ${by("pulled")} pulled, ${by("filled")} filled or gone. ${P.mgrs.length} hiring managers and ${P.cands.length} candidates across them.` };
+    return { text:`You've tried to pull ${P.jobs.length} job${P.jobs.length === 1 ? "" : "s"}: ${by("pursuing")} still in play, ${by("pulled")} pulled, ${by("filled")} filled or gone${by("bigwheel") ? `, ${by("bigwheel")} Big Wheel with no job right now` : ""}. ${P.mgrs.length} hiring managers and ${P.cands.length} candidates across them.` };
   }
   const hit = KB.find(x => x.k.test(q));
   if (hit) return { text:hit.a, acts:[hit.act] };
@@ -8577,9 +9096,10 @@ function asBot(on){
 /* =========================================================
    DEMO TOUR
    Sign in as "Demo" and PIPER walks through the regular interface on a made-up desk: her home
-   screen, the Dashboard (to dos, calendar and alerts, Outlook copies, KPIs, every job), Middleton
-   (the sheet reader and a new entry), then one job from Ad Stalk through Job Spec, RIG, Sourcing,
-   Candidate Match and Notes, and talking to her. Nothing is copied to the clipboard. Next skips ahead.
+   screen, the Dashboard (to dos, calendar and meeting records, Outlook copies, KPIs, every job with
+   duplicates and merging, Big Wheel), a job record into Middleton (the 4pm New entry, the call list,
+   an entry by hand), then one job from Ad Stalk through Job Spec, RIG, Sourcing, Candidate Match and
+   Notes, and talking to her. Nothing is copied to the clipboard. Next skips ahead.
    ========================================================= */
 const DEMO_JD = `Senior Manager, Quality Assurance
 Location: Boston, MA (Hybrid)
@@ -8658,7 +9178,7 @@ async function typeInto(sel, text){
 function pasteInto(sel, text){ const el = $(sel); el.value = text; el.dispatchEvent(new Event("input", { bubbles:true })); }
 function tourSpot(sel){
   document.querySelectorAll(".tour-spot").forEach(x => x.classList.remove("tour-spot"));
-  const el = sel && $(sel); if (!el) return;
+  const el = typeof sel === "string" ? $(sel) : sel; if (!el) return;
   el.classList.add("tour-spot");
   // A tall form starts from its top, so the page reads from its heading down
   const tall = el.offsetHeight > (DEMO ? $("main").clientHeight : innerHeight) * .7;
@@ -8813,50 +9333,101 @@ async function homeOff(){
 // Clears whatever the last step left open
 function tourTidy(){
   if (jr.open) jr.close();
+  if (mr.open) mr.close();
+  if ($("#jm").open) $("#jm").close();
   $("#alerts").innerHTML = ""; ALERTS_ON.clear();
   if ($("#d-job-q").value){ $("#d-job-q").value = ""; if (!$("#view-dashboard").hidden) renderJobs(pipeline()); }
+  if (MI_NEW) miNewEnd();
   setMiOpen(false);
 }
+const tourTap = sel => { const el = typeof sel === "string" ? $(sel) : sel; if (el) el.click(); return !!el; };
+// One made-up job, by name
+const demoJob = re => pipeline().jobs.find(x => re.test(x.company));
 const anA = n => /^(8|11|18)/.test(String(n)) ? "an" : "a";
 const DEMO_STEPS = [
   { home:true, say:"Hi, I'm PIPER, your Personal Intelligence for Prospecting, Execution and Recruitment. Here's the quick tour, on made-up data.",
     bits:["PERSONAL", "INTELLIGENCE", "PROSPECTING", "EXECUTION", "RECRUITMENT"] },
-  { view:"dashboard", say:"The Dashboard is your morning: the counts, who to call first, and my read on your desk.", bits:["TO DO", "CALL LIST", "FOLLOW UP", "REPLIED +", "TODAY"],
-    act: async () => { await pause(1600); tourSpot("#d-todo"); await pause(2400); tourSpot("#d-read"); } },
-  { view:"dashboard", el:"#d-cal-panel", say:"Your calendar: I'll alert you before each meeting, and remind you to log your KPIs before you leave.", bits:["CALENDAR", "INTAKE CALL", "ALERT", "10 MIN"],
+  { view:"dashboard", say:"The Dashboard is your morning: the counts, who to call first, and my read on your desk. Not today sets anything aside until tomorrow.", bits:["TO DO", "CALL LIST", "FOLLOW UP", "NOT TODAY", "TODAY"],
+    act: async () => {
+      await pause(1500); tourSpot("#d-todo"); await pause(2200); tourSpot("#d-read"); await pause(2200);
+      const no = $('[data-skip="u:demo2"]'); if (!no) return;
+      tourSpot(no.closest("li")); await pause(1300); no.click(); await pause(300); tourSpot(".todo-skipped");
+    } },
+  { view:"dashboard", el:"#d-cal-panel", say:"Your calendar: a live countdown before each meeting, and one click opens the record, with the details and the link inside.", bits:["CALENDAR", "INTAKE CALL", "COUNTDOWN", "MEETING LINK"],
     act: async () => {
       await pause(1800);
       const o = meetUpcoming(1)[0]; if (!o) return;
-      showAlert({ id:"demo", quiet:true, title:`${o.m.title}, ${inMins(o.at) || "at " + fmtClock(o.m.time)}`, body:`${fmtClock(o.m.time)} with ${o.m.who}`, acts:[{ label:"Snooze 5 min" }, { label:"Dismiss" }] });
+      showAlert({ ...meetAlert(o), quiet:true });
+      await pause(2800);
+      tourTap("#alerts .alert .btn.primary");
     } },
-  { view:"dashboard", el:"#d-ci-panel", say:"Manager Check In and Terms Amendments copy straight into Outlook, already formatted.", bits:["MONDAY EMAIL", "OUTLOOK", "TERMS", "APTOS 12"],
-    act: async () => { await pause(2800); unfold($("#d-terms-panel")); tourSpot("#d-terms-panel"); } },
+  { view:"dashboard", el:"#d-ci-panel", say:"Save Manager Check In entries through the week. It and Terms Amendments copy straight into Outlook, already formatted.", bits:["MONDAY EMAIL", "SAVE ENTRY", "OUTLOOK", "TERMS"],
+    act: async () => { await pause(2200); tourTap("#d-ci-save"); await pause(2400); unfold($("#d-terms-panel")); tourSpot("#d-terms-panel"); } },
   { view:"dashboard", el:"#d-kpi-form", say:"Log your five KPIs and see them against your targets.", bits:["KPI", "CALLS", "BEFORE 9AM", "PHONE TIME"],
     act: async () => {
       for (const [id, v] of [["calls", "33"], ["early", "6"], ["emails", "31"], ["phone", "68"], ["mgrs", "4"]]) await typeInto("#kpi-" + id, v);
       await pause(200); $("#d-kpi-form").requestSubmit(); await pause(200); tourSpot("#d-kpi-grid");
     } },
-  { view:"dashboard", el:"#d-oldest", say:"Job age, manager replies, live medtech news, and who just got funded.", bits:["JOB AGE", "REPLIES", "MEDTECH NEWS", "FUNDING"],
-    act: async () => { await pause(1500); tourSpot("#d-resp"); await pause(1500); tourSpot("#d-news"); } },
-  { view:"dashboard", el:"#d-jobs-panel", say:"Every job in one place, searchable. Click one for its contacts, dates and candidates, and edit anything.", bits:["EVERY JOB", "SEARCH", "CONTACTS", "CANDIDATES"],
+  { view:"dashboard", el:"#d-oldest", say:"Job age, manager replies, live medtech news with GS Medtech Weekly pinned, and who just got funded.", bits:["JOB AGE", "REPLIES", "GS MEDTECH WEEKLY", "FUNDING"],
+    act: async () => { await pause(1500); tourSpot("#d-resp"); await pause(1500); unfold($("#d-news-panel")); tourSpot("#d-news-panel .news-pin"); } },
+  { view:"dashboard", el:"#d-jobs-panel", say:"Every job, no duplicates. The same job written two ways combines by itself. Close calls wait for you, and you can tick any to merge.", bits:["EVERY JOB", "NO DUPLICATES", "MERGE", "COMBINED"],
     act: async () => {
-      await pause(900); await typeInto("#d-job-q", "northwind"); await pause(900);
-      const j = pipeline().jobs.find(x => /northwind/i.test(x.company)); if (j) openJob(j.key);
-      await pause(1600);
-      const dates = [...document.querySelectorAll("#jr-body .jr-sec")].find(x => /dates/i.test(x.textContent));
-      if (dates) jr.scrollTo({ top:dates.offsetTop - 12, behavior:REDUCED ? "auto" : "smooth" });
+      await pause(2600); tourSpot(".job-dups"); await pause(2200);
+      if (!tourTap('.job-dups [data-dup="merge"]')) return;
+      await pause(2200); tourTap("#jm-go"); await pause(300); tourSpot("#d-job-tools");
     } },
-  { view:"middleton", el:"#mi", say:"Middleton Method: paste your Excel sheet and I read it, merged with what's already here.", bits:["EXCEL", "PASTE", "JOBS", "MANAGERS", "DATES"],
-    act: async () => { setMiOpen(true); await pause(700); pasteInto("#mi-paste", demoSheet()); await pause(700); runImport(gridFromTSV(miPaste.value)); } },
-  { view:"middleton", el:"#m-form", say:"Or log one by hand: company, position, hiring manager. Tick Bullhorn, save, and it copies straight into Excel.",
+  { view:"dashboard", say:"No job right now? Mark it Big Wheel, and every four weeks I'll remind you to check in and keep the relationship going.", bits:["BIG WHEEL", "NO JOB ATM", "EVERY 20 WORKDAYS", "CHECK IN"],
+    act: async () => {
+      const P = pipeline(), j = bwDue(P)[0] || P.jobs.find(x => x.status === "bigwheel"); if (!j) return;
+      const row = [...document.querySelectorAll("#d-jobs tr[data-job]")].find(r => r.dataset.job === j.key);
+      tourSpot(row); await pause(1800);
+      showAlert({ ...bwAlert(j, P), quiet:true });
+    } },
+  { view:"dashboard", el:"#d-oldest", say:"Click any job for its record. Add to Middleton Method fills the form, candidates included. You tick Bullhorn and save.", bits:["JOB RECORD", "CONTACTS", "CANDIDATES", "MIDDLETON", "BULLHORN"],
+    act: async () => {
+      await pause(1200);
+      const j = demoJob(/harbor point/i); if (!j) return;
+      const row = [...document.querySelectorAll("#d-oldest [data-open-job], #d-newest [data-open-job]")].find(r => r.dataset.openJob === j.key);
+      if (row) tourSpot(row);
+      await pause(1000);
+      if (!(row ? tourTap(row) : (openJob(j.key), true))) return;
+      await pause(1700); tourSpot("#jr-mm"); await pause(1200);
+      const key = JR.key; jr.close();
+      await unlock("middleton", ["MIDDLETON", "LENA FISCHER", "CANDIDATES"]);
+      jobToMiddleton(key);
+      await pause(1000); tourSpot("#m-cands"); await pause(1600);
+      const b = $("#m-bullhorn"); if (!b.checked){ b.checked = true; b.dispatchEvent(new Event("change", { bubbles:true })); }
+      tourSpot("#m-bullhorn"); await pause(1000);
+      $("#m-form").requestSubmit(); await pause(200); tourSpot("#m-log");
+    } },
+  { view:"middleton", say:"Every day at 4, I ask for your Middleton entries. New entry takes the day's rows from your sheet and adds them to what's here.", bits:["4PM", "NEW ENTRY", "EXCEL", "PASTE", "DATES"],
+    act: async () => {
+      setMiOpen(true); await pause(150); tourSpot("#mi"); showAlert({ ...mmAlert(), quiet:true });
+      await pause(2800);
+      tourTap("#alerts .alert .btn.primary");   // Its own scroll lands first, then the box being filled comes back into view
+      await pause(350); tourSpot("#mi-paste");
+      await pause(700); pasteInto("#mi-paste", demoSheet()); await pause(1100); tourTap("#mi-read");
+      await pause(200); tourSpot("#mi-out .mi-tiles");
+    } },
+  { view:"middleton", el:"#mi-copy", say:"Tick who you're calling, and your call list copies in Middleton format, so it pastes straight into the sheet.", bits:["CALL LIST", "MIDDLETON FORMAT", "EXCEL"],
+    act: async () => {
+      setMiOpen(true); await pause(200);
+      tourSpot("#mi-out .mi-list"); await pause(1000);
+      for (const name of ["Marcus Oyelaran", "June Hartley"]){
+        const c = [...document.querySelectorAll("#mi-out [data-tick]")].find(x => x.closest("li").textContent.includes(name) && !x.checked);
+        if (c){ c.closest("li").scrollIntoView({ behavior:"auto", block:"center" }); c.click(); await pause(800); }
+      }
+      tourSpot("#mi-copy");
+    } },
+  { view:"middleton", el:"#m-form", say:"A brand new job goes in by hand. Company, position, manager, Bullhorn, save. Now let's take that one start to finish.",
     bits:["ACME BIOLOGICS", "PAT RIVERA", "VP OF QUALITY", "BULLHORN", "HIRING MANAGER"],
     act: async () => {
       LOG = LOG.filter(x => x.company !== "Acme Biologics");
-      await typeInto("#m-company", "Acme Biologics"); await pause(350); await typeInto("#m-position", "Senior Manager, Quality Assurance"); await pause(350);
+      await typeInto("#m-company", "Acme Biologics"); await pause(250); await typeInto("#m-position", "Senior Manager, Quality Assurance"); await pause(250);
       await typeInto("#mg0-title", "VP of Quality"); await typeInto("#mg0-name", "Pat Rivera"); await typeInto("#mg0-phone", "6175550199");
-      await pause(900);
+      await pause(500);
       const b = $("#m-bullhorn"); if (!b.checked){ b.checked = true; b.dispatchEvent(new Event("change", { bubbles:true })); }
-      await pause(1200); $("#m-form").requestSubmit(); await pause(200); tourSpot("#m-log");
+      await pause(800); $("#m-form").requestSubmit(); await pause(200); tourSpot("#m-log");
     } },
   { view:"stalk", el:"#s-jd", say:"Ad Stalk finds the real client behind an agency's ad.", bits:["AGENCY AD", "END CLIENT", "WHO IS IT", "SEARCH"],
     act: async () => { await typeInto("#s-agency", "Brightpath Talent"); pasteInto("#s-jd", DEMO_AD); } },
@@ -8942,7 +9513,8 @@ function exitDemo(){
   location.href = location.pathname;
 }
 $("#tour-next").addEventListener("click", () => { TOUR.skip = true; hush(); if (TOUR.finish) TOUR.finish(); });
-$("#tour-replay").addEventListener("click", () => { hush(); runTour(); });
+// A fresh page, so Replay starts from the same made-up desk instead of one the tour has already merged and ticked
+$("#tour-replay").addEventListener("click", () => { TOUR.run++; hush(); location.reload(); });
 $("#tour-end").addEventListener("click", exitDemo);
 $("#tour-login").addEventListener("click", exitDemo);
 
