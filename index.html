@@ -561,7 +561,12 @@ main > section[role="tabpanel"]:not(.home){min-height:100vh;min-height:100dvh}
 .job-table th{text-align:left;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:6px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
 .job-table td{padding:7px 8px;border-bottom:1px solid var(--line);vertical-align:middle}
 .job-table td.num{font-family:var(--f-mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+.job-table th.tp{white-space:normal;min-width:92px;line-height:1.25;vertical-align:bottom}
 .job-table select{padding:5px 8px;font-size:13px;width:auto}
+/* Status: Filled is red and Closed Won is green, the same in every look, so these two read at a glance */
+select.st-filled{background-color:#C62828 !important;border-color:#C62828 !important;color:#fff !important;font-weight:600}
+select.st-won{background-color:#15803D !important;border-color:#15803D !important;color:#fff !important;font-weight:600}
+select.st-filled option,select.st-won option{background:var(--surface);color:var(--ink);font-weight:400}
 .table-scroll{overflow-x:auto;position:relative}
 .dash-empty{border:1px dashed var(--line-strong);border-radius:8px;padding:14px;font-size:13px;color:var(--muted)}
 .ci-head,.ci-row{display:grid;grid-template-columns:72px 1.1fr 1.2fr 1.1fr 1.4fr 1.6fr 52px;gap:8px;align-items:start}
@@ -5096,19 +5101,33 @@ const dd = n => n == null ? "\u2014" : n + "d";
 const jobKey = (c, p) => norm(c) + "|" + norm(p);
 const mgrKey = (m, company) => m.email && /@/.test(m.email) ? norm(m.email) : "n:" + norm(m.name || m.title || m.phone) + "@" + norm(company);
 const FOLLOW_UP_DAYS = 3;
-const STATUS = { pursuing:"Trying to pull", pulled:"Pulled", filled:"Filled / unavailable", bigwheel:"No job ATM / Big Wheel" };
-const notLive = s => s === "filled" || s === "bigwheel";   // Nothing to pull right now, so no follow-ups or age on these
+const STATUS = { pursuing:"Trying to pull", pulled:"Pulled", won:"Closed Won", filled:"Filled / unavailable", bigwheel:"No job ATM / Big Wheel" };
+const isClosed = s => s === "filled" || s === "won";
+const notLive = s => isClosed(s) || s === "bigwheel";   // Nothing to pull right now, so no follow-ups or age on these
 
 /* Two ways of writing the same job come out the same here: "Acme, Inc." is "ACME" and "Sr. Mgr, Quality" is "Quality Senior Manager" */
 const CO_TAIL = /\s+(?:incorporated|inc|llc|ltd|limited|corp|corporation|co|company|plc|gmbh|llp|lp)$/;
-const POS_SWAP = { sr:"senior", snr:"senior", jr:"junior", mgr:"manager", mngr:"manager", dir:"director", assoc:"associate", engr:"engineer", eng:"engineer", mfg:"manufacturing", ops:"operations", vp:"vice president", svp:"senior vice president", evp:"executive vice president", qa:"quality assurance", qc:"quality control", ra:"regulatory affairs", rd:"research development", hr:"human resources" };
+const POS_SWAP = { sr:"senior", snr:"senior", jr:"junior", mgr:"manager", mngr:"manager", dir:"director", assoc:"associate", engr:"engineer", eng:"engineer", mfg:"manufacturing", ops:"operations", vp:"vice president", svp:"senior vice president", evp:"executive vice president", qa:"quality assurance", qc:"quality control", qe:"quality engineer", ra:"regulatory affairs", rd:"research development", hr:"human resources" };
 const POS_SKIP = new Set(["of", "and", "the", "a", "an", "for", "in"]);
 const looseWords = s => String(s ?? "").toLowerCase().replace(/r\s*&\s*d/g, "rd").replace(/&/g, " and ").replace(/[^a-z0-9]+/g, " ").trim();
 function looseCo(c){ let t = looseWords(c).replace(/^the /, ""), was; do { was = t; t = t.replace(CO_TAIL, ""); } while (t !== was); return t.replace(/ /g, ""); }
 const posWords = p => looseWords(p).split(" ").filter(Boolean).flatMap(w => (POS_SWAP[w] || w).split(" ")).filter(w => !POS_SKIP.has(w));
 const loosePos = p => posWords(p).sort().join(" ");
 const looseKey = (c, p) => looseCo(c) + "|" + loosePos(p);
-const looseOfId = id => { const i = id.indexOf("|"); return i < 0 ? "" : looseKey(id.slice(0, i), id.slice(i + 1)); };
+/* A job marked Filled or Closed Won is finished. The same company and title dated after that is a new opening with its own record,
+   not another touchpoint on the old one. CLOSED holds, for each job name, the day each opening closed: [opening 1, opening 2, ...] */
+let CLOSED = store.get("md.jobclosed", {});
+const openSuffix = n => n > 1 ? "##" + n : "";
+const openKey = (c, p, n) => looseKey(c, p) + openSuffix(n || 1);
+function openingOf(company, position, dates){
+  const list = CLOSED[looseKey(company, position)], latest = [...(dates || [])].filter(Boolean).sort().pop();
+  let n = 1;
+  // An entry with no date can't be "later", so it stays with the first opening
+  if (list && latest) for (let i = 0; i < list.length; i++){ if (list[i] && latest > list[i]) n = i + 2; else break; }
+  return n;
+}
+const logOpening = x => { const d = entryDate(x); return openingOf(x.company, x.position, d ? [d] : []); };
+const looseOfId = id => { const m = id.match(/^(.*?)(?:##(\d+))?$/s), i = m[1].indexOf("|"); return i < 0 ? "" : openKey(m[1].slice(0, i), m[1].slice(i + 1), Number(m[2]) || 1); };
 
 let IMPORT = store.get("md.import", null);   // the last sheet pasted on the Middleton Method tab, read
 let TOUCH = store.get("md.touch", {});       // { managerKey: { dates:[iso], resp:[{ t:"pos"|"neu"|"neg", d:iso, ts }], calledTs } }
@@ -5188,27 +5207,28 @@ function pipeline(){
   // Deleted and merged-away jobs first, so a live job of the same name wins
   for (const [id, e] of allEdits) if (e.deleted){
     if (looseOfId(id)) edited.set(looseOfId(id), id);
-    if (e.company != null) edited.set(looseKey(e.company, e.position), id);
+    if (e.company != null) edited.set(openKey(e.company, e.position, e.opening), id);
     if (e.into) into.set(id, follow(id));
   }
   for (const [id, e] of allEdits) if (!e.deleted){
     if (looseOfId(id)) edited.set(looseOfId(id), id);
-    edited.set(looseKey(e.company, e.position), id);
+    edited.set(openKey(e.company, e.position, e.opening), id);
   }
   function addJob(j, src, own){
     j = cleanJob(j); if (!j) return;
-    const id = own || follow(edited.get(looseKey(j.company, j.position))), e = id ? JOBEDIT[id] : null;
+    const id = own || follow(edited.get(openKey(j.company, j.position, j.opening))), e = id ? JOBEDIT[id] : null;
     if (e?.deleted) return;
     if (e && !own){
       const managers = j.managers.map(m => ({ ...m, key:m.key || mgrKey(m, j.company) })).filter(m => !(e.gone || []).includes(m.key));
       j = { ...j, company:e.company, position:e.position, managers, candidates:j.candidates.filter(c => !(e.goneC || []).includes(norm(c))), dates:j.dates.filter(d => !(e.goneD || []).includes(d)) };
     }
     // The same job written two ways lands on one record
-    let k = id || jobKey(j.company, j.position);
-    const lk = looseKey(j.company, j.position), held = loose.get(lk);
+    const opening = (e ? e.opening : j.opening) || 1;
+    let k = id || jobKey(j.company, j.position) + openSuffix(opening);
+    const lk = openKey(j.company, j.position, opening), held = loose.get(lk);
     if (held && held !== k){ alias.set(k, held); k = held; } else loose.set(lk, k);
     let r = jobs.get(k);
-    if (!r){ r = { key:k, company:String(j.company || "").trim(), position:String(j.position || "").trim(), link:"", terms:false, notes:e?.notes || "", mgrs:new Set(), rawM:new Map(), cands:new Set(), dates:new Set(), src:new Set(), sourced:[] }; jobs.set(k, r); }
+    if (!r){ r = { key:k, opening, company:String(j.company || "").trim(), position:String(j.position || "").trim(), link:"", terms:false, notes:e?.notes || "", mgrs:new Set(), rawM:new Map(), cands:new Set(), dates:new Set(), src:new Set(), sourced:[] }; jobs.set(k, r); }
     r.src.add(src);
     if (!r.locked){ if (!r.link && j.link) r.link = j.link; if (j.terms) r.terms = true; }
     if (own) r.locked = true;
@@ -5228,7 +5248,7 @@ function pipeline(){
   }
   for (const [id, e] of Object.entries(JOBEDIT)) if (!e.deleted) addJob(e, "edit", id);
   (IMPORT?.jobs || []).forEach(j => addJob(j, "sheet"));
-  LOG.forEach(x => { const d = entryDate(x); addJob({ company:x.company, position:x.position, link:x.link, terms:x.terms, candidates:x.candidates, managers:x.managers, dates:d ? [d] : [] }, "saved"); });
+  LOG.forEach(x => { const d = entryDate(x); addJob({ company:x.company, position:x.position, opening:logOpening(x), link:x.link, terms:x.terms, candidates:x.candidates, managers:x.managers, dates:d ? [d] : [] }, "saved"); });
   const dupes = alias.size;
   into.forEach((to, from) => alias.set(from, to));
   // Anything filed under another spelling of the job moves to the one record
@@ -5250,16 +5270,40 @@ function pipeline(){
   }
   for (const j of jobs.values()){
     const ds = [...j.dates]; j.mgrs.forEach(k => mgrs.get(k)?.dates.forEach(d => ds.push(d)));
-    const s = ds.filter(d => d <= today).sort();
+    // A manager can carry over to a new opening, but their calls only count on the opening they fell in
+    const cl = CLOSED[looseKey(j.company, j.position)] || [], after = j.opening > 1 ? cl[j.opening - 2] : "", until = cl[j.opening - 1];
+    const s = ds.filter(d => d <= today && (!after || d > after) && (!until || d <= until)).sort();
     j.first = s[0] || null; j.last = s[s.length - 1] || null;
+    // The same company and title again isn't a new job, it's a touchpoint on this one: one for each day there was contact
+    j.touchDays = [...new Set(s)]; j.touches = j.touchDays.length;
     j.status = JOBSTAT[j.key] || "pursuing";
   }
   const byJob = new Map(jobs);
   alias.forEach((to, from) => { if (jobs.has(to)) byJob.set(from, jobs.get(to)); });
   return { jobs:[...jobs.values()], mgrs:[...mgrs.values()], cands:[...cands.values()], byMgr:mgrs, byJob, dupes };
 }
+// The names a job can arrive under: its own, the one it started with, and any merged into it
+function closureNames(j){
+  const names = new Set([looseKey(j.company, j.position)]), base = j.key.replace(/##\d+$/, ""), i = base.indexOf("|");
+  if (i >= 0) names.add(looseKey(base.slice(0, i), base.slice(i + 1)));
+  for (const e of Object.values(JOBEDIT)) if (e.into === j.key && e.company != null) names.add(looseKey(e.company, e.position));
+  return names;
+}
+function markClosure(key, on){
+  const P = pipeline(), j = P.byJob.get(key); if (!j) return;
+  const i = j.opening - 1;
+  closureNames(j).forEach(lk => {
+    const list = CLOSED[lk] || (CLOSED[lk] = []), newer = P.jobs.some(x => looseKey(x.company, x.position) === lk && x.opening > j.opening);
+    // Once a newer opening has come from this closing, its day stays put, so flipping the old job's status can't move touchpoints between them
+    if (on){ if (!(newer && list[i])) list[i] = isoToday(); for (let k = 0; k < i; k++) if (!list[k]) list[k] = list[i]; }
+    else if (!newer){ list.length = Math.min(list.length, i); if (!list.length) delete CLOSED[lk]; }
+  });
+  store.set("md.jobclosed", CLOSED);
+}
 function setJobStatus(key, s){
+  const wasClosed = isClosed(JOBSTAT[key]);
   if (s === "pursuing") delete JOBSTAT[key]; else JOBSTAT[key] = s;
+  if (isClosed(s) !== wasClosed) markClosure(key, isClosed(s));
   if (s === "bigwheel"){ if (!BIGWHEEL[key]) BIGWHEEL[key] = { since:isoToday() }; } else delete BIGWHEEL[key];
   store.set("md.jobstat", JOBSTAT); store.set("md.bigwheel", BIGWHEEL);
 }
@@ -5429,7 +5473,7 @@ function renderDash(){
   $("#dash-say").textContent = `${fn ? fn + ", " : ""}${due ? `${due} thing${due === 1 ? "" : "s"} on today's list. ${due === 1 ? "It's" : "They're"} just below.` : "nothing's due today. Where to next?"}`;
   const tiles = [
     { n:P.jobs.length, l:"Jobs tried to pull", hi:true }, { n:by("pursuing"), l:"Still trying to pull" }, { n:by("pulled"), l:"Pulled" },
-    { n:by("filled"), l:"Filled / unavailable" }, ...(by("bigwheel") ? [{ n:by("bigwheel"), l:"Big Wheel" }] : []), { n:P.mgrs.length, l:"Hiring managers" }, { n:P.cands.length, l:"Candidates in play" }
+    ...(by("won") ? [{ n:by("won"), l:"Closed Won" }] : []), { n:by("filled"), l:"Filled / unavailable" }, ...(by("bigwheel") ? [{ n:by("bigwheel"), l:"Big Wheel" }] : []), { n:P.mgrs.length, l:"Hiring managers" }, { n:P.cands.length, l:"Candidates in play" }
   ];
   $("#d-tiles").innerHTML = tiles.map(t => `<div class="tile${t.hi ? " hi" : ""}"><b>${t.n}</b><span>${esc(t.l)}</span></div>`).join("");
 
@@ -5459,7 +5503,7 @@ function renderDash(){
   const newest = [...dated].sort((a, b) => a.first > b.first ? -1 : a.first < b.first ? 1 : 0).slice(0, 5);
   const maxD = Math.max(14, ...dated.map(j => daysSince(j.last) || 0));
   const ageRow = j => { const n = daysSince(j.last), cls = n >= 14 ? "bad" : n >= 7 ? "warn" : "";
-    return `<li><button type="button" class="age-row" data-open-job="${esc(j.key)}" aria-label="Open ${esc(jobLabel(j))}, ${n} days since last reached"><span class="top-line"><b title="${esc(j.position)}">${esc(j.position || "Untitled role")}</b><span>${n === 0 ? "today" : n + "d since"}</span></span><span class="bar"><i class="${cls}" style="width:${Math.max(3, Math.round(n / maxD * 100))}%"></i></span><span class="sub">${esc(j.company)} \u00b7 first reached ${ago(daysSince(j.first))}</span></button></li>`; };
+    return `<li><button type="button" class="age-row" data-open-job="${esc(j.key)}" aria-label="Open ${esc(jobLabel(j))}, ${n} days since last reached"><span class="top-line"><b title="${esc(j.position)}">${esc(j.position || "Untitled role")}</b><span>${n === 0 ? "today" : n + "d since"}</span></span><span class="bar"><i class="${cls}" style="width:${Math.max(3, Math.round(n / maxD * 100))}%"></i></span><span class="sub">${esc(j.company)} \u00b7 1st touchpoint ${ago(daysSince(j.first))}</span></button></li>`; };
   const emptyAge = `<li class="dash-empty">No dated jobs yet.</li>`;
   $("#d-oldest").innerHTML = oldest.map(ageRow).join("") || emptyAge;
   $("#d-newest").innerHTML = newest.map(ageRow).join("") || emptyAge;
@@ -5750,7 +5794,11 @@ document.querySelectorAll("[data-fold]").forEach(panel => {
 });
 
 /* Every job: search it, click into any job to view, edit, add or delete */
-const jobLabel = j => [j.company, j.position].filter(Boolean).join(" \u00b7 ") || "Untitled job";
+const daysNum = iso => iso ? daysSince(iso) : "\u2014";
+const TP_HEADS = `<th class="tp">Touchpoints</th><th class="tp">Days since 1st touchpoint</th><th class="tp">Days since last touchpoint</th>`;
+const tpCells = j => `<td class="num">${j.touches}</td><td class="num">${daysNum(j.first)}</td><td class="num">${daysNum(j.last)}</td>`;
+const jobLabel = j => ([j.company, j.position].filter(Boolean).join(" \u00b7 ") || "Untitled job") + (j.opening > 1 ? ` (opening ${j.opening})` : "");
+const openBadge = j => j.opening > 1 ? ` <span class="badge">Opening ${j.opening}</span>` : "";
 const jobContacts = (j, P) => [...j.mgrs].map(k => P.byMgr.get(k)).filter(Boolean);
 function renderJobs(P){
   const host = $("#d-jobs"), q = norm($("#d-job-q").value);
@@ -5758,15 +5806,15 @@ function renderJobs(P){
   renderJobTools(); renderJobDups(P);
   if (!P.jobs.length){ host.innerHTML = `<div class="dash-empty">No jobs yet. Paste your sheet or save entries on the Middleton Method tab, or add one here.</div>`; $("#d-job-count").textContent = ""; return; }
   const hay = j => norm([j.company, j.position, j.notes, ...jobContacts(j, P).flatMap(m => [m.name, m.title, m.email, m.phone]), ...j.cands, ...j.sourced.map(s => s.name), STATUS[j.status]].join(" "));
-  const order = { pursuing:0, pulled:1, filled:2, bigwheel:3 };
+  const order = { pursuing:0, pulled:1, won:2, filled:3, bigwheel:4 };
   const rows = P.jobs.filter(j => !q || q.split(/\s+/).every(w => hay(j).includes(w))).sort((a, b) => order[a.status] - order[b.status] || (a.last || "").localeCompare(b.last || ""));
   $("#d-job-count").textContent = (q ? `${rows.length} of ${P.jobs.length}` : `${P.jobs.length} job${P.jobs.length === 1 ? "" : "s"}`) + (P.dupes ? ` \u00b7 ${P.dupes} duplicate${P.dupes === 1 ? "" : "s"} combined` : "");
   if (!rows.length){ host.innerHTML = `<div class="dash-empty">No jobs match that search.</div>`; return; }
-  host.innerHTML = `<div class="table-scroll"><table class="job-table"><thead><tr><th class="sel-cell"><input type="checkbox" id="d-job-all" aria-label="Select every job shown"></th><th>Company</th><th>Position</th><th>Contacts</th><th>Candidates</th><th>First reached</th><th>Last reached</th><th>Status</th><th><span class="sr">Edit</span></th></tr></thead><tbody>${rows.map(j => `<tr data-job="${esc(j.key)}">
+  host.innerHTML = `<div class="table-scroll"><table class="job-table"><thead><tr><th class="sel-cell"><input type="checkbox" id="d-job-all" aria-label="Select every job shown"></th><th>Company</th><th>Position</th><th>Contacts</th><th>Candidates</th>${TP_HEADS}<th>Status</th><th><span class="sr">Edit</span></th></tr></thead><tbody>${rows.map(j => `<tr data-job="${esc(j.key)}">
     <td class="sel-cell"><input type="checkbox" data-sel="${esc(j.key)}"${JOBSEL.has(j.key) ? " checked" : ""} aria-label="Select ${esc(jobLabel(j))}"></td>
-    <td>${esc(j.company)}</td><td>${j.link ? `<a href="${esc(j.link)}" target="_blank" rel="noopener" style="color:inherit">${esc(j.position)}</a>` : esc(j.position)}</td>
-    <td class="who">${esc(jobContacts(j, P).map(mgrLabel).join(", "))}</td><td class="who">${esc([...new Map([...j.cands, ...j.sourced.map(s => s.name).filter(Boolean)].map(c => [norm(c), c])).values()].join(", "))}</td><td class="num">${esc(ago(daysSince(j.first)))}</td><td class="num">${esc(ago(daysSince(j.last)))}</td>
-    <td><label class="sr" for="st-${esc(j.key)}">Status</label><select id="st-${esc(j.key)}" data-status="${esc(j.key)}">${Object.entries(STATUS).map(([k, l]) => `<option value="${k}"${j.status === k ? " selected" : ""}>${l}</option>`).join("")}</select></td>
+    <td>${esc(j.company)}</td><td>${j.link ? `<a href="${esc(j.link)}" target="_blank" rel="noopener" style="color:inherit">${esc(j.position)}</a>` : esc(j.position)}${openBadge(j)}</td>
+    <td class="who">${esc(jobContacts(j, P).map(mgrLabel).join(", "))}</td><td class="who">${esc([...new Map([...j.cands, ...j.sourced.map(s => s.name).filter(Boolean)].map(c => [norm(c), c])).values()].join(", "))}</td>${tpCells(j)}
+    <td><label class="sr" for="st-${esc(j.key)}">Status</label><select id="st-${esc(j.key)}" class="st-${j.status}" data-status="${esc(j.key)}">${Object.entries(STATUS).map(([k, l]) => `<option value="${k}"${j.status === k ? " selected" : ""}>${l}</option>`).join("")}</select></td>
     <td><button type="button" class="btn ghost" data-job-edit="${esc(j.key)}">Edit</button></td></tr>`).join("")}</tbody></table></div>`;
 }
 $("#d-job-q").addEventListener("input", () => renderJobs(pipeline()));
@@ -5784,7 +5832,7 @@ $("#d-job-tools").addEventListener("click", e => {
   if (b.dataset.jt === "merge" && JOBSEL.size > 1) openMerge([...JOBSEL]);
   if (b.dataset.jt === "clear"){ JOBSEL.clear(); renderJobs(pipeline()); }
   if (b.dataset.jt === "undo" && MERGE_UNDO){
-    ({ JOBEDIT, JOBSTAT, BIGWHEEL } = MERGE_UNDO);
+    ({ JOBEDIT, JOBSTAT, BIGWHEEL, CLOSED } = MERGE_UNDO); store.set("md.jobclosed", CLOSED);
     CANDGONE = new Set(MERGE_UNDO.gone);
     SO.rows.forEach(r => { if (r.id in MERGE_UNDO.so) r.job = MERGE_UNDO.so[r.id]; });
     SO.job = MERGE_UNDO.soJob; MERGE_UNDO = null;
@@ -5811,7 +5859,7 @@ function mergeInto(keys, keepKey){
   const P = pipeline(), list = keys.map(k => P.byJob.get(k)).filter(Boolean), keep = P.byJob.get(keepKey);
   if (!keep || list.length < 2) return;
   const others = list.filter(j => j !== keep), union = (...a) => [...new Set(a.flat(Infinity).filter(Boolean))];
-  MERGE_UNDO = { JOBEDIT:structuredClone(JOBEDIT), JOBSTAT:{ ...JOBSTAT }, BIGWHEEL:structuredClone(BIGWHEEL), gone:[...CANDGONE], so:Object.fromEntries(SO.rows.map(r => [r.id, r.job])), soJob:SO.job };
+  MERGE_UNDO = { CLOSED:structuredClone(CLOSED), JOBEDIT:structuredClone(JOBEDIT), JOBSTAT:{ ...JOBSTAT }, BIGWHEEL:structuredClone(BIGWHEEL), gone:[...CANDGONE], so:Object.fromEntries(SO.rows.map(r => [r.id, r.job])), soJob:SO.job };
   const mgrs = new Map(), names = new Map();
   list.forEach(j => {
     j.rawM.forEach(x => { const m = P.byMgr.get(x.key); if (m) mgrs.set(x.key, { key:x.key, title:m.title, name:m.name, email:m.email, phone:m.phone, dates:union(mgrs.get(x.key)?.dates, x.dates) }); });
@@ -5819,15 +5867,15 @@ function mergeInto(keys, keepKey){
   });
   const was = list.map(j => JOBEDIT[j.key] || {});
   JOBEDIT[keep.key] = {
-    company:keep.company, position:keep.position, link:keep.link || others.find(j => j.link)?.link || "", terms:list.some(j => j.terms),
+    ...(keep.opening > 1 ? { opening:keep.opening } : {}), company:keep.company, position:keep.position, link:keep.link || others.find(j => j.link)?.link || "", terms:list.some(j => j.terms),
     notes:union(list.map(j => j.notes)).join("\n"), dates:union(list.map(j => [...j.dates])).sort(), candidates:[...names.values()], managers:[...mgrs.values()],
     gone:union(was.map(e => e.gone)), goneC:union(was.map(e => e.goneC)), goneD:union(was.map(e => e.goneD))
   };
   // The furthest along wins when the job you're keeping is still just "Trying to pull"
-  const st = keep.status !== "pursuing" ? keep.status : ["pulled", "bigwheel", "filled"].find(s => others.some(j => j.status === s)) || "pursuing";
+  const st = keep.status !== "pursuing" ? keep.status : ["won", "pulled", "bigwheel", "filled"].find(s => others.some(j => j.status === s)) || "pursuing";
   const bw = others.map(j => BIGWHEEL[j.key]).find(Boolean);
   others.forEach(j => {
-    JOBEDIT[j.key] = { deleted:true, into:keep.key, company:j.company, position:j.position };
+    JOBEDIT[j.key] = { deleted:true, into:keep.key, company:j.company, position:j.position, ...(j.opening > 1 ? { opening:j.opening } : {}) };
     delete JOBSTAT[j.key]; delete BIGWHEEL[j.key];
     SO.rows.forEach(r => { if (r.job === j.key) r.job = keep.key; });
     if (SO.job === j.key) SO.job = keep.key;
@@ -5845,6 +5893,7 @@ function possibleDups(P){
   P.jobs.forEach(j => { const c = looseCo(j.company); if (c){ if (!by.has(c)) by.set(c, []); by.get(c).push(j); } });
   by.forEach(list => {
     for (let a = 0; a < list.length; a++) for (let b = a + 1; b < list.length; b++){
+      if (looseKey(list[a].company, list[a].position) === looseKey(list[b].company, list[b].position)) continue;
       const A = new Set(posWords(list[a].position)), B = new Set(posWords(list[b].position));
       const both = [...A].filter(w => B.has(w)).length, any = new Set([...A, ...B]).size;
       const near = !A.size || !B.size ? list.length === 2 : both / any >= .6;
@@ -5888,7 +5937,7 @@ function openJob(key){
   const P = pipeline(), j = key ? P.byJob.get(key) : null;
   if (key && !j) return;
   JR = j ? {
-    key, isNew:false, company:j.company, position:j.position, link:j.link, terms:j.terms, notes:j.notes, status:j.status, first:j.first, last:j.last,
+    key, isNew:false, company:j.company, position:j.position, link:j.link, terms:j.terms, notes:j.notes, status:j.status, first:j.first, last:j.last, touches:j.touches, opening:j.opening,
     dates:[...j.dates].sort(), candidates:[...j.cands], sourced:j.sourced.map(s => s.name).filter(Boolean), gone:[], goneC:[], goneD:[],
     managers:[...j.rawM.values()].map(x => { const m = P.byMgr.get(x.key); return { key:x.key, title:m.title, name:m.name, email:m.email, phone:m.phone, dates:x.dates, last:m.last }; })
   } : { key:"u" + Date.now().toString(36), isNew:true, company:"", position:"", link:"", terms:false, notes:"", status:"pursuing", dates:[isoToday()], candidates:[], sourced:[], gone:[], goneC:[], goneD:[], managers:[{ key:"m" + Date.now().toString(36), title:"", name:"", email:"", phone:"", dates:[] }] };
@@ -5910,17 +5959,17 @@ function renderJr(){
         <div class="field"><label for="jr-company">Company</label><input type="text" id="jr-company" data-j="company" value="${esc(J.company)}" autocomplete="off"></div>
         <div class="field"><label for="jr-position">Position</label><input type="text" id="jr-position" data-j="position" value="${esc(J.position)}" autocomplete="off"></div>
         <div class="field"><label for="jr-link">Job description link</label><input type="url" id="jr-link" data-j="link" value="${esc(J.link)}" autocomplete="off"></div>
-        <div class="field"><label for="jr-status">Status</label><select id="jr-status" data-j="status">${Object.entries(STATUS).map(([k, l]) => `<option value="${k}"${J.status === k ? " selected" : ""}>${l}</option>`).join("")}</select></div>
+        <div class="field"><label for="jr-status">Status</label><select id="jr-status" class="st-${J.status}" data-j="status">${Object.entries(STATUS).map(([k, l]) => `<option value="${k}"${J.status === k ? " selected" : ""}>${l}</option>`).join("")}</select></div>
       </div>
       <p class="jr-meta" id="jr-bw"${J.status === "bigwheel" ? "" : " hidden"}>${esc(jrBwLine(J))}</p>
       <label class="check" style="margin-top:10px"><input type="checkbox" id="jr-terms" data-j="terms"${J.terms ? " checked" : ""}> Terms</label>
       <div class="field" style="margin-top:10px"><label for="jr-notes">Notes</label><textarea id="jr-notes" data-j="notes" rows="2">${esc(J.notes)}</textarea></div>
     </div>
     <div class="jr-sec">
-      <h3>Dates reached out</h3>
+      <h3>Touchpoints</h3>
       <div class="jr-chips">${J.dates.map(d => `<span class="jr-chip">${esc(longDate(d))}<button type="button" data-rm-date="${d}" aria-label="Remove ${esc(longDate(d))}">\u00d7</button></span>`).join("") || `<span class="jr-meta" style="margin:0">No dates yet</span>`}</div>
       <div class="jr-add"><label class="sr" for="jr-date">Add a date</label><input type="date" id="jr-date"><button type="button" class="btn" id="jr-date-add">Add date</button></div>
-      ${J.first ? `<p class="jr-meta">First reached ${esc(ago(daysSince(J.first)))}, last reached ${esc(ago(daysSince(J.last)))}, counting calls marked here.</p>` : ""}
+      ${J.first ? `<p class="jr-meta">${J.touches} touchpoint${J.touches === 1 ? "" : "s"}. Days since 1st touchpoint: ${daysSince(J.first)}. Days since last touchpoint: ${daysSince(J.last)}. Calls marked here count too.</p>` : ""}
     </div>
     <div class="jr-sec">
       <h3>Contacts</h3>
@@ -5944,7 +5993,7 @@ function renderJr(){
 $("#jr-body").addEventListener("input", e => {
   const f = e.target.closest("[data-j]"), m = e.target.closest("[data-m]");
   if (f) JR[f.dataset.j] = f.type === "checkbox" ? f.checked : f.value;
-  if (f?.id === "jr-status"){ const n = $("#jr-bw"); n.hidden = f.value !== "bigwheel"; if (!n.hidden) n.textContent = jrBwLine(JR); }
+  if (f?.id === "jr-status"){ f.className = "st-" + f.value; const n = $("#jr-bw"); n.hidden = f.value !== "bigwheel"; if (!n.hidden) n.textContent = jrBwLine(JR); }
   if (m) JR.managers[Number(m.closest(".jr-mgr").dataset.i)][m.dataset.m] = m.value;
   if (f?.tagName === "TEXTAREA") ciGrow(f);
 });
@@ -5978,7 +6027,7 @@ function saveJob(){
   if (!company && !position){ $("#jr-company").focus(); return false; }
   const was = JOBEDIT[J.key] || {}, more = (a, b) => [...new Set([...(a || []), ...b])];
   JOBEDIT[J.key] = {
-    company, position, link:normUrl(J.link), terms:!!J.terms, notes:J.notes.trim(), dates:J.dates, candidates:J.candidates,
+    ...(J.opening > 1 ? { opening:J.opening } : {}), company, position, link:normUrl(J.link), terms:!!J.terms, notes:J.notes.trim(), dates:J.dates, candidates:J.candidates,
     managers:J.managers.map(m => ({ key:m.key, title:m.title.trim(), name:m.name.trim(), email:m.email.trim(), phone:formatPhone(m.phone), dates:m.dates })).filter(m => m.title || m.name || m.email || m.phone),
     gone:more(was.gone, J.gone), goneC:more(was.goneC, J.goneC), goneD:more(was.goneD, J.goneD).filter(d => !J.dates.includes(d))
   };
@@ -5993,7 +6042,7 @@ function jobToMiddleton(key){
   if (entryInProgress() && !(E.id && looseKey(E.company, E.position) === looseKey(j.company, j.position)) && !confirm("The Middleton Method form already has an entry in progress. Replace it with this job?")) return false;
   const mgrs = jobContacts(j, P).map(m => ({ title:m.title, name:m.name, email:m.email, phone:m.phone }));
   const names = [...j.cands, ...j.sourced.filter(s => s.name && !s.notfit && !s.reject).map(s => s.name)].map(c => String(c).trim()).filter(c => c && !isPhoneName(c));
-  const saved = LOG.find(x => looseKey(x.company, x.position) === looseKey(j.company, j.position));
+  const saved = LOG.find(x => openKey(x.company, x.position, logOpening(x)) === openKey(j.company, j.position, j.opening));
   if (saved){
     E = structuredClone(saved); E.example = false;
     E.managers = E.managers?.length ? E.managers : [];
@@ -6283,7 +6332,7 @@ function soJobGroups(P, sel, label){
   const group = (l, list) => list.length ? `<optgroup label="${l}">${list.map(opt).join("")}</optgroup>` : "";
   // A job that's since been deleted still shows, so the candidate doesn't silently lose their match
   const gone = sel && sel !== "*" && !P.byJob.has(sel) ? `<option value="${esc(sel)}" selected>${esc(label || "A deleted job")}</option>` : "";
-  return gone + group("Pulled", by("pulled")) + group("Still trying to pull", by("pursuing")) + group("Filled / unavailable", by("filled")) + group("No job ATM / Big Wheel", by("bigwheel"));
+  return gone + group("Pulled", by("pulled")) + group("Still trying to pull", by("pursuing")) + group("Closed Won", by("won")) + group("Filled / unavailable", by("filled")) + group("No job ATM / Big Wheel", by("bigwheel"));
 }
 function soRecHTML(r, P){
   const id = f => `so-${esc(r.id)}-${f}`;
@@ -6652,9 +6701,12 @@ function readSheet(grid){
 }
 // A new paste adds to what's already read, so one day's rows don't wipe out the rest. The same job again just picks up its new dates
 function mergeJobs(base, add){
-  const map = new Map(base.map(j => [jobKey(j.company, j.position), j]));
+  const mk = j => jobKey(j.company, j.position) + openSuffix(j.opening);
+  const map = new Map(base.map(j => [mk(j), j]));
   for (const j of add){
-    const k = jobKey(j.company, j.position), o = map.get(k);
+    const n = openingOf(j.company, j.position, [...(j.dates || []), ...(j.managers || []).flatMap(m => m.dates || [])]);
+    if (n > 1) j.opening = n; else delete j.opening;
+    const k = mk(j), o = map.get(k);
     if (!o){ map.set(k, j); continue; }
     o.link = o.link || j.link; o.terms = o.terms || j.terms;
     o.dates = [...new Set([...(o.dates || []), ...j.dates])];
@@ -6746,14 +6798,26 @@ function addToSheet(grid, text){
   if (!res.jobs.length || (res.mode.startsWith("blocks") && res.jobs.every(j => !j.position && !j.managers.length))) return false;
   res.jobs.forEach(j => j.managers.forEach(m => { m.key = mgrKey(m, j.company); }));
   const days = [...new Set(res.jobs.flatMap(j => j.dates))].sort(), chunk = text.trim();
+  // Before these rows go in: which jobs are new, and which days are new contact on a job that's already here
+  const P0 = pipeline(), known = new Map(P0.jobs.map(j => [openKey(j.company, j.position, j.opening), j])), newJobs = new Set(), newOpenings = new Set();
+  let newTouches = 0;
+  { const counted = new Map();
+    res.jobs.forEach(j => {
+      const n = openingOf(j.company, j.position, [...j.dates, ...j.managers.flatMap(m => m.dates || [])]);
+      const lk = openKey(j.company, j.position, n), was = known.get(lk) || P0.byJob.get(jobKey(j.company, j.position) + openSuffix(n));
+      if (!was){ (n > 1 ? newOpenings : newJobs).add(lk); return; }
+      if (!counted.has(lk)) counted.set(lk, new Set());
+      [...j.dates, ...j.managers.flatMap(m => m.dates || [])].forEach(d => { if (d <= isoToday() && !was.touchDays.includes(d)) counted.get(lk).add(d); });
+    });
+    counted.forEach(ds => { newTouches += ds.size; }); }
   IMPORT = { v:3, at:Date.now(), mode:res.mode, jobs:mergeJobs(IMPORT?.jobs || [], res.jobs), text:miChunks(IMPORT?.text).includes(chunk) ? IMPORT.text : miJoin(IMPORT?.text, chunk), days };
   store.set("md.import", IMPORT);
   miPaste.value = IMPORT.text; miPaste.scrollTop = miPaste.scrollHeight;
   if (days.includes(isoToday()) && !DEMO){ ALERTED.mm = isoToday(); saveAlerted(); }   // The end-of-day reminder has nothing left to ask for
   renderImport();
   if (!$("#view-dashboard").hidden) renderDash();
-  const mc = new Set(res.jobs.flatMap(j => j.managers.map(m => m.key))).size;
-  toast(`Added ${res.jobs.length} job${res.jobs.length === 1 ? "" : "s"} and ${mc} manager${mc === 1 ? "" : "s"}${days.length ? `, ${days.length} date${days.length === 1 ? "" : "s"}` : ", no dates"}`);
+  const said = [newJobs.size && `${newJobs.size} new job${newJobs.size === 1 ? "" : "s"}`, newOpenings.size && `${newOpenings.size} new opening${newOpenings.size === 1 ? "" : "s"} of a closed job`, newTouches && `${newTouches} new touchpoint${newTouches === 1 ? "" : "s"} on a job already here`].filter(Boolean);
+  toast(said.length ? `Added ${said.join(" and ")}${days.length ? "" : ", no dates"}` : "Those jobs are already here, with no new dates to count.");
   return true;
 }
 $("#mi-new-save").addEventListener("click", () => {
@@ -6824,18 +6888,18 @@ function renderImport(){
       return `<li class="${on ? "on" : ""}"><input type="checkbox" id="${esc(id)}" data-tick="${esc(m.key)}"${on ? " checked" : ""} aria-label="Call ${esc(mgrLabel(m))} next"><label class="who" for="${esc(id)}"><b>${esc(mgrLabel(m))}</b><span>${esc([m.name && m.title, m.company].filter(Boolean).join(" \u00b7 "))}${m.jobs.size > 1 ? ` \u00b7 ${m.jobs.size} jobs` : ""}</span></label><span class="reach">${esc([m.phone, m.email].filter(Boolean).join(" \u00b7 ") || "No phone or email")}</span>
         <span class="days"><span>${dd(daysSince(m.last))}<small>since last</small></span><span>${dd(daysSince(m.first))}<small>since first</small></span><span>${m.touches}<small>touches</small></span><button type="button" class="btn ghost mi-edit" data-job="${esc([...m.jobs][0])}">Edit</button></span></li>`;
     }).join("")}</ul></div>`).join("") || `<p class="mi-note">No managers match that filter.</p>`}</div>
-    <details class="rules"><summary>Jobs (${P.jobs.length}). Click one to edit it</summary><div class="table-scroll"><table class="job-table"><thead><tr><th>Company</th><th>Position</th><th>Contacts</th><th>Since first</th><th>Since last</th></tr></thead><tbody>${[...P.jobs].sort((a, b) => a.company.localeCompare(b.company)).map(j => `<tr data-job="${esc(j.key)}"><td>${esc(j.company)}${j.terms ? ` <span class="badge ok">Terms</span>` : ""}</td><td>${esc(j.position)}</td><td class="num">${j.mgrs.size}</td><td class="num">${dd(daysSince(j.first))}</td><td class="num">${dd(daysSince(j.last))}</td></tr>`).join("")}</tbody></table></div></details>
+    <details class="rules"><summary>Jobs (${P.jobs.length}). Click one to edit it</summary><div class="table-scroll"><table class="job-table"><thead><tr><th>Company</th><th>Position</th><th>Contacts</th>${TP_HEADS}</tr></thead><tbody>${[...P.jobs].sort((a, b) => a.company.localeCompare(b.company)).map(j => `<tr data-job="${esc(j.key)}"><td>${esc(j.company)}${j.terms ? ` <span class="badge ok">Terms</span>` : ""}</td><td>${esc(j.position)}${openBadge(j)}</td><td class="num">${j.mgrs.size}</td>${tpCells(j)}</tr>`).join("")}</tbody></table></div></details>
     <details class="rules" id="mi-cands-box"${miCandsOpen ? " open" : ""}><summary>Candidates (${P.cands.length})</summary>${P.cands.length ? `<div class="mi-cands">${P.cands.sort((a, b) => a.name.localeCompare(b.name)).map(c => `<div class="mi-cand" data-cand="${esc(c.name)}"><div class="mi-cand-h"><b>${esc(c.name)}</b><button type="button" class="mi-x" data-cand-rm aria-label="Remove ${esc(c.name)}" title="Remove ${esc(c.name)}">\u00d7</button></div>${[...c.jobs].map(k => { const j = P.byJob.get(k); return `<span class="mi-cand-job"><i>${esc(j.position || "Untitled role")} \u00b7 ${esc(j.company)}</i>${c.jobs.size > 1 ? `<button type="button" class="mi-x" data-cand-rm-job="${esc(k)}" aria-label="Remove ${esc(c.name)} from this job" title="Remove from this job only">\u00d7</button>` : ""}</span>`; }).join("")}</div>`).join("")}</div>` : `<p class="mi-note">No candidates found in column F.</p>`}</details>`;
 }
 let miCandsOpen = false;
 $("#mi-out").addEventListener("toggle", e => { if (e.target.id === "mi-cands-box") miCandsOpen = e.target.open; }, true);
 // Off the job here, off the sheet read and the saved entry too, and it stays off when the same rows are pasted again
 function removeCand(name, keys){
-  const P = pipeline(), n = norm(name), jobs = keys.map(k => P.byJob.get(k)).filter(Boolean), lk = new Set(jobs.map(j => looseKey(j.company, j.position)));
+  const P = pipeline(), n = norm(name), jobs = keys.map(k => P.byJob.get(k)).filter(Boolean), lk = new Set(jobs.map(j => openKey(j.company, j.position, j.opening))), keyOfEntry = x => openKey(x.company, x.position, x.opening || (x.id ? logOpening(x) : 1));
   jobs.forEach(j => { CANDGONE.add(j.key + "::" + n); const e = JOBEDIT[j.key]; if (e?.candidates) e.candidates = e.candidates.filter(c => norm(c) !== n); });
-  const strip = x => { if (lk.has(looseKey(x.company, x.position)) && x.candidates) x.candidates = x.candidates.filter(c => norm(c) !== n); };
+  const strip = x => { if (lk.has(keyOfEntry(x)) && x.candidates) x.candidates = x.candidates.filter(c => norm(c) !== n); };
   (IMPORT?.jobs || []).forEach(strip); LOG.forEach(strip);
-  if (E.id && LOG.some(x => x.id === E.id && lk.has(looseKey(x.company, x.position)))){ strip(E); saveE(); renderEntryCands(); }
+  if (E.id && LOG.some(x => x.id === E.id && lk.has(keyOfEntry(x)))){ strip(E); saveE(); renderEntryCands(); }
   saveCandGone(); saveJobEdit(); saveLog(); store.set("md.import", IMPORT);
   renderLog(); renderImport();
   if (!$("#view-dashboard").hidden) renderDash();
@@ -7487,7 +7551,7 @@ function answer(raw){
   if (/how many|count|pipeline|pulled|tried to pull|jobs/.test(q) && !/where|how do/.test(q)){
     if (!P.jobs.length) return { text:"No jobs yet. Paste your sheet on the Middleton Method tab.", acts:[{ label:"Paste my sheet", view:"middleton", open:"mi" }] };
     const by = s => P.jobs.filter(j => j.status === s).length;
-    return { text:`You've tried to pull ${P.jobs.length} job${P.jobs.length === 1 ? "" : "s"}: ${by("pursuing")} still in play, ${by("pulled")} pulled, ${by("filled")} filled or gone${by("bigwheel") ? `, ${by("bigwheel")} Big Wheel with no job right now` : ""}. ${P.mgrs.length} hiring managers and ${P.cands.length} candidates across them.` };
+    return { text:`You've tried to pull ${P.jobs.length} job${P.jobs.length === 1 ? "" : "s"}: ${by("pursuing")} still in play, ${by("pulled")} pulled, ${by("won") ? `${by("won")} closed won, ` : ""}${by("filled")} filled or gone${by("bigwheel") ? `, ${by("bigwheel")} Big Wheel with no job right now` : ""}. ${P.mgrs.length} hiring managers and ${P.cands.length} candidates across them.` };
   }
   const hit = KB.find(x => x.k.test(q));
   if (hit) return { text:hit.a, acts:[hit.act] };
@@ -9620,6 +9684,7 @@ setScrOpen(!!SCR.open); renderScreen();
 document.querySelectorAll('link[rel="icon"], link[rel="apple-touch-icon"]').forEach(l => { if (l.parentNode !== document.head) document.head.appendChild(l); });
 syncInputsFromB(); updateCopyBtn();
 if (E.num == null) E.num = nextNum();
+pipeline().jobs.filter(j => isClosed(j.status) && !CLOSED[looseKey(j.company, j.position)]?.[j.opening - 1]).forEach(j => markClosure(j.key, true));
 renderEntryForm(); renderLog();
 renderMatch();
 renderNotes("notes"); renderNotes("spec");
