@@ -654,6 +654,31 @@ span.tick{cursor:default}
 .panel.folded > :not(.card-h){display:none}
 .panel.folded > .card-h{margin-bottom:0}
 .panel.folded{align-self:start}
+/* On a phone the arrow stays up beside the title, and a long note drops below them */
+@media (max-width:620px){[data-fold] > .card-h > small{order:10;flex-basis:100%}[data-fold] > .card-h > .fold-btn{margin-left:auto}}
+/* The top boxes jump to their list */
+button.tile{display:block;width:100%;font:inherit;color:inherit;text-align:left;cursor:pointer;transition:border-color .15s,transform .15s}
+button.tile:hover,button.tile:focus-visible{border-color:var(--accent);transform:translateY(-1px);outline:none}
+button.tile.on{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+@media (prefers-reduced-motion:reduce){button.tile:hover,button.tile:focus-visible{transform:none}}
+#d-jobs-panel{scroll-margin-top:134px}
+.job-views{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.job-view{font:inherit;font-size:12.5px;padding:5px 11px;border:1px solid var(--line);border-radius:999px;background:transparent;color:var(--muted);cursor:pointer;white-space:nowrap}
+.job-view b{margin-left:6px;font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
+.job-view:hover,.job-view:focus-visible{color:var(--ink);border-color:var(--line-strong);outline:none}
+.job-view[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent);color:var(--ink)}
+.job-link{display:block;padding:1px 0;background:none;border:0;font:inherit;color:inherit;text-align:left;cursor:pointer}
+.job-link:hover,.job-link:focus-visible{text-decoration:underline;text-underline-offset:2px;outline:none}
+.job-link small{margin-left:4px;color:var(--muted);font-size:11.5px}
+.job-table .who-sub{font-size:12px;color:var(--muted)}
+.job-table td.nowrap{white-space:nowrap}
+/* A to-do tied to a job opens its record */
+.todo li.has-rec{cursor:pointer}
+.todo li.has-rec:hover{background:rgba(255,220,0,.04)}
+.t-open{display:block;max-width:100%;padding:0;background:none;border:0;font:inherit;color:inherit;text-align:left;cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.todo li.has-rec:hover .t-open,.t-open:focus-visible{text-decoration:underline;text-underline-offset:2px;outline:none}
+.todo-pick{grid-column:1 / -1;display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding-left:34px;font-size:12.5px;color:var(--muted);cursor:default}
+.todo-pick .btn{padding:5px 9px;font-size:12.5px}
 /* Every job */
 .job-search{display:flex;align-items:center;gap:12px;margin-bottom:12px}
 .job-search input{flex:1;min-width:0}
@@ -724,6 +749,26 @@ span.tick{cursor:default}
 .jr-chip button{background:none;border:0;padding:0 4px;color:var(--muted);font-size:15px;line-height:1;cursor:pointer}
 .jr-chip button:hover{color:var(--not)}
 .jr-add{display:flex;gap:8px}
+.jr-tasks{list-style:none;margin:0 0 8px;padding:0;display:grid;gap:6px}
+.jr-tasks:empty{display:none}
+.jr-tasks li{display:grid;grid-template-columns:24px minmax(0,1fr) auto auto;gap:10px;align-items:center;font-size:14px}
+.jr-tasks .txt{overflow-wrap:anywhere}
+.jr-tasks .txt small{margin-left:8px;font-size:12px;color:var(--muted)}
+.jr-tasks li.done .txt{color:var(--muted);text-decoration:line-through}
+.jr-tasks li.done .txt small{display:inline-block;text-decoration:none}
+.jr-tasks .btn{padding:3px 9px;font-size:13px}
+.jt-due{width:138px;padding:3px 6px;font-size:12.5px}
+.jt-due.late{color:var(--warn);border-color:var(--warn)}
+.jr-add-task{flex-wrap:wrap}
+@media (max-width:620px){.jr-tasks li{grid-template-columns:24px minmax(0,1fr) auto}.jr-tasks li > .jt-due,.jr-tasks li > .undo{grid-column:2;grid-row:2;justify-self:start}}
+#jr-task{flex:1 1 220px}
+#jr-task-due{flex:0 0 150px}
+.todo-later{margin-top:8px;font-size:12.5px;color:var(--muted)}
+.todo-later summary{cursor:pointer}
+.todo-later ul{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:4px}
+.todo-later li{display:grid;grid-template-columns:96px minmax(0,1fr);gap:8px;align-items:baseline}
+.todo-later .when{font-family:var(--f-mono);font-size:12px;white-space:nowrap}
+.todo-later .job-link{color:var(--ink)}
 .jr-add input{flex:1;min-width:0}
 .jr-meta{font-size:12.5px;color:var(--muted);margin:8px 0 0}
 .jr-foot{margin-top:20px;padding-top:14px;border-top:1px solid var(--line)}
@@ -1782,7 +1827,7 @@ html.astro ::selection{background:#F7A134;color:#2A1208}
       <div class="dash">
         <div class="c12 tiles" id="d-tiles"></div>
 
-        <div class="panel c7">
+        <div class="panel c7" id="d-todo-panel" data-fold="todo">
           <div class="card-h"><h2>To Do List</h2><small id="d-todo-sub"></small></div>
           <div id="d-todo"></div>
           <form class="add-todo" id="d-add-todo">
@@ -1792,11 +1837,11 @@ html.astro ::selection{background:#F7A134;color:#2A1208}
           </form>
         </div>
 
-        <div class="panel c5">
+        <div class="panel c5" id="d-read-panel" data-fold="read">
           <div class="card-h"><h2>PIPER's read</h2><button type="button" class="btn ghost" id="d-read-say">Read it to me</button></div>
           <ul class="read" id="d-read"></ul>
           <div class="row" style="margin-top:14px">
-            <button type="button" class="btn" id="d-read-deep">Copy for a deeper read</button>
+            <a class="btn primary" id="d-read-deep" href="https://chatgpt.com/" target="_blank" rel="noopener">Copy for a deeper read &amp; open ChatGPT &#8599;</a>
           </div>
         </div>
 
@@ -1845,15 +1890,15 @@ html.astro ::selection{background:#F7A134;color:#2A1208}
           </div>
         </div>
 
-        <div class="panel c7">
+        <div class="panel c7" id="d-age-panel" data-fold="age">
           <div class="card-h"><h2>Pipeline age</h2><small>Days since you last reached out. Click a job to open it</small></div>
           <div class="age-cols">
-            <div><div class="age-h">5 oldest jobs</div><ul class="age" id="d-oldest"></ul></div>
-            <div><div class="age-h">5 newest jobs</div><ul class="age" id="d-newest"></ul></div>
+            <div><div class="age-h">Most dated touchpoint</div><ul class="age" id="d-oldest"></ul></div>
+            <div><div class="age-h">Most recent touchpoint</div><ul class="age" id="d-newest"></ul></div>
           </div>
         </div>
 
-        <div class="panel c5">
+        <div class="panel c5" id="d-resp-panel" data-fold="resp">
           <div class="card-h"><h2>Manager responses</h2><small id="d-resp-sub"></small></div>
           <div id="d-resp"></div>
           <form class="log-resp" id="d-log-resp">
@@ -1868,7 +1913,7 @@ html.astro ::selection{background:#F7A134;color:#2A1208}
           </form>
         </div>
 
-        <div class="panel c12">
+        <div class="panel c12" id="d-kpi-panel" data-fold="kpi">
           <div class="card-h"><h2>Daily KPIs</h2><small id="d-kpi-sub"></small></div>
           <form id="d-kpi-form">
             <div class="kpi-form" id="d-kpi-inputs"></div>
@@ -1908,7 +1953,8 @@ html.astro ::selection{background:#F7A134;color:#2A1208}
         </div>
 
         <div class="panel c12" id="d-jobs-panel" data-fold="jobs">
-          <div class="card-h"><h2>Every job</h2><small>Click a job to view, edit or delete it. Tick two or more to merge them</small><button type="button" class="btn" id="d-job-add">+ Add job</button></div>
+          <div class="card-h"><h2 id="d-jobs-h">Every job</h2><small id="d-jobs-note"></small><button type="button" class="btn" id="d-job-add">+ Add job</button></div>
+          <div class="job-views" id="d-job-views" role="group" aria-label="What to show"></div>
           <div class="job-search">
             <label class="sr" for="d-job-q">Search every job</label>
             <input type="search" id="d-job-q" placeholder="Search companies, positions, contacts or candidates" autocomplete="off">
@@ -2525,7 +2571,7 @@ html.astro ::selection{background:#F7A134;color:#2A1208}
   <div class="pp-log" id="pp-log" aria-live="polite"></div>
   <div class="pp-chips" id="pp-chips">
     <button type="button">Who do I call today?</button>
-    <button type="button">What are my oldest jobs?</button>
+    <button type="button">What are my most dated touchpoints?</button>
     <button type="button">How are my KPIs?</button>
     <button type="button">Where do I paste my sheet?</button>
     <button type="button">Summarize the job description</button>
@@ -5133,7 +5179,7 @@ let IMPORT = store.get("md.import", null);   // the last sheet pasted on the Mid
 let TOUCH = store.get("md.touch", {});       // { managerKey: { dates:[iso], resp:[{ t:"pos"|"neu"|"neg", d:iso, ts }], calledTs } }
 let JOBSTAT = store.get("md.jobstat", {});   // { jobKey: "pursuing" | "pulled" | "filled" }
 let CALLNEXT = store.get("md.callnext", []); // manager keys ticked for the next call list
-let TODOS = store.get("md.todos", []);       // [{ id, text, day, done }]
+let TODOS = store.get("md.todos", []);       // [{ id, text, day, done, job?, due? }]. job = a task made inside that job's record. due = the date picked for it; none means it's for today, and no date shows
 let BIGWHEEL = store.get("md.bigwheel", {}); // { jobKey: { since:iso, done:iso } } for jobs marked No job ATM / Big Wheel
 let CANDGONE = new Set(store.get("md.candgone", []));   // "jobKey::name" taken off a job on Paste your sheet, so pasting again doesn't bring them back
 const saveCandGone = () => store.set("md.candgone", [...CANDGONE]);
@@ -5260,6 +5306,9 @@ function pipeline(){
     if (SO.job === from) SO.job = to;
   });
   if (moved){ store.set("md.jobstat", JOBSTAT); store.set("md.bigwheel", BIGWHEEL); }
+  let tasksMoved = false;
+  TODOS.forEach(t => { const to = t.job && alias.get(t.job); if (to && jobs.has(to)){ t.job = to; tasksMoved = true; } });
+  if (tasksMoved) store.set("md.todos", TODOS);
   SO.rows.forEach(s => { if (soHas(s)) jobs.get(s.job)?.sourced.push(s); });
   for (const [k, t] of Object.entries(TOUCH)){ const r = mgrs.get(k); if (r) (t.dates || []).forEach(d => r.dates.add(d)); }
   for (const m of mgrs.values()){
@@ -5374,6 +5423,14 @@ function todayList(P){
 }
 // "Not today": off the list and out of the counts until tomorrow
 let SKIP = store.get("md.skip", { day:"", ids:[] });
+// Tasks that belong on today's list: no date picked, or the date has come. Dated ones first, earliest first
+function tasksDue(){
+  const today = isoToday(), off = skipToday(), when = x => x.due || "9";
+  return TODOS.filter(x => !x.done && (!x.due || x.due <= today) && !off.includes("u:" + x.id)).sort((a, b) => when(a).localeCompare(when(b)));
+}
+const dueLabel = iso => fromISO(iso).toLocaleDateString("en-US", { weekday:"short", month:"short", day:"numeric" });
+let TODO_LATER = false;   // Whether the scheduled tasks are showing
+let TODO_PICK = null;   // The manager whose jobs are showing, when they're on more than one
 function skipToday(){ if (SKIP.day !== isoToday()) SKIP = { day:isoToday(), ids:[] }; return SKIP.ids; }
 const todoId = x => x.kind === "mgr" ? "m:" + x.m.key : x.kind === "daily" ? "d:" + x.id : x.kind === "task" ? "t:" + (x.job || x.bw || x.text) : "u:" + x.id;
 
@@ -5434,6 +5491,9 @@ function dashRead(P){
   const out = [], T = todayList(P).filter(x => x.kind === "mgr"), meet = meetUpcoming(1).find(o => o.iso === isoToday());
   if (meet) out.push(`Next meeting: ${meet.m.title} at ${fmtClock(meet.m.time)}.`);
   if (!out.length && !P.jobs.length && !Object.keys(KPI.days).length) return [`Paste your tracking sheet on the Middleton Method tab and log today's KPIs below, and I'll have a proper read for you.`];
+  const dated = tasksDue().filter(x => x.due), late = dated.filter(x => x.due < isoToday()), now = dated.filter(x => x.due === isoToday());
+  if (late.length) out.push(late.length === 1 ? `Overdue task: ${late[0].text}.` : `${late.length} tasks are overdue. Start with: ${late[0].text}.`);
+  if (now.length) out.push(now.length === 1 ? `Due today: ${now[0].text}.` : `${now.length} tasks are due today.`);
   const pos = T.filter(x => x.cls === "pos");
   if (pos.length) out.push(`${pos.length === 1 ? mgrLabel(pos[0].m) + " replied" : pos.length + " managers replied"} positively and ${pos.length === 1 ? "hasn't" : "haven't"} had a call back. Start there.`);
   const due = T.filter(x => x.cls === "due").length, listed = T.filter(x => x.cls === "list").length;
@@ -5469,29 +5529,49 @@ function renderDash(){
   $("#d-date").textContent = IMPORT ? `Sheet read ${ago(daysSince(toISO(new Date(IMPORT.at))))}.` : "Paste your sheet on the Middleton Method tab to fill this in.";
   tickClock();
   const by = s => P.jobs.filter(j => j.status === s).length;
-  const due = todayList(P).filter(x => !x.done).length;
+  const due = todayList(P).filter(x => !x.done).length + tasksDue().length;
   $("#dash-say").textContent = `${fn ? fn + ", " : ""}${due ? `${due} thing${due === 1 ? "" : "s"} on today's list. ${due === 1 ? "It's" : "They're"} just below.` : "nothing's due today. Where to next?"}`;
   const tiles = [
-    { n:P.jobs.length, l:"Jobs tried to pull", hi:true }, { n:by("pursuing"), l:"Still trying to pull" }, { n:by("pulled"), l:"Pulled" },
-    ...(by("won") ? [{ n:by("won"), l:"Closed Won" }] : []), { n:by("filled"), l:"Filled / unavailable" }, ...(by("bigwheel") ? [{ n:by("bigwheel"), l:"Big Wheel" }] : []), { n:P.mgrs.length, l:"Hiring managers" }, { n:P.cands.length, l:"Candidates in play" }
+    { n:P.jobs.length, l:"Jobs tried to pull", v:"all", hi:true }, { n:by("pursuing"), l:"Still trying to pull", v:"pursuing" }, { n:by("pulled"), l:"Pulled", v:"pulled" },
+    ...(by("won") ? [{ n:by("won"), l:"Closed Won", v:"won" }] : []), { n:by("filled"), l:"Filled / unavailable", v:"filled" }, ...(by("bigwheel") ? [{ n:by("bigwheel"), l:"Big Wheel", v:"bigwheel" }] : []), { n:P.mgrs.length, l:"Hiring managers", v:"mgrs" }, { n:P.cands.length, l:"Candidates in play", v:"cands" }
   ];
-  $("#d-tiles").innerHTML = tiles.map(t => `<div class="tile${t.hi ? " hi" : ""}"><b>${t.n}</b><span>${esc(t.l)}</span></div>`).join("");
+  $("#d-tiles").innerHTML = tiles.map(t => `<button type="button" class="tile${t.hi ? " hi" : ""}${t.v !== "all" && t.v === JOBVIEW ? " on" : ""}" data-tile="${t.v}" aria-label="${t.n} ${esc(t.l)}. Jump to the list" title="Jump to the list"><b>${t.n}</b><span>${esc(t.l)}</span></button>`).join("");
 
   // To Do List
-  const T = todayList(P), off = skipToday(), todos = TODOS.filter(x => (x.day === today || !x.done) && !off.includes("u:" + x.id));
+  const T = todayList(P), off = skipToday(), todos = TODOS.filter(x => (x.day === today || !x.done) && !(!x.done && x.due > today) && !off.includes("u:" + x.id));
+  // A task you picked a date for comes first once that date arrives
+  const dueNow = todos.filter(x => !x.done && x.due).sort((a, b) => a.due.localeCompare(b.due)), restTodos = todos.filter(x => !dueNow.includes(x));
+  const later = TODOS.filter(x => !x.done && x.due > today).sort((a, b) => a.due.localeCompare(b.due));
   const notToday = x => x.done ? "" : `<button type="button" class="btn ghost" data-skip="${esc(todoId(x))}" title="Take this off today's list. It comes back tomorrow.">Not today</button>`;
   const left = T.filter(x => !x.done).length + todos.filter(x => !x.done).length;
-  $("#d-todo-sub").textContent = left ? `${left} to do` : "All done";
+  // A row tied to a job opens that job's record, where it can be edited, closed out or deleted. Live jobs first: a manager's old filled job isn't why they're on the list
+  const recKeys = x => {
+    if (x.kind === "task") return [x.job || x.bw].filter(Boolean);
+    if (x.kind !== "mgr") return [];
+    const keys = [...x.m.jobs].filter(k => P.byJob.has(k)), live = keys.filter(k => !notLive(P.byJob.get(k).status));
+    return live.length ? live : keys;
+  };
+  const recName = (x, label) => {
+    const keys = recKeys(x);
+    if (!keys.length) return esc(label);
+    return keys.length === 1
+      ? `<button type="button" class="t-open" data-open-job="${esc(keys[0])}" title="Open this job's record">${esc(label)}</button>`
+      : `<button type="button" class="t-open" data-todo-pick="${esc(x.m.key)}" aria-expanded="${TODO_PICK === x.m.key}" title="Choose which job to open">${esc(label)}</button>`;
+  };
+  const recPick = x => { const keys = recKeys(x); return keys.length > 1 && TODO_PICK === x.m.key ? `<div class="todo-pick"><span>Which job?</span>${keys.map(k => `<button type="button" class="btn ghost" data-open-job="${esc(k)}">${esc(jobLabel(P.byJob.get(k)))}</button>`).join("")}</div>` : ""; };
+  $("#d-todo-sub").textContent = (left ? `${left} to do` : "All done") + (T.some(x => recKeys(x).length) || todos.some(x => x.job && P.byJob.has(x.job)) ? ". Click a job's row to open its record" : "");
   const tick = (attr, on, what) => `<button type="button" class="tick${on ? " on" : ""}" ${attr} aria-pressed="${on}" aria-label="${on ? "Done" : "Mark done"}: ${esc(what)}"></button>`;
-  const mgrRow = x => `<li><span></span><span class="why ${x.cls}">${esc(x.why)}</span><span class="t"><b>${esc(mgrLabel(x.m))}</b><span>${esc([x.m.name && x.m.title, x.m.company].filter(Boolean).join(" \u00b7 "))}${x.note ? " \u00b7 " + esc(x.note) : ""}</span><span>${esc([x.m.phone, x.m.email].filter(Boolean).join(" \u00b7 "))}</span></span>
-    <span class="acts"><button type="button" class="btn" data-called="${esc(x.m.key)}">Called</button><button type="button" class="btn resp-btn pos" data-r="pos" data-k="${esc(x.m.key)}" aria-label="Positive response" title="Positive response">+</button><button type="button" class="btn resp-btn" data-r="neu" data-k="${esc(x.m.key)}" aria-label="Neutral response" title="Neutral response">=</button><button type="button" class="btn resp-btn neg" data-r="neg" data-k="${esc(x.m.key)}" aria-label="Negative response" title="Negative response">\u2212</button>${notToday(x)}</span></li>`;
-  const taskRow = x => `<li><span></span><span class="why ${x.cls}">${esc(x.why)}</span><span class="t"><b>${esc(x.text)}</b><span>${esc(x.note || "")}</span></span><span class="acts">${x.bw ? `<button type="button" class="btn" data-open-job="${esc(x.bw)}">Open</button><button type="button" class="btn" data-bw-done="${esc(x.bw)}">Reached out</button>` : x.job ? `<button type="button" class="btn" data-source-job="${esc(x.job)}">Open</button>` : x.view ? `<button type="button" class="btn" data-goto="${x.view}">Open</button>` : x.scroll ? `<button type="button" class="btn" data-scroll="${x.scroll}">Go</button>` : ""}${notToday(x)}</span></li>`;
+  const mgrRow = x => `<li${recKeys(x).length ? ' class="has-rec"' : ""}><span></span><span class="why ${x.cls}">${esc(x.why)}</span><span class="t"><b>${recName(x, mgrLabel(x.m))}</b><span>${esc([x.m.name && x.m.title, x.m.company].filter(Boolean).join(" \u00b7 "))}${x.note ? " \u00b7 " + esc(x.note) : ""}</span><span>${esc([x.m.phone, x.m.email].filter(Boolean).join(" \u00b7 "))}</span></span>
+    <span class="acts"><button type="button" class="btn" data-called="${esc(x.m.key)}">Called</button><button type="button" class="btn resp-btn pos" data-r="pos" data-k="${esc(x.m.key)}" aria-label="Positive response" title="Positive response">+</button><button type="button" class="btn resp-btn" data-r="neu" data-k="${esc(x.m.key)}" aria-label="Neutral response" title="Neutral response">=</button><button type="button" class="btn resp-btn neg" data-r="neg" data-k="${esc(x.m.key)}" aria-label="Negative response" title="Negative response">\u2212</button>${notToday(x)}</span>${recPick(x)}</li>`;
+  const taskRow = x => `<li${recKeys(x).length ? ' class="has-rec"' : ""}><span></span><span class="why ${x.cls}">${esc(x.why)}</span><span class="t"><b>${recName(x, x.text)}</b><span>${esc(x.note || "")}</span></span><span class="acts">${x.bw ? `<button type="button" class="btn" data-open-job="${esc(x.bw)}">Open</button><button type="button" class="btn" data-bw-done="${esc(x.bw)}">Reached out</button>` : x.job ? `<button type="button" class="btn" data-source-job="${esc(x.job)}">Sourcing</button>` : x.view ? `<button type="button" class="btn" data-goto="${x.view}">Open</button>` : x.scroll ? `<button type="button" class="btn" data-scroll="${x.scroll}">Go</button>` : ""}${notToday(x)}</span></li>`;
   const dailyRow = x => `<li class="${x.done ? "done" : ""}">${x.auto ? `<span class="tick${x.done ? " on" : ""}" role="img" aria-label="${x.done ? "Logged" : "Not logged yet"}"></span>` : tick(`data-daily="${x.id}"`, x.done, x.text)}<span class="why ${x.cls}">${esc(x.why)}</span><span class="t"><b>${esc(x.text)}</b><span>${esc(x.done ? (x.auto ? "Logged" : "Done for today") : x.note || "")}</span></span><span class="acts">${x.auto ? (x.done ? "" : `<button type="button" class="btn" data-scroll="${x.scroll}">Go</button>`) : x.done ? `<button type="button" class="undo" data-daily="${x.id}">Undo</button>` : ""}${notToday(x)}</span></li>`;
-  const todoRow = x => `<li class="${x.done ? "done" : ""}">${tick(`data-todo-done="${x.id}"`, x.done, x.text)}<span class="why">To do</span><span class="t"><b>${esc(x.text)}</b></span><span class="acts">${x.done ? `<button type="button" class="undo" data-todo-done="${x.id}">Undo</button>` : ""}${notToday({ ...x, kind:"todo" })}<button type="button" class="btn ghost" data-todo-del="${x.id}" aria-label="Delete">\u00d7</button></span></li>`;
+  const taskJob = x => x.job ? P.byJob.get(x.job) : null;
+  const todoRow = x => `<li class="${[x.done ? "done" : "", taskJob(x) ? "has-rec" : ""].join(" ").trim()}">${tick(`data-todo-done="${x.id}"`, x.done, x.text)}${!x.done && x.due ? (x.due < today ? `<span class="why due">Overdue</span>` : `<span class="why list">Due today</span>`) : `<span class="why">${taskJob(x) ? "Task" : "To do"}</span>`}<span class="t">${taskJob(x) ? `<b><button type="button" class="t-open" data-open-job="${esc(taskJob(x).key)}" title="Open this job's record">${esc(x.text)}</button></b><span>${esc(jobLabel(taskJob(x)))}${!x.done && x.due && x.due < today ? ` \u00b7 Was due ${esc(dueLabel(x.due))}` : ""}</span>` : `<b>${esc(x.text)}</b>`}</span><span class="acts">${x.done ? `<button type="button" class="undo" data-todo-done="${x.id}">Undo</button>` : ""}${notToday({ ...x, kind:"todo" })}<button type="button" class="btn ghost" data-todo-del="${x.id}" aria-label="Delete">\u00d7</button></span></li>`;
   $("#d-todo").innerHTML = T.length || todos.length
-    ? `<ul class="todo">${T.map(x => x.kind === "mgr" ? mgrRow(x) : x.kind === "daily" ? dailyRow(x) : taskRow(x)).join("")}${todos.map(todoRow).join("")}</ul>`
-    : `<div class="dash-empty">${off.length ? "Nothing else for today." : "Nothing due. Paste your sheet on the Middleton Method tab, or tick managers there for your call list, and they'll show up here."}</div>`;
+    ? `<ul class="todo">${dueNow.map(todoRow).join("")}${T.map(x => x.kind === "mgr" ? mgrRow(x) : x.kind === "daily" ? dailyRow(x) : taskRow(x)).join("")}${restTodos.map(todoRow).join("")}</ul>`
+    : `<div class="dash-empty">${off.length || later.length ? "Nothing else for today." : "Nothing due. Paste your sheet on the Middleton Method tab, or tick managers there for your call list, and they'll show up here."}</div>`;
   if (off.length) $("#d-todo").insertAdjacentHTML("beforeend", `<div class="todo-skipped"><span>${off.length} set aside until tomorrow</span><button type="button" class="undo" data-skip-undo>Bring ${off.length === 1 ? "it" : "them"} back</button></div>`);
+  if (later.length) $("#d-todo").insertAdjacentHTML("beforeend", `<details class="todo-later"${TODO_LATER ? " open" : ""}><summary>${later.length} task${later.length === 1 ? "" : "s"} scheduled. Next: ${esc(dueLabel(later[0].due))}</summary><ul>${later.map(x => `<li><span class="when">${esc(dueLabel(x.due))}</span>${taskJob(x) ? `<button type="button" class="job-link" data-open-job="${esc(taskJob(x).key)}">${esc(x.text)} <small>${esc(jobLabel(taskJob(x)))}</small></button>` : `<span>${esc(x.text)}</span>`}</li>`).join("")}</ul></details>`);
 
   // PIPER's read
   $("#d-read").innerHTML = dashRead(P).map(s => `<li>${esc(s)}</li>`).join("");
@@ -5499,8 +5579,12 @@ function renderDash(){
   // Pipeline age
   const live = P.jobs.filter(j => !notLive(j.status));
   const dated = live.filter(j => j.first);
-  const oldest = [...dated].sort((a, b) => a.first < b.first ? -1 : a.first > b.first ? 1 : 0).slice(0, 5);
-  const newest = [...dated].sort((a, b) => a.first > b.first ? -1 : a.first < b.first ? 1 : 0).slice(0, 5);
+  // By last touch, not by when the job started: reach out to the most dated one and it moves to the top of the recent side.
+  // Most days have plenty of jobs touched on the same date, so the actual time of a marked call breaks the tie
+  const calledAt = j => Math.max(0, ...[...j.mgrs].map(k => TOUCH[k]?.calledTs || 0));
+  const byTouch = (a, b) => a.last < b.last ? -1 : a.last > b.last ? 1 : calledAt(a) - calledAt(b);
+  const oldest = [...dated].sort(byTouch).slice(0, 5);
+  const newest = [...dated].sort((a, b) => byTouch(b, a)).slice(0, 5);
   const maxD = Math.max(14, ...dated.map(j => daysSince(j.last) || 0));
   const ageRow = j => { const n = daysSince(j.last), cls = n >= 14 ? "bad" : n >= 7 ? "warn" : "";
     return `<li><button type="button" class="age-row" data-open-job="${esc(j.key)}" aria-label="Open ${esc(jobLabel(j))}, ${n} days since last reached"><span class="top-line"><b title="${esc(j.position)}">${esc(j.position || "Untitled role")}</b><span>${n === 0 ? "today" : n + "d since"}</span></span><span class="bar"><i class="${cls}" style="width:${Math.max(3, Math.round(n / maxD * 100))}%"></i></span><span class="sub">${esc(j.company)} \u00b7 1st touchpoint ${ago(daysSince(j.first))}</span></button></li>`; };
@@ -5626,7 +5710,16 @@ addEventListener("resize", () => { if (!$("#view-dashboard").hidden) $("#d-ci").
 
 // Clicks inside the dashboard
 $("#view-dashboard").addEventListener("click", e => {
-  const b = e.target.closest("button, a"); if (!b) return;
+  const b = e.target.closest("button, a");
+  if (!b){
+    // Anywhere else on a to-do row opens it too, unless you were selecting a phone number or email to copy
+    const row = e.target.closest(".todo li.has-rec");
+    if (row && !selectingIn(row)) row.querySelector(".t-open")?.click();
+    return;
+  }
+  if (b.dataset.tile){ showJobView(b.dataset.tile); return; }
+  if (b.dataset.jobView){ JOBVIEW = b.dataset.jobView; renderDash(); return; }
+  if (b.dataset.todoPick){ TODO_PICK = TODO_PICK === b.dataset.todoPick ? null : b.dataset.todoPick; renderDash(); return; }
   if (b.dataset.called){ markCalled(b.dataset.called); renderDash(); toast("Marked as called today"); return; }
   if (b.dataset.r && b.dataset.k){ logResp(b.dataset.k, b.dataset.r); renderDash(); toast(`${RESP_LABEL[b.dataset.r]} response logged`); return; }
   if (b.dataset.goto){ showView(b.dataset.goto); window.scrollTo(0, 0); return; }
@@ -5635,7 +5728,7 @@ $("#view-dashboard").addEventListener("click", e => {
   if (b.dataset.bwDone){ bwDone(b.dataset.bwDone); return; }
   if (b.dataset.skip){ skipToday().push(b.dataset.skip); store.set("md.skip", SKIP); renderDash(); toast("Off the list for today"); return; }
   if ("skipUndo" in b.dataset){ SKIP = { day:isoToday(), ids:[] }; store.set("md.skip", SKIP); renderDash(); return; }
-  if (b.dataset.scroll){ $(b.dataset.scroll)?.scrollIntoView({ behavior:"smooth", block:"center" }); return; }
+  if (b.dataset.scroll){ const to = $(b.dataset.scroll); unfold(to); to?.scrollIntoView({ behavior:"smooth", block:"center" }); return; }
   if (b.dataset.daily){ toggleDaily(b.dataset.daily); renderDash(); return; }
   if (b.dataset.todoDone){ const x = TODOS.find(t => t.id === b.dataset.todoDone); if (x){ x.done = !x.done; x.day = isoToday(); store.set("md.todos", TODOS); renderDash(); } return; }
   if (b.dataset.todoDel){ TODOS = TODOS.filter(t => t.id !== b.dataset.todoDel); store.set("md.todos", TODOS); renderDash(); return; }
@@ -5650,17 +5743,19 @@ $("#view-dashboard").addEventListener("click", e => {
     renderDash(); toast(`${RESP_LABEL[b.dataset.resp]} response logged for ${mgrLabel(m)}`);
   }
 });
+$("#d-todo").addEventListener("toggle", e => { if (e.target.classList?.contains("todo-later")) TODO_LATER = e.target.open; }, true);
 $("#d-add-todo").addEventListener("submit", e => {
   e.preventDefault();
   const v = $("#d-todo-in").value.trim(); if (!v) return;
   TODOS.push({ id:"t" + Date.now().toString(36), text:v, day:isoToday(), done:false });
-  // Finished to-dos from earlier days drop off
-  TODOS = TODOS.filter(x => !x.done || x.day === isoToday());
+  // Finished to-dos from earlier days drop off. A job's tasks stay in its record
+  TODOS = TODOS.filter(x => !x.done || x.day === isoToday() || x.job);
   store.set("md.todos", TODOS); $("#d-todo-in").value = ""; renderDash();
 });
 $("#d-read-say").addEventListener("click", () => say([...$("#d-read").querySelectorAll("li")].map(li => li.textContent).join(" ")));
-$("#d-read-deep").addEventListener("click", async () => {
-  toast(await copyText(deepReadPrompt()) ? "Copied. Paste it into ChatGPT." : "Copy was blocked by this browser.");
+// The link opens ChatGPT in a new tab on its own; the copy happens in the same click
+$("#d-read-deep").addEventListener("click", () => {
+  copyText(deepReadPrompt()).then(ok => toast(ok ? "Copied. Paste it in the new tab." : "Copy was blocked by this browser."));
 });
 function deepReadPrompt(){
   const P = pipeline(), today = isoToday();
@@ -5800,16 +5895,50 @@ const tpCells = j => `<td class="num">${j.touches}</td><td class="num">${daysNum
 const jobLabel = j => ([j.company, j.position].filter(Boolean).join(" \u00b7 ") || "Untitled job") + (j.opening > 1 ? ` (opening ${j.opening})` : "");
 const openBadge = j => j.opening > 1 ? ` <span class="badge">Opening ${j.opening}</span>` : "";
 const jobContacts = (j, P) => [...j.mgrs].map(k => P.byMgr.get(k)).filter(Boolean);
+// True when the click was the end of dragging over some text in this row, to copy a phone number or email
+const selectingIn = el => { const s = getSelection(); return !s.isCollapsed && el.contains(s.anchorNode); };
+/* What the panel is showing: every job, one status, or the people behind the top boxes. The boxes jump here and pick the view */
+let JOBVIEW = "all";
+function showJobView(v){
+  JOBVIEW = v; $("#d-job-q").value = "";   // A search left over from earlier would hide what you just asked for
+  renderDash();
+  spotlight($("#d-jobs-panel"), "start");
+}
+const jobLinks = (keys, P) => keys.map(k => P.byJob.get(k)).filter(Boolean).map(j => `<button type="button" class="job-link" data-open-job="${esc(j.key)}">${esc(jobLabel(j))} <small>${esc(STATUS[j.status])}</small></button>`).join("");
+const oneJob = keys => keys.length === 1 ? ` data-job="${esc(keys[0])}"` : "";
+function renderMgrView(P, q, host){
+  const hay = m => norm([m.name, m.title, m.email, m.phone, m.company, ...[...m.jobs].map(k => { const j = P.byJob.get(k); return j ? j.company + " " + j.position : ""; })].join(" "));
+  const rows = P.mgrs.filter(m => !q || q.split(/\s+/).every(w => hay(m).includes(w))).sort((a, b) => mgrLabel(a).localeCompare(mgrLabel(b)));
+  $("#d-job-count").textContent = q ? `${rows.length} of ${P.mgrs.length}` : `${P.mgrs.length} manager${P.mgrs.length === 1 ? "" : "s"}`;
+  host.innerHTML = rows.length ? `<div class="table-scroll"><table class="job-table"><thead><tr><th>Manager</th><th>Company</th><th>Phone</th><th>Email</th><th>Jobs</th><th class="tp">Days since last touchpoint</th><th>Last response</th></tr></thead><tbody>${rows.map(m => { const keys = [...m.jobs].filter(k => P.byJob.has(k)); return `<tr${oneJob(keys)}>
+    <td><b>${esc(mgrLabel(m))}</b>${m.name && m.title ? `<div class="who-sub">${esc(m.title)}</div>` : ""}</td><td>${esc(m.company)}</td><td class="nowrap">${esc(m.phone)}</td><td>${esc(m.email)}</td><td>${jobLinks(keys, P)}</td><td class="num">${daysNum(m.last)}</td>
+    <td>${m.lastResp ? `<span class="rtag ${m.lastResp.t}">${RESP_LABEL[m.lastResp.t]}</span>` : ""}</td></tr>`; }).join("")}</tbody></table></div>` : `<div class="dash-empty">${q ? "No managers match that search." : "No hiring managers yet."}</div>`;
+}
+function renderCandView(P, q, host){
+  const hay = c => norm([c.name, ...[...c.jobs].map(k => { const j = P.byJob.get(k); return j ? j.company + " " + j.position : ""; })].join(" "));
+  const rows = [...P.cands].filter(c => !q || q.split(/\s+/).every(w => hay(c).includes(w))).sort((a, b) => a.name.localeCompare(b.name));
+  $("#d-job-count").textContent = q ? `${rows.length} of ${P.cands.length}` : `${P.cands.length} candidate${P.cands.length === 1 ? "" : "s"}`;
+  host.innerHTML = rows.length ? `<div class="table-scroll"><table class="job-table"><thead><tr><th>Candidate</th><th>Jobs</th></tr></thead><tbody>${rows.map(c => { const keys = [...c.jobs].filter(k => P.byJob.has(k)); return `<tr${oneJob(keys)}><td><b>${esc(c.name)}</b></td><td>${jobLinks(keys, P)}</td></tr>`; }).join("")}</tbody></table></div>` : `<div class="dash-empty">${q ? "No candidates match that search." : "No candidates in play yet."}</div>`;
+}
 function renderJobs(P){
-  const host = $("#d-jobs"), q = norm($("#d-job-q").value);
+  const host = $("#d-jobs"), q = norm($("#d-job-q").value), people = JOBVIEW === "mgrs" || JOBVIEW === "cands";
+  const count = s => P.jobs.filter(j => j.status === s).length;
+  const views = [{ v:"all", l:"All jobs", n:P.jobs.length }, { v:"pursuing", l:"Still trying to pull", n:count("pursuing") }, { v:"pulled", l:"Pulled", n:count("pulled") }, { v:"won", l:"Closed Won", n:count("won") }, { v:"filled", l:"Filled / unavailable", n:count("filled") }, { v:"bigwheel", l:"Big Wheel", n:count("bigwheel") }, { v:"mgrs", l:"Hiring managers", n:P.mgrs.length }, { v:"cands", l:"Candidates in play", n:P.cands.length }];
+  $("#d-job-views").innerHTML = views.filter(x => x.n || x.v === JOBVIEW || x.v === "all").map(x => `<button type="button" class="job-view" data-job-view="${x.v}" aria-pressed="${x.v === JOBVIEW}">${esc(x.l)}<b>${x.n}</b></button>`).join("");
+  $("#d-jobs-h").textContent = JOBVIEW === "mgrs" ? "Hiring managers" : JOBVIEW === "cands" ? "Candidates in play" : "Every job";
+  $("#d-jobs-note").textContent = people ? "Click a row to open the job" : "Click a job to view, edit or delete it. Tick two or more to merge them";
   JOBSEL = new Set([...JOBSEL].filter(k => P.byJob.has(k)));
-  renderJobTools(); renderJobDups(P);
+  if (people){ $("#d-job-tools").hidden = true; $("#d-job-dups").innerHTML = ""; }
+  else { renderJobTools(); renderJobDups(P); }
   if (!P.jobs.length){ host.innerHTML = `<div class="dash-empty">No jobs yet. Paste your sheet or save entries on the Middleton Method tab, or add one here.</div>`; $("#d-job-count").textContent = ""; return; }
   const hay = j => norm([j.company, j.position, j.notes, ...jobContacts(j, P).flatMap(m => [m.name, m.title, m.email, m.phone]), ...j.cands, ...j.sourced.map(s => s.name), STATUS[j.status]].join(" "));
   const order = { pursuing:0, pulled:1, won:2, filled:3, bigwheel:4 };
-  const rows = P.jobs.filter(j => !q || q.split(/\s+/).every(w => hay(j).includes(w))).sort((a, b) => order[a.status] - order[b.status] || (a.last || "").localeCompare(b.last || ""));
-  $("#d-job-count").textContent = (q ? `${rows.length} of ${P.jobs.length}` : `${P.jobs.length} job${P.jobs.length === 1 ? "" : "s"}`) + (P.dupes ? ` \u00b7 ${P.dupes} duplicate${P.dupes === 1 ? "" : "s"} combined` : "");
-  if (!rows.length){ host.innerHTML = `<div class="dash-empty">No jobs match that search.</div>`; return; }
+  if (JOBVIEW === "mgrs") return renderMgrView(P, q, host);
+  if (JOBVIEW === "cands") return renderCandView(P, q, host);
+  const shown = JOBVIEW === "all" ? P.jobs : P.jobs.filter(j => j.status === JOBVIEW);
+  const rows = shown.filter(j => !q || q.split(/\s+/).every(w => hay(j).includes(w))).sort((a, b) => order[a.status] - order[b.status] || (a.last || "").localeCompare(b.last || ""));
+  $("#d-job-count").textContent = (q ? `${rows.length} of ${shown.length}` : `${shown.length} job${shown.length === 1 ? "" : "s"}`) + (P.dupes ? ` \u00b7 ${P.dupes} duplicate${P.dupes === 1 ? "" : "s"} combined` : "");
+  if (!rows.length){ host.innerHTML = `<div class="dash-empty">${q ? "No jobs match that search." : "No jobs in this list right now."}</div>`; return; }
   host.innerHTML = `<div class="table-scroll"><table class="job-table"><thead><tr><th class="sel-cell"><input type="checkbox" id="d-job-all" aria-label="Select every job shown"></th><th>Company</th><th>Position</th><th>Contacts</th><th>Candidates</th>${TP_HEADS}<th>Status</th><th><span class="sr">Edit</span></th></tr></thead><tbody>${rows.map(j => `<tr data-job="${esc(j.key)}">
     <td class="sel-cell"><input type="checkbox" data-sel="${esc(j.key)}"${JOBSEL.has(j.key) ? " checked" : ""} aria-label="Select ${esc(jobLabel(j))}"></td>
     <td>${esc(j.company)}</td><td>${j.link ? `<a href="${esc(j.link)}" target="_blank" rel="noopener" style="color:inherit">${esc(j.position)}</a>` : esc(j.position)}${openBadge(j)}</td>
@@ -5834,6 +5963,7 @@ $("#d-job-tools").addEventListener("click", e => {
   if (b.dataset.jt === "undo" && MERGE_UNDO){
     ({ JOBEDIT, JOBSTAT, BIGWHEEL, CLOSED } = MERGE_UNDO); store.set("md.jobclosed", CLOSED);
     CANDGONE = new Set(MERGE_UNDO.gone);
+    TODOS = MERGE_UNDO.todos; store.set("md.todos", TODOS);
     SO.rows.forEach(r => { if (r.id in MERGE_UNDO.so) r.job = MERGE_UNDO.so[r.id]; });
     SO.job = MERGE_UNDO.soJob; MERGE_UNDO = null;
     saveJobEdit(); store.set("md.jobstat", JOBSTAT); store.set("md.bigwheel", BIGWHEEL); saveCandGone(); saveSo();
@@ -5859,7 +5989,7 @@ function mergeInto(keys, keepKey){
   const P = pipeline(), list = keys.map(k => P.byJob.get(k)).filter(Boolean), keep = P.byJob.get(keepKey);
   if (!keep || list.length < 2) return;
   const others = list.filter(j => j !== keep), union = (...a) => [...new Set(a.flat(Infinity).filter(Boolean))];
-  MERGE_UNDO = { CLOSED:structuredClone(CLOSED), JOBEDIT:structuredClone(JOBEDIT), JOBSTAT:{ ...JOBSTAT }, BIGWHEEL:structuredClone(BIGWHEEL), gone:[...CANDGONE], so:Object.fromEntries(SO.rows.map(r => [r.id, r.job])), soJob:SO.job };
+  MERGE_UNDO = { todos:structuredClone(TODOS), CLOSED:structuredClone(CLOSED), JOBEDIT:structuredClone(JOBEDIT), JOBSTAT:{ ...JOBSTAT }, BIGWHEEL:structuredClone(BIGWHEEL), gone:[...CANDGONE], so:Object.fromEntries(SO.rows.map(r => [r.id, r.job])), soJob:SO.job };
   const mgrs = new Map(), names = new Map();
   list.forEach(j => {
     j.rawM.forEach(x => { const m = P.byMgr.get(x.key); if (m) mgrs.set(x.key, { key:x.key, title:m.title, name:m.name, email:m.email, phone:m.phone, dates:union(mgrs.get(x.key)?.dates, x.dates) }); });
@@ -5926,8 +6056,8 @@ $("#d-jobs").addEventListener("change", e => {
   if (all){ $("#d-jobs").querySelectorAll("[data-sel]").forEach(c => { c.checked = all.checked; if (all.checked) JOBSEL.add(c.dataset.sel); else JOBSEL.delete(c.dataset.sel); }); renderJobTools(); }
 });
 $("#d-jobs").addEventListener("click", e => {
-  if (e.target.closest("select, label, a, .sel-cell")) return;
-  const r = e.target.closest("[data-job]"); if (r) openJob(r.dataset.job);
+  if (e.target.closest("select, label, a, .sel-cell, [data-open-job]")) return;
+  const r = e.target.closest("[data-job]"); if (r && !selectingIn(r)) openJob(r.dataset.job);
 });
 
 /* One job, opened up. Changes are kept as a record of their own, so pasting the sheet again won't undo them */
@@ -5940,7 +6070,7 @@ function openJob(key){
     key, isNew:false, company:j.company, position:j.position, link:j.link, terms:j.terms, notes:j.notes, status:j.status, first:j.first, last:j.last, touches:j.touches, opening:j.opening,
     dates:[...j.dates].sort(), candidates:[...j.cands], sourced:j.sourced.map(s => s.name).filter(Boolean), gone:[], goneC:[], goneD:[],
     managers:[...j.rawM.values()].map(x => { const m = P.byMgr.get(x.key); return { key:x.key, title:m.title, name:m.name, email:m.email, phone:m.phone, dates:x.dates, last:m.last }; })
-  } : { key:"u" + Date.now().toString(36), isNew:true, company:"", position:"", link:"", terms:false, notes:"", status:"pursuing", dates:[isoToday()], candidates:[], sourced:[], gone:[], goneC:[], goneD:[], managers:[{ key:"m" + Date.now().toString(36), title:"", name:"", email:"", phone:"", dates:[] }] };
+  } : { key:"u" + Date.now().toString(36), isNew:true, company:"", position:"", link:"", terms:false, notes:"", status:"pursuing", dates:[isoToday()], candidates:[], sourced:[], gone:[], goneC:[], goneD:[], newTasks:[], managers:[{ key:"m" + Date.now().toString(36), title:"", name:"", email:"", phone:"", dates:[] }] };
   JR_START = JSON.stringify(JR);
   $("#jr-del").hidden = JR.isNew; $("#jr-source").hidden = JR.isNew; $("#jr-mm").hidden = JR.isNew;
   const del = $("#jr-del"); del.dataset.armed = ""; del.classList.remove("armed"); del.textContent = "Delete job";
@@ -5948,6 +6078,18 @@ function openJob(key){
   if (DEMO) jr.show(); else jr.showModal();   // In the tour it opens over the page window, so Next and Exit still work
   if (JR.isNew) $("#jr-company").focus();
 }
+/* Tasks made inside a job's record. They save the moment you add them, so Close doesn't lose them. A job that's still being added holds them until it's saved */
+const jrTasks = J => (J.isNew ? J.newTasks : TODOS).filter(t => t.job === J.key);
+function jrTasksChanged(){
+  if (!JR.isNew){ store.set("md.todos", TODOS); if (!$("#view-dashboard").hidden) renderDash(); }
+  renderJr();
+}
+function jrAddTask(){
+  const el = $("#jr-task"), v = el.value.trim(), due = $("#jr-task-due").value; if (!v){ el.focus(); return; }
+  (JR.isNew ? JR.newTasks : TODOS).push({ id:"t" + Date.now().toString(36) + Math.random().toString(36).slice(2, 5), text:v, day:isoToday(), done:false, job:JR.key, ...(due ? { due } : {}) });
+  jrTasksChanged(); $("#jr-task").focus();
+}
+const jtDueInput = t => `<input type="date" class="jt-due${t.due && t.due < isoToday() ? " late" : ""}" data-jt-due="${esc(t.id)}" value="${esc(t.due || "")}" aria-label="Due date: ${esc(t.text)}">`;
 const jrBwLine = J => `I'll remind you to check in on ${longDate(bwNext({ key:J.key, last:J.last }))}, and every 20 working days after that.`;
 function renderJr(){
   const J = JR;
@@ -5964,6 +6106,12 @@ function renderJr(){
       <p class="jr-meta" id="jr-bw"${J.status === "bigwheel" ? "" : " hidden"}>${esc(jrBwLine(J))}</p>
       <label class="check" style="margin-top:10px"><input type="checkbox" id="jr-terms" data-j="terms"${J.terms ? " checked" : ""}> Terms</label>
       <div class="field" style="margin-top:10px"><label for="jr-notes">Notes</label><textarea id="jr-notes" data-j="notes" rows="2">${esc(J.notes)}</textarea></div>
+    </div>
+    <div class="jr-sec">
+      <h3>Tasks</h3>
+      <ul class="jr-tasks">${jrTasks(J).sort((a, b) => a.done - b.done || (a.due || isoToday()).localeCompare(b.due || isoToday())).map(t => `<li class="${t.done ? "done" : ""}"><button type="button" class="tick${t.done ? " on" : ""}" data-jt-done="${esc(t.id)}" aria-pressed="${!!t.done}" aria-label="${t.done ? "Done" : "Mark done"}: ${esc(t.text)}"></button><span class="txt">${esc(t.text)}${t.done ? `<small>Done ${esc(fromISO(t.day).toLocaleDateString("en-US", { month:"short", day:"numeric" }))}</small>` : ""}</span>${t.done ? "<span></span>" : t.due ? jtDueInput(t) : `<button type="button" class="undo" data-jt-setdue="${esc(t.id)}">Add date</button>`}<button type="button" class="btn ghost" data-jt-del="${esc(t.id)}" aria-label="Delete task: ${esc(t.text)}">\u00d7</button></li>`).join("")}</ul>
+      <div class="jr-add jr-add-task"><label class="sr" for="jr-task">Add a task</label><input type="text" id="jr-task" placeholder="Add a task for this job" autocomplete="off"><label class="sr" for="jr-task-due">Due date, optional</label><input type="date" id="jr-task-due" title="Due date, optional"><button type="button" class="btn" id="jr-task-add">Add task</button></div>
+      <p class="jr-meta">Leave the date blank for today. A task with a date joins your To Do List on that day${J.isNew ? ", once you save this job" : ""}.</p>
     </div>
     <div class="jr-sec">
       <h3>Touchpoints</h3>
@@ -5997,6 +6145,14 @@ $("#jr-body").addEventListener("input", e => {
   if (m) JR.managers[Number(m.closest(".jr-mgr").dataset.i)][m.dataset.m] = m.value;
   if (f?.tagName === "TEXTAREA") ciGrow(f);
 });
+// Saved without redrawing the record, since Chrome fires this while a date is still being typed
+$("#jr-body").addEventListener("change", e => {
+  const d = e.target.closest("[data-jt-due]"); if (!d) return;
+  const x = jrTasks(JR).find(y => y.id === d.dataset.jtDue); if (!x) return;
+  if (d.value) x.due = d.value; else delete x.due;
+  d.classList.toggle("late", !!d.value && d.value < isoToday());
+  if (!JR.isNew){ store.set("md.todos", TODOS); if (!$("#view-dashboard").hidden) renderDash(); }
+});
 $("#jr-body").addEventListener("focusout", e => {
   const m = e.target.closest('[data-m="phone"]'); if (!m) return;
   m.value = JR.managers[Number(m.closest(".jr-mgr").dataset.i)].phone = formatPhone(m.value);
@@ -6006,12 +6162,24 @@ function jrAddCand(){ const el = $("#jr-cand"), v = el.value.trim(); if (!v) { e
 $("#jr-body").addEventListener("keydown", e => {
   if (e.key !== "Enter") return;
   if (e.target.id === "jr-cand"){ e.preventDefault(); jrAddCand(); }
+  else if (e.target.id === "jr-task" || e.target.id === "jr-task-due"){ e.preventDefault(); jrAddTask(); }
+  else if (e.target.closest("[data-jt-due]")) e.preventDefault();
   else if (e.target.id === "jr-date"){ e.preventDefault(); jrAddDate(); }
 });
 $("#jr-body").addEventListener("click", e => {
   const t = e.target;
   if (t.closest("#jr-date-add")) return jrAddDate();
   if (t.closest("#jr-cand-add")) return jrAddCand();
+  if (t.closest("#jr-task-add")) return jrAddTask();
+  const td = t.closest("[data-jt-done]"), tx = t.closest("[data-jt-del]"), ts = t.closest("[data-jt-setdue]");
+  if (ts){
+    const x = jrTasks(JR).find(y => y.id === ts.dataset.jtSetdue); if (!x) return;
+    ts.insertAdjacentHTML("afterend", jtDueInput(x)); const input = ts.nextElementSibling; ts.remove(); input.focus();
+    try { input.showPicker(); } catch(_){}
+    return;
+  }
+  if (td){ const x = jrTasks(JR).find(y => y.id === td.dataset.jtDone); if (x){ x.done = !x.done; x.day = isoToday(); jrTasksChanged(); } return; }
+  if (tx){ if (JR.isNew) JR.newTasks = JR.newTasks.filter(y => y.id !== tx.dataset.jtDel); else TODOS = TODOS.filter(y => y.id !== tx.dataset.jtDel); jrTasksChanged(); return; }
   if (t.closest("#jr-mgr-add")){
     JR.managers.push({ key:"m" + Date.now().toString(36), title:"", name:"", email:"", phone:"", dates:[] }); renderJr();
     document.getElementById(`jr-m${JR.managers.length - 1}-title`).focus(); return;
@@ -6034,6 +6202,8 @@ function saveJob(){
   saveJobEdit();
   J.candidates.forEach(c => { if (CANDGONE.delete(J.key + "::" + norm(c))) saveCandGone(); });
   setJobStatus(J.key, J.status);
+  if ($("#jr-task")?.value.trim()) jrAddTask();   // Typed but not added yet: Save means keep it
+  if (J.newTasks?.length){ TODOS.push(...J.newTasks); J.newTasks = []; store.set("md.todos", TODOS); }
   return true;
 }
 /* An existing job into the Middleton Method form, candidates included. It stops at the form because Bullhorn still has to be checked before saving */
@@ -6075,6 +6245,7 @@ $("#jr-del").addEventListener("click", e => {
   const b = e.currentTarget;
   if (b.dataset.armed !== "1"){ b.dataset.armed = "1"; b.classList.add("armed"); b.textContent = "Confirm delete"; setTimeout(() => { if (b.dataset.armed === "1"){ b.dataset.armed = ""; b.classList.remove("armed"); b.textContent = "Delete job"; } }, 3000); return; }
   JOBEDIT[JR.key] = { deleted:true }; saveJobEdit();
+  TODOS = TODOS.filter(t => t.job !== JR.key); store.set("md.todos", TODOS);
   delete JOBSTAT[JR.key]; store.set("md.jobstat", JOBSTAT);
   jr.close(); afterJobChange(); toast("Job deleted");
 });
@@ -7429,11 +7600,11 @@ function tuck(){
   if (window.matchMedia("(max-width:620px)").matches){ panel.hidden = true; dock.setAttribute("aria-expanded", "false"); }
 }
 // Light up what she's pointing at for a moment
-function spotlight(el){
+function spotlight(el, block = "center"){
   if (!el) return;
   unfold(el);
   const box = /^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName) ? el : el.closest(".panel, .spec-panel, .tile") || el;
-  box.scrollIntoView({ behavior:REDUCED ? "auto" : "smooth", block:"center" });
+  box.scrollIntoView({ behavior:REDUCED ? "auto" : "smooth", block });
   box.classList.remove("pp-spot"); void box.offsetWidth; box.classList.add("pp-spot");
   setTimeout(() => box.classList.remove("pp-spot"), 2800);
 }
@@ -7455,7 +7626,7 @@ const SPOTS = [
   { k:/news/, view:"dashboard", el:"#d-news", say:"Here's today's medical device news." },
   { k:/funding|form ?d\b|new money|funded/, view:"dashboard", el:"#d-fund", say:"Here's the new medtech money." },
   { k:/respon|replied|repl(y|ies)/, view:"dashboard", el:"#d-resp", say:"Here are your manager responses." },
-  { k:/pipeline age|oldest|newest|aging|ageing/, view:"dashboard", el:"#d-oldest", say:"Here's your pipeline age." },
+  { k:/pipeline age|oldest|newest|aging|ageing|\bdated touch|recent touch/, view:"dashboard", el:"#d-oldest", say:"Here's your pipeline age." },
   { k:/every job|all (the |my )?jobs|job status|statuses/, view:"dashboard", el:"#d-jobs", say:"Here's every job and where it stands." },
   { k:/reach out|to ?dos?\b|call list|who (to|do i|should i) call|pledge/, view:"dashboard", el:"#d-todo", say:"Here's your To Do List." },
   { k:/calendar|meetings?\b|schedule/, view:"dashboard", el:"#d-cal-panel", say:"Here's your calendar." },
@@ -7532,15 +7703,15 @@ function answer(raw){
     return { text:"Here's how your numbers read:", list:r, acts:[{ label:"See the KPIs", view:"dashboard", scroll:"#d-kpi-form" }] };
   }
   if (/who.*(call|reach|contact|follow)|call (list|today)|to ?do|what.*(should|do) i do|whats next|today/.test(q)){
-    const T = todayList(P).filter(x => !x.done);
+    const T = [...tasksDue().filter(x => x.due), ...todayList(P).filter(x => !x.done), ...tasksDue().filter(x => !x.due)];
     if (!T.length) return { text:P.jobs.length ? "Nothing's due today. A good day to source, or to tick a few managers for tomorrow." : "I don't have your sheet yet. Paste it on the Middleton Method tab and I'll build the list.", acts:P.jobs.length ? [] : [{ label:"Paste my sheet", view:"middleton", open:"mi" }] };
     return { text:`${T.length} thing${T.length === 1 ? "" : "s"} for today. First up:`, list:T.slice(0, 6).map(x => x.kind === "mgr" ? `${mgrLabel(x.m)}${x.m.company ? " (" + x.m.company + ")" : ""}: ${x.why === "Replied +" ? "positive reply, call back" : x.note}` : x.text), acts:[{ label:"Open the Dashboard", view:"dashboard" }] };
   }
-  if (/oldest|stale|quiet|longest|aging|ageing|neglect/.test(q) || /newest|latest|recent|new job/.test(q)){
+  if (/oldest|stale|quiet|longest|aging|ageing|neglect|\bdated\b/.test(q) || /newest|latest|recent|new job/.test(q)){
     const newest = /newest|latest|recent|new job/.test(q);
-    const live = P.jobs.filter(j => !notLive(j.status) && j.first).sort((a, b) => newest ? (a.first < b.first ? 1 : -1) : (a.first < b.first ? -1 : 1)).slice(0, 5);
+    const live = P.jobs.filter(j => !notLive(j.status) && j.first).sort((a, b) => newest ? (a.last < b.last ? 1 : -1) : (a.last < b.last ? -1 : 1)).slice(0, 5);
     if (!live.length) return { text:"I don't have any dated jobs yet. Paste your sheet with its dates, or save entries on the Middleton Method tab." };
-    return { text:`Your ${live.length} ${newest ? "newest" : "oldest"} live jobs, and how long since you last reached out:`, list:live.map(j => `${j.position || "Untitled"} at ${j.company}: ${ago(daysSince(j.last))}`), acts:[{ label:"Pipeline age", view:"dashboard" }] };
+    return { text:`Your ${live.length} ${newest ? "most recent" : "most dated"} touchpoints on live jobs:`, list:live.map(j => `${j.position || "Untitled"} at ${j.company}: ${ago(daysSince(j.last))}`), acts:[{ label:"Pipeline age", view:"dashboard" }] };
   }
   if (/respon|replied|reply|positive|negative|neutral/.test(q)){
     const resp = P.mgrs.filter(m => m.lastResp); const c = { pos:0, neu:0, neg:0 }; resp.forEach(m => c[m.lastResp.t]++);
@@ -7557,7 +7728,7 @@ function answer(raw){
   if (hit) return { text:hit.a, acts:[hit.act] };
   return { text:"That one's outside what I can see in here. I can hand it to ChatGPT with my personality and your numbers attached.", acts:[{ label:"Copy & open ChatGPT \u2197", fn:() => {
     const P2 = pipeline();
-    const ctx = `My desk right now: ${P2.jobs.length} jobs (${P2.jobs.filter(j => j.status === "pulled").length} pulled), ${P2.mgrs.length} hiring managers, ${todayList(P2).filter(x => !x.done).length} things due today.${kpiRead().length ? " KPI read: " + kpiRead().join(" ") : ""}`;
+    const ctx = `My desk right now: ${P2.jobs.length} jobs (${P2.jobs.filter(j => j.status === "pulled").length} pulled), ${P2.mgrs.length} hiring managers, ${todayList(P2).filter(x => !x.done).length + tasksDue().length} things due today.${kpiRead().length ? " KPI read: " + kpiRead().join(" ") : ""}`;
     copyText(`${PIPER_PERSONA}\n\n${ctx}\n\nMy question: ${raw}`).then(ok => { toast(ok ? "Copied. Paste it in the new tab." : "Copy was blocked by this browser."); window.open("https://chatgpt.com/", "_blank", "noopener"); });
   } }] };
 }
@@ -8993,7 +9164,7 @@ function botCarry(on){
 // He reads the real list. Nothing due gets a line, not an empty tray.
 let botQuiet = 0;
 BOT.el.querySelector(".as-bot-go").addEventListener("click", () => {
-  const due = todayList(pipeline()).filter(x => !x.done), n = due.length, top = due[0];
+  const due = [...todayList(pipeline()).filter(x => !x.done), ...tasksDue()], n = due.length, top = due[0];
   const who = top && (top.m ? mgrLabel(top.m) : top.text);
   if (n) toast(`${n} thing${n === 1 ? "" : "s"} on today's list.${who ? ` First up: ${who}.` : ""}`);
   else toast(["Nothing due today. More coffee?", "All clear. Feet up.", "Tray's empty. So is your list."][botQuiet++ % 3]);
@@ -9491,9 +9662,9 @@ const anA = n => /^(8|11|18)/.test(String(n)) ? "an" : "a";
 const DEMO_STEPS = [
   { home:true, say:"Hi, I'm PIPER, your Personal Intelligence for Prospecting, Execution and Recruitment. Here's the quick tour, on made-up data.",
     bits:["PERSONAL", "INTELLIGENCE", "PROSPECTING", "EXECUTION", "RECRUITMENT"] },
-  { view:"dashboard", say:"The Dashboard is your morning: the counts, who to call first, and my read on your desk. Not today sets anything aside until tomorrow.", bits:["TO DO", "CALL LIST", "FOLLOW UP", "NOT TODAY", "TODAY"],
+  { view:"dashboard", say:"The Dashboard is your morning. Click any count to jump to that list. Click a to-do to open its job, and Not today sets anything aside until tomorrow.", bits:["COUNTS", "TO DO", "CALL LIST", "JOB RECORD", "NOT TODAY"],
     act: async () => {
-      await pause(1500); tourSpot("#d-todo"); await pause(2200); tourSpot("#d-read"); await pause(2200);
+      tourSpot("#d-tiles"); await pause(1500); tourSpot("#d-todo"); await pause(2200); tourSpot("#d-read"); await pause(2200);
       const no = $('[data-skip="u:demo2"]'); if (!no) return;
       tourSpot(no.closest("li")); await pause(1300); no.click(); await pause(300); tourSpot(".todo-skipped");
     } },
@@ -9512,7 +9683,7 @@ const DEMO_STEPS = [
       for (const [id, v] of [["calls", "33"], ["early", "6"], ["emails", "31"], ["phone", "68"], ["mgrs", "4"]]) await typeInto("#kpi-" + id, v);
       await pause(200); $("#d-kpi-form").requestSubmit(); await pause(200); tourSpot("#d-kpi-grid");
     } },
-  { view:"dashboard", el:"#d-oldest", say:"Job age, manager replies, live medtech news with GS Medtech Weekly pinned, and who just got funded.", bits:["JOB AGE", "REPLIES", "GS MEDTECH WEEKLY", "FUNDING"],
+  { view:"dashboard", el:"#d-oldest", say:"The jobs you've gone longest without touching, manager replies, live medtech news with GS Medtech Weekly pinned, and who just got funded.", bits:["TOUCHPOINTS", "REPLIES", "GS MEDTECH WEEKLY", "FUNDING"],
     act: async () => { await pause(1500); tourSpot("#d-resp"); await pause(1500); unfold($("#d-news-panel")); tourSpot("#d-news-panel .news-pin"); } },
   { view:"dashboard", el:"#d-jobs-panel", say:"Every job, no duplicates. The same job written two ways combines by itself. Close calls wait for you, and you can tick any to merge.", bits:["EVERY JOB", "NO DUPLICATES", "MERGE", "COMBINED"],
     act: async () => {
@@ -9527,7 +9698,7 @@ const DEMO_STEPS = [
       tourSpot(row); await pause(1800);
       showAlert({ ...bwAlert(j, P), quiet:true });
     } },
-  { view:"dashboard", el:"#d-oldest", say:"Click any job for its record. Add to Middleton Method fills the form, candidates included. You tick Bullhorn and save.", bits:["JOB RECORD", "CONTACTS", "CANDIDATES", "MIDDLETON", "BULLHORN"],
+  { view:"dashboard", el:"#d-oldest", say:"Click any job for its record. Give a task a due date and it joins your To Do List that day. Add to Middleton Method fills the form, candidates included. You tick Bullhorn and save.", bits:["JOB RECORD", "TASKS", "CONTACTS", "CANDIDATES", "MIDDLETON", "BULLHORN"],
     act: async () => {
       await pause(1200);
       const j = demoJob(/harbor point/i); if (!j) return;
@@ -9535,7 +9706,10 @@ const DEMO_STEPS = [
       if (row) tourSpot(row);
       await pause(1000);
       if (!(row ? tourTap(row) : (openJob(j.key), true))) return;
-      await pause(1700); tourSpot("#jr-mm"); await pause(1200);
+      await pause(1000);
+      const ti = $("#jr-task");
+      if (ti){ tourSpot(ti); ti.value = "Send the intake notes"; $("#jr-task-due").value = isoShift(isoToday(), 2); await pause(1100); tourTap("#jr-task-add"); await pause(900); }
+      tourSpot("#jr-mm"); await pause(1200);
       const key = JR.key; jr.close();
       await unlock("middleton", ["MIDDLETON", "LENA FISCHER", "CANDIDATES"]);
       jobToMiddleton(key);
